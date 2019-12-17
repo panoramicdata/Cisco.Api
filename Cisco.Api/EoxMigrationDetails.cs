@@ -1,13 +1,29 @@
-﻿namespace Cisco.Api
+﻿using System.Runtime.Serialization;
+
+namespace Cisco.Api
 {
+	[DataContract]
 	public class EoxMigrationDetails
 	{
+		[DataMember(Name= "PIDActiveFlag")]
 		public string PidActiveFlag { get; set; }
-		public string MigrationInformation { get; set; }
-		public string MigrationOption { get; set; }
-		public string MigrationProductId { get; set; }
-		public string MigrationProductName { get; set; }
-		public string MigrationStrategy { get; set; }
-		public string MigrationProductInfoUrl { get; set; }
+
+		[DataMember(Name = "MigrationInformation")]
+		public string Information { get; set; }
+
+		[DataMember(Name = "MigrationOption")]
+		public string Option { get; set; }
+
+		[DataMember(Name = "MigrationProductId")]
+		public string ProductId { get; set; }
+
+		[DataMember(Name = "MigrationProductName")]
+		public string ProductName { get; set; }
+
+		[DataMember(Name = "MigrationStrategy")]
+		public string Strategy { get; set; }
+
+		[DataMember(Name = "MigrationProductInfoURL")]
+		public string ProductInfoUrl { get; set; }
 	}
 }

@@ -13,5 +13,11 @@ namespace Cisco.Api
 
 		[DataMember(Name = "expires_in")]
 		public int ExpiresIn { get; set; }
+
+		[DataMember(Name = "error_description")]
+		public string ErrorDescription { get; set; }
+
+		[DataMember(Name = "error")]
+		public string Error { get; set; }
 	}
 }

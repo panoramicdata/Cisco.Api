@@ -6,9 +6,9 @@ namespace Cisco.Api
 	public class Dimensions
 	{
 		[DataMember(Name = "dimensions_format")]
-		public string DimensionsFormat { get; set; }
+		public string Format { get; set; }
 
 		[DataMember(Name = "dimensions_value")]
-		public string DimensionsValue { get; set; }
+		public string Value { get; set; }
 	}
 }

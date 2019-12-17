@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,10 +18,10 @@ namespace Cisco.Api
 
 		public CiscoClient(string clientId, string clientSecret)
 		{
-			_httpClient = new HttpClient()
+			_httpClient = new HttpClient
 				{BaseAddress = new Uri("https://api.cisco.com/")};
-			_clientId = clientId;
-			_clientSecret = clientSecret;
+			_clientId = clientId ?? throw new ArgumentNullException(nameof(clientId));
+			_clientSecret = clientSecret ?? throw new ArgumentNullException(nameof(clientSecret));
 		}
 
 		public async Task AuthenticateAsync()
@@ -30,13 +31,17 @@ namespace Cisco.Api
 				throw new InvalidOperationException("Already authenticated.");
 			}
 
-			using (var httpClient = new HttpClient()
+			using (var httpClient = new HttpClient
 				{BaseAddress = new Uri("https://cloudsso.cisco.com/")})
 			{
 				var stringContent = new StringContent($"client_id={_clientId}&grant_type=client_credentials&client_secret={_clientSecret}", Encoding.UTF8, "application/x-www-form-urlencoded");
 				var response = await httpClient.PostAsync("as/token.oauth2", stringContent);
 				var contents = await response.Content.ReadAsStringAsync();
 				var accessTokenResponse = JsonConvert.DeserializeObject<AccessTokenResponse>(contents);
+				if (accessTokenResponse.ErrorDescription != null || accessTokenResponse.Error != null)
+				{
+					throw new SecurityException($"{accessTokenResponse.Error}: {accessTokenResponse.ErrorDescription}");
+				}
 				_accessToken = accessTokenResponse.AccessToken;
 				_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
 			}

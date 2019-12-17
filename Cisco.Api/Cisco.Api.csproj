@@ -5,9 +5,11 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Panoramic Data Limited</Company>
     <Copyright>Copyright (c) Panoramic Data Limited 2018</Copyright>
-    <PackageReleaseNotes>1.0.0 Initial release</PackageReleaseNotes>
+    <PackageReleaseNotes>1.0.1 Fixed naming and variously-non-mapped fields
+1.0.0 Initial release</PackageReleaseNotes>
     <Description>Provides access to EOX, Product Information and Serial Number to Information APIs.  Requires client crendentials.</Description>
     <Authors>David Bond</Authors>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -9,7 +9,7 @@ namespace Cisco.Api
 		public string Id { get; set; }
 
 		[DataMember(Name = "sr_no")]
-		public string SrNo { get; set; }
+		public string SerialNumber { get; set; }
 
 		[DataMember(Name = "base_pid")]
 		public string BasePid { get; set; }
