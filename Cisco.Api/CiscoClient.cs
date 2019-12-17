@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Cisco.Api.Exceptions;
+using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -54,6 +55,12 @@ namespace Cisco.Api
 			var response = cancellationToken.HasValue
 				? await _httpClient.GetAsync(s, cancellationToken.Value).ConfigureAwait(false)
 				: await _httpClient.GetAsync(s).ConfigureAwait(false);
+
+			if (!response.IsSuccessStatusCode)
+			{
+				throw new CiscoApiException(response);
+			}
+
 			var contents = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 			var result = JsonConvert.DeserializeObject<T>(contents);
 			return result;

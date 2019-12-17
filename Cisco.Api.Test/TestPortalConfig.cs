@@ -11,7 +11,7 @@ namespace Cisco.Api.Test
 		internal TestPortalConfig(string credentialsName, ITestOutputHelper iTestOutputHelper)
 		{
 			var builder = new ConfigurationBuilder()
-				.SetBasePath(Directory.GetCurrentDirectory())
+				.SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../../.."))
 				.AddJsonFile("appsettings.json");
 
 			var configuration = builder.Build();
