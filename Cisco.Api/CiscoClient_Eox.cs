@@ -14,7 +14,7 @@ namespace Cisco.Api
 		/// <param name="cancellationToken">An optional cancellation token</param>
 		/// <returns>The EOX information</returns>
 		public async Task<EoxRecord> GetEoxInfoBySerialNumberAsync(string serialNumber, CancellationToken? cancellationToken = null)
-			=> (await GetAsync<EoxInfoPage>($"supporttools/eox/rest/5/EOXBySerialNumber/1/{serialNumber}", cancellationToken).ConfigureAwait(false)).EoxRecord.FirstOrDefault();
+			=> (await GetAsync<EoxInfoPage>($"supporttools/eox/rest/5/EOXBySerialNumber/1/{serialNumber}", cancellationToken).ConfigureAwait(false)).EoxRecords.FirstOrDefault();
 
 		/// <summary>
 		/// Gets EOX information for a date range

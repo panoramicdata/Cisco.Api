@@ -14,7 +14,7 @@ namespace Cisco.Api.Test
 		[Fact]
 		public async void GoodCredentials()
 		{
-			await CiscoClient.AuthenticateAsync();
+			await CiscoClient.AuthenticateAsync().ConfigureAwait(false);
 		}
 
 		[Fact]
@@ -39,9 +39,7 @@ namespace Cisco.Api.Test
 		public async void BadCredentials()
 		{
 			var ciscoClient = new CiscoClient("BAD", "BAD");
-			await Assert.ThrowsAsync<SecurityException>(async () => {
-				await ciscoClient.AuthenticateAsync();
-			});
+			await Assert.ThrowsAsync<SecurityException>(async () => await ciscoClient.AuthenticateAsync().ConfigureAwait(false)).ConfigureAwait(false);
 		}
 	}
 }
