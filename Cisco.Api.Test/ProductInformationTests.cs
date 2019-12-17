@@ -12,7 +12,7 @@ namespace Cisco.Api.Test
 		[Fact]
 		public async void GetProductInformationBySerialNumber()
 		{
-			var productInformation = await CiscoClient.GetProductInformationBySerialNumber("FTX1910100B");
+			var productInformation = await CiscoClient.GetProductInformationBySerialNumber("FTX1910100B").ConfigureAwait(false);
 			Assert.NotNull(productInformation);
 			Assert.NotNull(productInformation.BasePid);
 			Assert.NotNull(productInformation.Dimensions);

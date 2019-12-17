@@ -7,8 +7,10 @@ namespace Cisco.Api
 	{
 		[DataMember(Name = "orderable_pid")]
 		public string OrderablePid { get; set; }
+
 		[DataMember(Name = "pillar_code")]
 		public string PillarCode { get; set; }
+
 		[DataMember(Name = "pillar_description")]
 		public string PillarDescription { get; set; }
 	}

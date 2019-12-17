@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Cisco.Api.Exceptions;
+using Newtonsoft.Json;
+using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace Cisco.Api
 {
@@ -35,8 +36,8 @@ namespace Cisco.Api
 				{BaseAddress = new Uri("https://cloudsso.cisco.com/")})
 			{
 				var stringContent = new StringContent($"client_id={_clientId}&grant_type=client_credentials&client_secret={_clientSecret}", Encoding.UTF8, "application/x-www-form-urlencoded");
-				var response = await httpClient.PostAsync("as/token.oauth2", stringContent);
-				var contents = await response.Content.ReadAsStringAsync();
+				var response = await httpClient.PostAsync("as/token.oauth2", stringContent).ConfigureAwait(false);
+				var contents = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 				var accessTokenResponse = JsonConvert.DeserializeObject<AccessTokenResponse>(contents);
 				if (accessTokenResponse.ErrorDescription != null || accessTokenResponse.Error != null)
 				{
@@ -49,18 +50,25 @@ namespace Cisco.Api
 
 		public bool IsAuthenticated => _accessToken != null;
 
-		public void Dispose()
-		{
-			_httpClient?.Dispose();
-		}
+		public void Dispose() => _httpClient?.Dispose();
 
 		private async Task<T> GetAsync<T>(string s, CancellationToken? cancellationToken)
 		{
-			if(!IsAuthenticated) await AuthenticateAsync();
+			if (!IsAuthenticated)
+			{
+				await AuthenticateAsync().ConfigureAwait(false);
+			}
+
 			var response = cancellationToken.HasValue
-				? await _httpClient.GetAsync(s, cancellationToken.Value)
-				: await _httpClient.GetAsync(s);
-			var contents = await response.Content.ReadAsStringAsync();
+				? await _httpClient.GetAsync(s, cancellationToken.Value).ConfigureAwait(false)
+				: await _httpClient.GetAsync(s).ConfigureAwait(false);
+
+			if (!response.IsSuccessStatusCode)
+			{
+				throw new CiscoApiException(response);
+			}
+
+			var contents = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 			var result = JsonConvert.DeserializeObject<T>(contents);
 			return result;
 		}

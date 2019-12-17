@@ -20,9 +20,7 @@ namespace Cisco.Api.Test
 		protected CiscoClient CiscoClient { get; }
 
 		protected void AssertIsFast(int durationSeconds)
-		{
-			Assert.InRange(Stopwatch.ElapsedMilliseconds, 0, durationSeconds * 1000);
-		}
+			=> Assert.InRange(Stopwatch.ElapsedMilliseconds, 0, durationSeconds * 1000);
 
 		protected CiscoClient GetCiscoClient(string customerName) => new TestPortalConfig(customerName, Output).CiscoClient;
 	}

@@ -12,7 +12,7 @@ namespace Cisco.Api.Test
 		[Fact]
 		public async void GetCoverageStatusBySerialNumber()
 		{
-			var coverageStatus = await CiscoClient.GetCoverageStatusBySerialNumber("FTX1910100B");
+			var coverageStatus = await CiscoClient.GetCoverageStatusBySerialNumber("FTX1910100B").ConfigureAwait(false);
 			Assert.NotNull(coverageStatus);
 			Assert.NotNull(coverageStatus.CoverageEndDate);
 			Assert.NotNull(coverageStatus.IsCovered);
@@ -22,7 +22,7 @@ namespace Cisco.Api.Test
 		[Fact]
 		public async void GetCoverageSummaryBySerialNumber()
 		{
-			var coverageSummary = await CiscoClient.GetCoverageSummaryBySerialNumber("FTX1910100B");
+			var coverageSummary = await CiscoClient.GetCoverageSummaryBySerialNumber("FTX1910100B").ConfigureAwait(false);
 			Assert.NotNull(coverageSummary);
 			Assert.NotNull(coverageSummary.BasePidList);
 			Assert.NotNull(coverageSummary.ContractSiteAddress1);
@@ -45,7 +45,7 @@ namespace Cisco.Api.Test
 		[Fact]
 		public async void GetOrderableProductIdentifierBySerialNumber()
 		{
-			var serialNumberOrderablePids = await CiscoClient.GetOrderableProductIdentifiersBySerialNumber("FTX1910100B");
+			var serialNumberOrderablePids = await CiscoClient.GetOrderableProductIdentifiersBySerialNumber("FTX1910100B").ConfigureAwait(false);
 			Assert.NotNull(serialNumberOrderablePids);
 			Assert.All(serialNumberOrderablePids, CheckSerialNumberOrderablePid);
 		}

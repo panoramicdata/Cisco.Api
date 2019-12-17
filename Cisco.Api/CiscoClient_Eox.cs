@@ -14,7 +14,7 @@ namespace Cisco.Api
 		/// <param name="cancellationToken">An optional cancellation token</param>
 		/// <returns>The EOX information</returns>
 		public async Task<EoxRecord> GetEoxInfoBySerialNumberAsync(string serialNumber, CancellationToken? cancellationToken = null)
-			=> (await GetAsync<EoxInfoPage>($"supporttools/eox/rest/5/EOXBySerialNumber/1/{serialNumber}", cancellationToken)).EoxRecords.FirstOrDefault();
+			=> (await GetAsync<EoxInfoPage>($"supporttools/eox/rest/5/EOXBySerialNumber/1/{serialNumber}", cancellationToken).ConfigureAwait(false)).EoxRecord.FirstOrDefault();
 
 		/// <summary>
 		/// Gets EOX information for a date range
@@ -25,7 +25,7 @@ namespace Cisco.Api
 		/// <param name="cancellationToken">An optional cancellation token</param>
 		/// <returns>The EOX information</returns>
 		public async Task<EoxInfoPage> GetEoxInfoByDatesAsync(DateTime startDate, DateTime endDate, int pageIndex = 1, CancellationToken? cancellationToken = null)
-			=> await GetAsync<EoxInfoPage>($"supporttools/eox/rest/5/EOXByDates/{pageIndex}/{startDate:yyyy-MM-dd}/{endDate:yyyy-MM-dd}", cancellationToken);
+			=> await GetAsync<EoxInfoPage>($"supporttools/eox/rest/5/EOXByDates/{pageIndex}/{startDate:yyyy-MM-dd}/{endDate:yyyy-MM-dd}", cancellationToken).ConfigureAwait(false);
 
 		/// <summary>
 		/// Gets EOX information for a product id
@@ -35,7 +35,7 @@ namespace Cisco.Api
 		/// <param name="cancellationToken">An optional cancellation token</param>
 		/// <returns>The EOX information</returns>
 		public async Task<EoxInfoPage> GetEoxInfoByProductIdAsync(string productId, int pageIndex = 1, CancellationToken? cancellationToken = null)
-			=> await GetAsync<EoxInfoPage>($"supporttools/eox/rest/5/EOXByProductID/{pageIndex}/{productId}", cancellationToken);
+			=> await GetAsync<EoxInfoPage>($"supporttools/eox/rest/5/EOXByProductID/{pageIndex}/{productId}", cancellationToken).ConfigureAwait(false);
 
 		/// <summary>
 		/// Gets EOX information for a single serial number
@@ -45,6 +45,6 @@ namespace Cisco.Api
 		/// <param name="cancellationToken">An optional cancellation token</param>
 		/// <returns>The EOX information</returns>
 		public async Task<EoxInfoPage> GetEoxInfoBySoftwareReleaseStringAsync(string softwareReleaseString, int pageIndex = 1, CancellationToken? cancellationToken = null)
-			=> await GetAsync<EoxInfoPage>($"supporttools/eox/rest/5/EOXBySWReleaseString/{pageIndex}?input1={softwareReleaseString}", cancellationToken);
+			=> await GetAsync<EoxInfoPage>($"supporttools/eox/rest/5/EOXBySWReleaseString/{pageIndex}?input1={softwareReleaseString}", cancellationToken).ConfigureAwait(false);
 	}
 }

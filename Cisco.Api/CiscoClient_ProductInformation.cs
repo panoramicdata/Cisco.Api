@@ -13,6 +13,6 @@ namespace Cisco.Api
 		/// <param name="cancellationToken">An optional cancellation token</param>
 		/// <returns>The coverage status</returns>
 		public async Task<ProductInformation> GetProductInformationBySerialNumber(string serialNumber, CancellationToken? cancellationToken = null)
-			=> (await GetAsync<ProductInformationPage>($"product/v1/information/serial_numbers/{serialNumber}", cancellationToken)).Products.FirstOrDefault();
+			=> (await GetAsync<ProductInformationPage>($"product/v1/information/serial_numbers/{serialNumber}", cancellationToken).ConfigureAwait(false)).Products.FirstOrDefault();
 	}
 }

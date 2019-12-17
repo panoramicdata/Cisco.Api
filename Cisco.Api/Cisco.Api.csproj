@@ -1,21 +1,24 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Panoramic Data Limited</Company>
-    <Copyright>Copyright (c) Panoramic Data Limited 2018</Copyright>
-    <PackageReleaseNotes>1.0.1 Fixed naming and variously-non-mapped fields
-1.0.0 Initial release</PackageReleaseNotes>
+    <Copyright>Copyright (c) Panoramic Data Limited 2018,2019</Copyright>
+    <PackageReleaseNotes>Better handling for API errors</PackageReleaseNotes>
     <Description>Provides access to EOX, Product Information and Serial Number to Information APIs.  Requires client crendentials.</Description>
-    <Authors>David Bond</Authors>
-    <Version>1.0.2</Version>
+    <Authors>David Bond,Daniel Abbatt</Authors>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>C:\Users\david.bond\.nuget\packages\newtonsoft.json\10.0.1\lib\netstandard1.3\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Nerdbank.GitVersioning" Version="3.0.28">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+	</ItemGroup>
+
+	<ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
+
 
 </Project>

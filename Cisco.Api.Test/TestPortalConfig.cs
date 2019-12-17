@@ -1,6 +1,7 @@
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
-using Microsoft.Extensions.Configuration;
 using Xunit.Abstractions;
 
 namespace Cisco.Api.Test
@@ -10,13 +11,14 @@ namespace Cisco.Api.Test
 		internal TestPortalConfig(string credentialsName, ITestOutputHelper iTestOutputHelper)
 		{
 			var builder = new ConfigurationBuilder()
-				.SetBasePath(Directory.GetCurrentDirectory())
+				.SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../../.."))
 				.AddJsonFile("appsettings.json");
-			Configuration = builder.Build();
 
-			var defaultCredentialsName = Configuration["DefaultCredentials"];
+			var configuration = builder.Build();
+
+			var defaultCredentialsName = configuration["DefaultCredentials"];
 			credentialsName = $"{credentialsName ?? defaultCredentialsName}Credentials";
-			var credentialsAppSetting = Configuration[$"Credentials:{credentialsName}"];
+			var credentialsAppSetting = configuration[$"Credentials:{credentialsName}"];
 
 			if (credentialsAppSetting == null)
 			{
@@ -34,11 +36,13 @@ namespace Cisco.Api.Test
 			ClientSecret = credentials[++credentialIndex];
 
 			CiscoClient = new CiscoClient(ClientId, ClientSecret);
+
+			TestLogger = iTestOutputHelper.BuildLogger();
 		}
 
-		public static IConfigurationRoot Configuration { get; set; }
+		internal CiscoClient CiscoClient { get; }
 
-		public CiscoClient CiscoClient { get; }
+		internal ILogger TestLogger { get; }
 
 		internal string ClientId { get; }
 
