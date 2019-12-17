@@ -13,28 +13,28 @@ namespace Cisco.Api.Test
 		[Fact]
 		public async void GetEoxInfoByDatesAsync()
 		{
-			var eoxInfoPage = await CiscoClient.GetEoxInfoByDatesAsync(DateTime.Parse("2017-01-01"), DateTime.Parse("2018-01-01"));
+			var eoxInfoPage = await CiscoClient.GetEoxInfoByDatesAsync(DateTime.Parse("2017-01-01"), DateTime.Parse("2018-01-01")).ConfigureAwait(false);
 			Assert.NotNull(eoxInfoPage);
 		}
 
 		[Fact]
 		public async void GetEoxInfoByProductIdAsync()
 		{
-			var eoxInfoPage = await CiscoClient.GetEoxInfoByProductIdAsync("WIC-1T=");
+			var eoxInfoPage = await CiscoClient.GetEoxInfoByProductIdAsync("WIC-1T=").ConfigureAwait(false);
 			Assert.NotNull(eoxInfoPage);
 		}
 
 		[Fact]
 		public async void GetEoxInfoBySerialNumberAsync()
 		{
-			var eoxRecord = await CiscoClient.GetEoxInfoBySerialNumberAsync("FTX1910100B");
+			var eoxRecord = await CiscoClient.GetEoxInfoBySerialNumberAsync("FTX1910100B").ConfigureAwait(false);
 			Assert.NotNull(eoxRecord);
 		}
 
 		[Fact]
 		public async void GetEoxInfoBySoftwareReleaseStringAsync()
 		{
-			var eoxInfoPage = await CiscoClient.GetEoxInfoBySoftwareReleaseStringAsync("12.2,IOS");
+			var eoxInfoPage = await CiscoClient.GetEoxInfoBySoftwareReleaseStringAsync("12.2,IOS").ConfigureAwait(false);
 			Assert.NotNull(eoxInfoPage);
 		}
 	}
