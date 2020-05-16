@@ -5,10 +5,9 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Panoramic Data Limited</Company>
     <Copyright>Copyright (c) Panoramic Data Limited 2020</Copyright>
-    <PackageReleaseNotes>Optional ILogger in CiscoClient constructor.
-Code tidy</PackageReleaseNotes>
+    <PackageReleaseNotes>Updated author.</PackageReleaseNotes>
     <Description>Provides access to EOX, Product Information and Serial Number to Information APIs.  Requires client crendentials.</Description>
-    <Authors>David Bond,Daniel Abbatt</Authors>
+    <Authors>Panoramic Data Limited</Authors>
 	  <PackageProjectUrl>https://github.com/panoramicdata/Cisco.Api</PackageProjectUrl>
 		<PackageIcon>Icon.png</PackageIcon>
 		<RepositoryUrl>https://github.com/panoramicdata/Cisco.Api</RepositoryUrl>
