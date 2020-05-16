@@ -30,7 +30,7 @@ namespace My.Project
 			var dnaCenterClient = new CiscoClient("<ID>", "<SECRET>");
 
 			var productInformation = await CiscoClient
-				.GetProductInformationBySerialNumber("<SERIAL NUMBER>"
+				.GetProductInformationBySerialNumber("<SERIAL NUMBER>")
 				.ConfigureAwait(false);
 
 			Console.WriteLine($"Product Name: {productInformation.ProductName}");
