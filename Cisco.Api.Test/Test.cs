@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using Xunit;
 using Xunit.Abstractions;
@@ -8,20 +9,17 @@ namespace Cisco.Api.Test
 	{
 		protected Test(ITestOutputHelper iTestOutputHelper)
 		{
-			Output = iTestOutputHelper;
-			CiscoClient = new TestPortalConfig(null, iTestOutputHelper).CiscoClient;
+			Logger = iTestOutputHelper.BuildLoggerFor<Test>();
+			CiscoClient = new TestPortalConfig(null, Logger).CiscoClient;
 			Stopwatch = Stopwatch.StartNew();
 		}
+		protected ILogger Logger { get; }
 
 		private Stopwatch Stopwatch { get; }
-
-		protected ITestOutputHelper Output { get; }
 
 		protected CiscoClient CiscoClient { get; }
 
 		protected void AssertIsFast(int durationSeconds)
 			=> Assert.InRange(Stopwatch.ElapsedMilliseconds, 0, durationSeconds * 1000);
-
-		protected CiscoClient GetCiscoClient(string customerName) => new TestPortalConfig(customerName, Output).CiscoClient;
 	}
 }

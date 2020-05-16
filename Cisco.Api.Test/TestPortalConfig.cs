@@ -2,13 +2,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
-using Xunit.Abstractions;
 
 namespace Cisco.Api.Test
 {
 	internal class TestPortalConfig
 	{
-		internal TestPortalConfig(string credentialsName, ITestOutputHelper iTestOutputHelper)
+		internal TestPortalConfig(
+			string credentialsName, ILogger logger)
 		{
 			var builder = new ConfigurationBuilder()
 				.SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../../.."))
@@ -34,15 +34,10 @@ namespace Cisco.Api.Test
 			var credentialIndex = -1;
 			ClientId = credentials[++credentialIndex];
 			ClientSecret = credentials[++credentialIndex];
-
-			CiscoClient = new CiscoClient(ClientId, ClientSecret);
-
-			TestLogger = iTestOutputHelper.BuildLogger();
+			CiscoClient = new CiscoClient(ClientId, ClientSecret, logger);
 		}
 
 		internal CiscoClient CiscoClient { get; }
-
-		internal ILogger TestLogger { get; }
 
 		internal string ClientId { get; }
 

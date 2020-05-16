@@ -13,7 +13,7 @@ namespace Cisco.Api
 		/// <param name="serialNumber">The serial number</param>
 		/// <param name="cancellationToken">An optional cancellation token</param>
 		/// <returns>The coverage status</returns>
-		public async Task<CoverageStatus> GetCoverageStatusBySerialNumber(string serialNumber, CancellationToken? cancellationToken = null)
+		public async Task<CoverageStatus> GetCoverageStatusBySerialNumber(string serialNumber, CancellationToken cancellationToken = default)
 			=> (await GetAsync<CoverageStatusCollection>($"sn2info/v2/coverage/status/serial_numbers/{serialNumber}", cancellationToken).ConfigureAwait(false)).CoverageStatuses.FirstOrDefault();
 
 		/// <summary>
@@ -22,7 +22,7 @@ namespace Cisco.Api
 		/// <param name="serialNumber">The serial number</param>
 		/// <param name="cancellationToken">An optional cancellation token</param>
 		/// <returns>The coverage summary</returns>
-		public async Task<CoverageSummary> GetCoverageSummaryBySerialNumber(string serialNumber, CancellationToken? cancellationToken = null)
+		public async Task<CoverageSummary> GetCoverageSummaryBySerialNumber(string serialNumber, CancellationToken cancellationToken = default)
 			=> (await GetAsync<CoverageSummaryCollection>($"sn2info/v2/coverage/summary/serial_numbers/{serialNumber}", cancellationToken).ConfigureAwait(false)).CoverageSummaries.FirstOrDefault();
 
 		/// <summary>
@@ -31,7 +31,7 @@ namespace Cisco.Api
 		/// <param name="serialNumber">The serial number</param>
 		/// <param name="cancellationToken">An optional cancellation token</param>
 		/// <returns>The coverage summary</returns>
-		public async Task<List<SerialNumberOrderablePid>> GetOrderableProductIdentifiersBySerialNumber(string serialNumber, CancellationToken? cancellationToken = null)
+		public async Task<List<SerialNumberOrderablePid>> GetOrderableProductIdentifiersBySerialNumber(string serialNumber, CancellationToken cancellationToken = default)
 			=> (await GetAsync<OrderablePidCollection>($"sn2info/v2/identifiers/orderable/serial_numbers/{serialNumber}", cancellationToken).ConfigureAwait(false)).SerialNumberOrderablePids.FirstOrDefault()?.OrderablePids;
 	}
 }

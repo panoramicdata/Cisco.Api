@@ -7,33 +7,30 @@ namespace Cisco.Api.Test
 {
 	public class AuthenticationTests : Test
 	{
-		public AuthenticationTests(ITestOutputHelper iTestOutputHelper) : base(iTestOutputHelper)
+		public AuthenticationTests(ITestOutputHelper iTestOutputHelper)
+			: base(iTestOutputHelper)
 		{
 		}
 
 		[Fact]
-		public async void GoodCredentials()
-		{
-			await CiscoClient.AuthenticateAsync().ConfigureAwait(false);
-		}
+		public async void GoodCredentials_AuthenticationSucceeds()
+			=> await CiscoClient
+				.AuthenticateAsync()
+				.ConfigureAwait(false);
 
 		[Fact]
-		public void NoId()
-		{
-			Assert.Throws<ArgumentNullException>(() =>
-			{
-				var ciscoClient = new CiscoClient(null, "BAD");
-			});
-		}
+		public void NoId_ThrowsException()
+			=> Assert.Throws<ArgumentNullException>(() =>
+				{
+					var ciscoClient = new CiscoClient(null, "BAD");
+				});
 
 		[Fact]
 		public void NoSecret()
-		{
-			Assert.Throws<ArgumentNullException>(() =>
-			{
-				var ciscoClient = new CiscoClient("BAD", null);
-			});
-		}
+			=> Assert.Throws<ArgumentNullException>(() =>
+				{
+					var ciscoClient = new CiscoClient("BAD", null);
+				});
 
 		[Fact]
 		public async void BadCredentials()
