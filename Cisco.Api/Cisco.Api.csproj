@@ -33,5 +33,10 @@ Code tidy</PackageReleaseNotes>
 
 	<ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
+	<ItemGroup>
+		<None Remove="Icon.png" />
+		<None Include="Icon.png" Pack="true" PackagePath="" />
+	</ItemGroup>
+
 
 </Project>
