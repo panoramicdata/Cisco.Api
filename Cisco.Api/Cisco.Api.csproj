@@ -5,7 +5,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Panoramic Data Limited</Company>
     <Copyright>Copyright (c) Panoramic Data Limited 2020</Copyright>
-    <PackageReleaseNotes>Changed Microsoft.Extensionos.Logging to 3.1.3 from 3.1.4</PackageReleaseNotes>
+    <PackageReleaseNotes>GetEoxInfoBySoftwareReleaseStringAsync now accepts a list of software release strings</PackageReleaseNotes>
     <Description>Provides access to EOX, Product Information and Serial Number to Information APIs.  Requires client credentials.</Description>
     <Authors>Panoramic Data Limited</Authors>
 	  <PackageProjectUrl>https://github.com/panoramicdata/Cisco.Api</PackageProjectUrl>

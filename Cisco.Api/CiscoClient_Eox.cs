@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -46,5 +47,18 @@ namespace Cisco.Api
 		/// <returns>The EOX information</returns>
 		public async Task<EoxInfoPage> GetEoxInfoBySoftwareReleaseStringAsync(string softwareReleaseString, int pageIndex = 1, CancellationToken cancellationToken = default)
 			=> await GetAsync<EoxInfoPage>($"supporttools/eox/rest/5/EOXBySWReleaseString/{pageIndex}?input1={softwareReleaseString}", cancellationToken).ConfigureAwait(false);
+
+		/// <summary>
+		/// Gets EOX information for a single serial number
+		/// </summary>
+		/// <param name="softwareReleasesStringList">The software release string</param>
+		/// <param name="pageIndex">The page index</param>
+		/// <param name="cancellationToken">An optional cancellation token</param>
+		/// <returns>The EOX information</returns>
+		public async Task<EoxInfoPage> GetEoxInfoBySoftwareReleaseStringAsync(List<string> softwareReleasesStringList, int pageIndex = 1, CancellationToken cancellationToken = default)
+			=> await GetAsync<EoxInfoPage>($"supporttools/eox/rest/5/EOXBySWReleaseString/{pageIndex}?{GenerateInputParameters(softwareReleasesStringList)}", cancellationToken).ConfigureAwait(false);
+
+		private string GenerateInputParameters(List<string> strings)
+			=> string.Join("&", strings.Select(s => $"input{strings.IndexOf(s) + 1}={s}"));
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -72,6 +73,20 @@ namespace Cisco.Api.Test
 		public async void GetEoxInfoBySoftwareReleaseStringAsync()
 		{
 			var eoxInfoPage = await CiscoClient.GetEoxInfoBySoftwareReleaseStringAsync("12.2,IOS").ConfigureAwait(false);
+			Assert.NotNull(eoxInfoPage);
+		}
+
+		[Fact]
+		public async void GetEoxInfoBySoftwareMultipleReleaseStringAsync()
+		{
+			var eoxInfoPage = await CiscoClient.GetEoxInfoBySoftwareReleaseStringAsync(
+				new List<string>
+				{
+					"12.2,IOS",
+					"12.4(15),IOS"
+				})
+				.ConfigureAwait(false);
+
 			Assert.NotNull(eoxInfoPage);
 		}
 	}
