@@ -23,7 +23,7 @@ namespace Cisco.Api
 		/// <param name="serialNumbers">The serial numbers</param>
 		/// <param name="cancellationToken">An optional cancellation token</param>
 		/// <returns>A list of the EOX information</returns>
-		public async Task<List<EoxRecord>> GetEoxInfoBySerialNumberAsync(List<string> serialNumbers, CancellationToken cancellationToken = default)
+		public async Task<List<EoxRecord>> GetEoxInfoBySerialNumbersAsync(List<string> serialNumbers, CancellationToken cancellationToken = default)
 			=> (await GetAsync<EoxInfoPage>($"supporttools/eox/rest/5/EOXBySerialNumber/1/{string.Join(",", serialNumbers)}", cancellationToken).ConfigureAwait(false)).EoxRecords;
 
 		/// <summary>

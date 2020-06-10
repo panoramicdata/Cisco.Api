@@ -36,7 +36,7 @@ namespace Cisco.Api.Test
 		public async void GetEoxInfoBySerialNumbersAsync()
 		{
 			var eoxRecords =
-				await CiscoClient.GetEoxInfoBySerialNumberAsync(
+				await CiscoClient.GetEoxInfoBySerialNumbersAsync(
 					new List<string>
 					{
 						"FTX1910100B",
