@@ -18,6 +18,15 @@ namespace Cisco.Api
 			=> (await GetAsync<EoxInfoPage>($"supporttools/eox/rest/5/EOXBySerialNumber/1/{serialNumber}", cancellationToken).ConfigureAwait(false)).EoxRecords.FirstOrDefault();
 
 		/// <summary>
+		/// Gets EOX information for multiple serial numbers
+		/// </summary>
+		/// <param name="serialNumbers">The serial numbers</param>
+		/// <param name="cancellationToken">An optional cancellation token</param>
+		/// <returns>A list of the EOX information</returns>
+		public async Task<List<EoxRecord>> GetEoxInfoBySerialNumberAsync(List<string> serialNumbers, CancellationToken cancellationToken = default)
+			=> (await GetAsync<EoxInfoPage>($"supporttools/eox/rest/5/EOXBySerialNumber/1/{string.Join(",", serialNumbers)}", cancellationToken).ConfigureAwait(false)).EoxRecords;
+
+		/// <summary>
 		/// Gets EOX information for a date range
 		/// </summary>
 		/// <param name="startDate">The start date</param>
@@ -39,7 +48,7 @@ namespace Cisco.Api
 			=> await GetAsync<EoxInfoPage>($"supporttools/eox/rest/5/EOXByProductID/{pageIndex}/{productId}", cancellationToken).ConfigureAwait(false);
 
 		/// <summary>
-		/// Gets EOX information for a single serial number
+		/// Gets EOX information for a single software release string
 		/// </summary>
 		/// <param name="softwareReleaseString">The software release string</param>
 		/// <param name="pageIndex">The page index</param>
@@ -49,9 +58,9 @@ namespace Cisco.Api
 			=> await GetAsync<EoxInfoPage>($"supporttools/eox/rest/5/EOXBySWReleaseString/{pageIndex}?input1={softwareReleaseString}", cancellationToken).ConfigureAwait(false);
 
 		/// <summary>
-		/// Gets EOX information for a single serial number
+		/// Gets EOX information for multiple software release strings
 		/// </summary>
-		/// <param name="softwareReleasesStringList">The software release string</param>
+		/// <param name="softwareReleasesStringList">The software release string e.g. 12.2,IOS (comma required)</param>
 		/// <param name="pageIndex">The page index</param>
 		/// <param name="cancellationToken">An optional cancellation token</param>
 		/// <returns>The EOX information</returns>

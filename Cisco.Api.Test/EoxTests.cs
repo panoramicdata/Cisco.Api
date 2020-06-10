@@ -32,6 +32,24 @@ namespace Cisco.Api.Test
 			CheckEoxRecord(eoxRecord);
 		}
 
+		[Fact]
+		public async void GetEoxInfoBySerialNumbersAsync()
+		{
+			var eoxRecords =
+				await CiscoClient.GetEoxInfoBySerialNumberAsync(
+					new List<string>
+					{
+						"FTX1910100B",
+						"FTX1910100B"
+					})
+				.ConfigureAwait(false);
+
+			foreach (var eoxRecord in eoxRecords)
+			{
+				CheckEoxRecord(eoxRecord);
+			}
+		}
+
 		private static void CheckEoxInfoPage(EoxInfoPage eoxInfoPage)
 		{
 			Assert.NotNull(eoxInfoPage);
