@@ -1,5 +1,6 @@
+using FluentAssertions;
 using System;
-using System.Security;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,30 +14,44 @@ namespace Cisco.Api.Test
 		}
 
 		[Fact]
-		public async void GoodCredentials_AuthenticationSucceeds()
-			=> await CiscoClient
-				.AuthenticateAsync()
-				.ConfigureAwait(false);
-
-		[Fact]
-		public void NoId_ThrowsException()
-			=> Assert.Throws<ArgumentNullException>(() =>
-				{
-					var ciscoClient = new CiscoClient(null, "BAD");
-				});
-
-		[Fact]
-		public void NoSecret()
-			=> Assert.Throws<ArgumentNullException>(() =>
-				{
-					var ciscoClient = new CiscoClient("BAD", null);
-				});
-
-		[Fact]
-		public async void BadCredentials()
+		public void NoClientId_ThrowsException()
 		{
-			var ciscoClient = new CiscoClient("BAD", "BAD");
-			await Assert.ThrowsAsync<SecurityException>(async () => await ciscoClient.AuthenticateAsync().ConfigureAwait(false)).ConfigureAwait(false);
+			Func<Task> act = async () =>
+			{
+				await new CiscoClient(new CiscoClientOptions
+				{
+					ClientId = null,
+					ClientSecret = "set"
+				})
+				.Hello
+				.HelloAsync()
+				.ConfigureAwait(false);
+			};
+
+			act
+				.Should()
+				.Throw<ArgumentException>()
+				.WithMessage("Options ClientId must be set when no HttpClient is provided (Parameter 'options')");
+		}
+		[Fact]
+		public void NoClientSecret_ThrowsException()
+		{
+			Func<Task> act = async () =>
+			{
+				await new CiscoClient(new CiscoClientOptions
+				{
+					ClientId = "set",
+					ClientSecret = null
+				})
+				.Hello
+				.HelloAsync()
+				.ConfigureAwait(false);
+			};
+
+			act
+				.Should()
+				.Throw<ArgumentException>()
+				.WithMessage("Options ClientSecret must be set when no HttpClient is provided (Parameter 'options')");
 		}
 	}
 }

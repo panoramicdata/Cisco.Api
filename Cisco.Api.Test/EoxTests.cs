@@ -1,4 +1,7 @@
+using Cisco.Api.Data.Eox;
+using FluentAssertions;
 using System;
+using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,68 +14,72 @@ namespace Cisco.Api.Test
 		}
 
 		[Fact]
-		public async void GetEoxInfoByDatesAsync()
+		public async void GetByDatesAsync_Succeeds()
 		{
-			var eoxInfoPage = await CiscoClient.GetEoxInfoByDatesAsync(DateTime.Parse("2017-01-01"), DateTime.Parse("2018-01-01")).ConfigureAwait(false);
+			var eoxInfoPage = await CiscoClient
+				.Eox
+				.GetByDatesAsync(DateTime.Parse("2017-01-01"), DateTime.Parse("2018-01-01"))
+				.ConfigureAwait(false);
 			CheckEoxInfoPage(eoxInfoPage);
 		}
 
 		[Fact]
-		public async void GetEoxInfoByProductIdAsync()
+		public async void GetByProductIdAsync_Succeeds()
 		{
-			var eoxInfoPage = await CiscoClient.GetEoxInfoByProductIdAsync("WIC-1T=").ConfigureAwait(false);
+			var eoxInfoPage = await CiscoClient
+				.Eox
+				.GetByProductIdAsync("WIC-1T=")
+				.ConfigureAwait(false);
 			CheckEoxInfoPage(eoxInfoPage);
 		}
 
 		[Fact]
-		public async void GetEoxInfoBySerialNumberAsync()
+		public async void GetBySerialNumberAsync_Succeeds()
 		{
-			var eoxRecord = await CiscoClient.GetEoxInfoBySerialNumberAsync("FTX1910100B").ConfigureAwait(false);
-			CheckEoxRecord(eoxRecord);
+			var eoxInfoPage = await CiscoClient
+				.Eox
+				.GetBySerialNumberAsync("FTX1910100B")
+				.ConfigureAwait(false);
+			CheckEoxInfoPage(eoxInfoPage);
+		}
+
+		[Fact]
+		public async void GetBySoftwareReleaseStringAsync_Succeeds()
+		{
+			var eoxInfoPage = await CiscoClient
+				.Eox
+				.GetBySoftwareReleaseStringAsync(new[] { "12.2,IOS" })
+				.ConfigureAwait(false);
+			CheckEoxInfoPage(eoxInfoPage);
 		}
 
 		private static void CheckEoxInfoPage(EoxInfoPage eoxInfoPage)
 		{
-			Assert.NotNull(eoxInfoPage);
-			Assert.NotNull(eoxInfoPage.EoxRecords);
-			Assert.NotEmpty(eoxInfoPage.EoxRecords);
-			Assert.All(eoxInfoPage.EoxRecords, CheckEoxRecord);
-		}
-
-		private static void CheckEoxRecord(EoxRecord eoxRecord)
-		{
-			Assert.NotNull(eoxRecord);
-			Assert.NotNull(eoxRecord.EndOfRoutineFailureAnalysisDate);
-			Assert.NotNull(eoxRecord.EndOfSaleDate);
-			Assert.NotNull(eoxRecord.EndOfSecurityVulnerabilitySupportDate);
-			Assert.NotNull(eoxRecord.EndOfServiceContractRenewalDate);
-			Assert.NotNull(eoxRecord.EndOfSoftwareMaintenanceReleases);
-			Assert.NotNull(eoxRecord.EolProductId);
-			Assert.NotNull(eoxRecord.EndOfSvcAttachDate);
-			Assert.NotNull(eoxRecord.ExternalAnnouncementDate);
-			Assert.NotNull(eoxRecord.InputType);
-			Assert.NotNull(eoxRecord.InputValue);
-			Assert.NotNull(eoxRecord.LastSupportDate);
-			Assert.NotNull(eoxRecord.LinkToProductBulletinUrl);
-			Assert.NotNull(eoxRecord.ProductIdDescription);
-			Assert.NotNull(eoxRecord.ProductBulletinNumber);
-			Assert.NotNull(eoxRecord.UpdatedDate);
-
-			Assert.NotNull(eoxRecord.EoxMigrationDetails);
-			Assert.NotNull(eoxRecord.EoxMigrationDetails.Information);
-			Assert.NotNull(eoxRecord.EoxMigrationDetails.Option);
-			Assert.NotNull(eoxRecord.EoxMigrationDetails.ProductId);
-			Assert.NotNull(eoxRecord.EoxMigrationDetails.ProductInfoUrl);
-			Assert.NotNull(eoxRecord.EoxMigrationDetails.ProductName);
-			Assert.NotNull(eoxRecord.EoxMigrationDetails.Strategy);
-			Assert.NotNull(eoxRecord.EoxMigrationDetails.PidActiveFlag);
-		}
-
-		[Fact]
-		public async void GetEoxInfoBySoftwareReleaseStringAsync()
-		{
-			var eoxInfoPage = await CiscoClient.GetEoxInfoBySoftwareReleaseStringAsync("12.2,IOS").ConfigureAwait(false);
-			Assert.NotNull(eoxInfoPage);
+			eoxInfoPage.Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Should().NotBeNullOrEmpty();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.EndOfRoutineFailureAnalysisDate).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.EndOfSaleDate).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.EndOfSecurityVulnerabilitySupportDate).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.EndOfServiceContractRenewalDate).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.EndOfSoftwareMaintenanceReleases).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.EolProductId).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.EndOfServiceAttachDate).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.ExternalAnnouncementDate).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.InputType).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.InputValue).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.LastSupportDate).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.LinkToProductBulletinUrl).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.ProductDescription).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.ProductBulletinNumber).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.UpdatedDate).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.EoxMigrationDetails).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.EoxMigrationDetails.Information).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.EoxMigrationDetails.Option).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.EoxMigrationDetails.ProductId).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.EoxMigrationDetails.ProductInfoUrl).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.EoxMigrationDetails.ProductName).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.EoxMigrationDetails.Strategy).Should().NotBeNull();
+			eoxInfoPage.EoxRecords.Select(eoxRecord => eoxRecord.EoxMigrationDetails.PidActiveFlag).Should().NotBeNull();
 		}
 	}
 }

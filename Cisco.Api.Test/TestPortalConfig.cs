@@ -34,7 +34,7 @@ namespace Cisco.Api.Test
 			var credentialIndex = -1;
 			ClientId = credentials[++credentialIndex];
 			ClientSecret = credentials[++credentialIndex];
-			CiscoClient = new CiscoClient(ClientId, ClientSecret, logger);
+			CiscoClient = new CiscoClient(new CiscoClientOptions { ClientId = ClientId, ClientSecret = ClientSecret }, logger);
 		}
 
 		internal CiscoClient CiscoClient { get; }
