@@ -13,7 +13,6 @@ namespace Cisco.Api
 		private readonly ILogger _logger;
 		private readonly HttpClient _restHttpClient;
 		private readonly HttpClient _soapHttpClient;
-		private readonly bool _shouldDisposeHttpClient;
 		private bool disposedValue;
 
 		public CiscoClient(
