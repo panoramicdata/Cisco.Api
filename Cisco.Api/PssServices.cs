@@ -17,24 +17,116 @@ namespace Cisco.Api
 		{
 			_soapClient = SoapClient.Prepare(soapHttpClient);
 		}
-
-		public async Task<CustomersInventoryResponse> GetCustomerInventoryAsync(
-			CustomersInventoryRequest request,
-			CancellationToken cancellationToken)
+		private async Task<TResponse> GetAsync<TRequest, TResponse>(
+			string v1,
+			string v2,
+			TRequest request,
+			CancellationToken cancellationToken
+		)
 		{
 			var requestEnvelope = SoapEnvelope
 				.Prepare()
 				.Body(request);
 
 			var responseEnvelope = await _soapClient.SendAsync(
-				"InventoryService",
-				"getCustomerInventoryIds",
+				v1,
+				v2,
 				requestEnvelope,
 				cancellationToken)
 				.ConfigureAwait(false);
 
 			return responseEnvelope
-				.Body<CustomersInventoryResponse>();
+				.Body<TResponse>();
 		}
+
+		public Task<CustomersInventoryResponse> GetCustomerInventoryAsync(
+			CustomersInventoryRequest request,
+			CancellationToken cancellationToken)
+			=> GetAsync<CustomersInventoryRequest, CustomersInventoryResponse>(
+				"InventoryService",
+				"getCustomerInventoryIds",
+				request,
+				cancellationToken);
+
+		public Task<CustomerExtendedInventoryDetailsResponse> GetCustomerExtendedInventoryDetailsAsync(
+			CustomerExtendedInventoryDetailsRequest request,
+			CancellationToken cancellationToken)
+			=> GetAsync<CustomerExtendedInventoryDetailsRequest, CustomerExtendedInventoryDetailsResponse>(
+				"InventoryService",
+				"getCustomerExtendedInventoryDetails",
+				request,
+				cancellationToken);
+
+		public Task<ContractCoverageResponse> GetContractCoverageAsync(
+			ContractCoverageRequest request,
+			CancellationToken cancellationToken)
+			=> GetAsync<ContractCoverageRequest, ContractCoverageResponse>(
+				"InventoryService",
+				"getCustomerExtendedInventoryDetails",
+				request,
+				cancellationToken);
+
+		public Task<SoftwareEoxResponse> GetSoftwareEoxAsync(
+			SoftwareEoxRequest request,
+			CancellationToken cancellationToken)
+			=> GetAsync<SoftwareEoxRequest, SoftwareEoxResponse>(
+				"InventoryService",
+				"getCustomerExtendedInventoryDetails",
+				request,
+				cancellationToken);
+
+		public Task<SoftwareEoxBulletinResponse> GetSoftwareEoxBulletinAsync(
+			SoftwareEoxBulletinRequest request,
+			CancellationToken cancellationToken)
+			=> GetAsync<SoftwareEoxBulletinRequest, SoftwareEoxBulletinResponse>(
+				"InventoryService",
+				"getCustomerExtendedInventoryDetails",
+				request,
+				cancellationToken);
+
+		public Task<HardwareEoxResponse> GetHardwareEoxAsync(
+			HardwareEoxRequest request,
+			CancellationToken cancellationToken)
+			=> GetAsync<HardwareEoxRequest, HardwareEoxResponse>(
+				"InventoryService",
+				"getCustomerInventoryIds",
+				request,
+				cancellationToken);
+
+		public Task<HardwareEoxBulletinResponse> GetHardwareEoxBulletinResponse(
+			HardwareEoxBulletinRequest request,
+			CancellationToken cancellationToken)
+			=> GetAsync<HardwareEoxBulletinRequest, HardwareEoxBulletinResponse>(
+				"InventoryService",
+				"getCustomerInventoryIds",
+				request,
+				cancellationToken);
+
+		public Task<EoswmLifecycleResponse> GetEoswmLifecycleAsync(
+			EoswmLifecycleRequest request,
+			CancellationToken cancellationToken)
+			=> GetAsync<EoswmLifecycleRequest, EoswmLifecycleResponse>(
+				"InventoryService",
+				"getCustomerInventoryIds",
+				request,
+				cancellationToken);
+
+		public Task<PsirtResponse> GetPsirtAsync(
+			PsirtRequest request,
+			CancellationToken cancellationToken)
+			=> GetAsync<PsirtRequest, PsirtResponse>(
+				"InventoryService",
+				"getCustomerInventoryIds",
+				request,
+				cancellationToken);
+
+		public Task<FieldNoticesResponse> GetFieldNoticesAsync(
+			FieldNoticesRequest request,
+			CancellationToken cancellationToken)
+			=> GetAsync<FieldNoticesRequest, FieldNoticesResponse>(
+				"InventoryService",
+				"getCustomerInventoryIds",
+				request,
+				cancellationToken);
 	}
 }

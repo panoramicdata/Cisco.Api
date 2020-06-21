@@ -37,8 +37,13 @@ namespace Cisco.Api.Test
 				ClientId = credentials[++credentialIndex],
 				ClientSecret = credentials[++credentialIndex],
 			}, logger);
+
+			TestCustomerId = configuration["TestCustomerId"];
+			TestInventoryId = configuration["TestInventoryId"];
 		}
 
 		internal CiscoClient CiscoClient { get; }
+		public string TestCustomerId { get; }
+		public string TestInventoryId { get; }
 	}
 }

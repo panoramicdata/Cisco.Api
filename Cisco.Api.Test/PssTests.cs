@@ -15,24 +15,43 @@ namespace Cisco.Api.Test
 		}
 
 		[Fact]
-		public async void GetCustomerInventoryDetailsRequest_Succeeds()
+		public async void GetCustomerInventoryAsync_Succeeds()
 		{
-			var customerInventoryResponse = await CiscoClient
+			var response = await CiscoClient
 				.Pss
 				.GetCustomerInventoryAsync(new CustomersInventoryRequest(), CancellationToken.None)
 				.ConfigureAwait(false);
 
-			customerInventoryResponse.Should().NotBeNull();
+			response.Should().BeOfType<CustomersInventoryResponse>();
+			response.Should().NotBeNull();
 
-			customerInventoryResponse.CustomerInventories.Should().NotBeEmpty();
-			customerInventoryResponse.CustomerInventories.Select(ci => ci.Inventory).Should().NotBeNull();
-			customerInventoryResponse.CustomerInventories.Select(ci => ci.Customer).Should().NotBeNull();
+			response.CustomerInventories.Should().NotBeEmpty();
+			response.CustomerInventories.Select(ci => ci.Inventory).Should().NotBeNull();
+			response.CustomerInventories.Select(ci => ci.Customer).Should().NotBeNull();
 
-			customerInventoryResponse.ResponseTimestamp.Should().NotBe(new DateTime());
+			response.ResponseTimestamp.Should().NotBe(new DateTime());
 
-			customerInventoryResponse.Message.Should().NotBeNull();
-			customerInventoryResponse.Message.MessageType.Should().NotBeNull();
-			customerInventoryResponse.Message.MessageDetail.Should().NotBeNull();
+			response.Message.Should().NotBeNull();
+			response.Message.MessageType.Should().NotBeNull();
+			response.Message.MessageDetail.Should().NotBeNull();
+		}
+
+		[Fact]
+		public async void GetCustomerInventoryDetailsRequest_Succeeds()
+		{
+			var response = await CiscoClient
+				.Pss
+				.GetCustomerExtendedInventoryDetailsAsync(new CustomerExtendedInventoryDetailsRequest
+				{
+					CustomerId = Config.TestCustomerId,
+					InventoryId = Config.TestInventoryId
+				}, CancellationToken.None)
+				.ConfigureAwait(false);
+
+			response.Should().BeOfType<CustomerExtendedInventoryDetailsResponse>();
+			response.Should().NotBeNull();
+
+			// TODO - property tests
 		}
 	}
 }
