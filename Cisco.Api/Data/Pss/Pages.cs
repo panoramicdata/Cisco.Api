@@ -3,6 +3,9 @@ using System.Xml.Serialization;
 
 namespace Cisco.Api.Data.Pss
 {
+	/// <summary>
+	/// Paging information
+	/// </summary>
 	[DebuggerDisplay("{PageCount}/{PageTotal}")]
 	[XmlRoot("pages", Namespace = "http://www.cisco.com/InventoryService")]
 	public class Pages
