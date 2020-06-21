@@ -1,4 +1,4 @@
-﻿using Refit;
+﻿using Cisco.Api.Data.Pss;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,15 +9,8 @@ namespace Cisco.Api.Interfaces
 	/// </summary>
 	public interface IPss
 	{
-		// TODO - REMOVE THIS ONE
-
-		/// <summary>
-		/// Say "hello" and get a response.
-		/// </summary>
-		/// <param name="cancellationToken">An optional cancellation token</param>
-		/// <returns>The EOX information</returns>
-		[Get("/hello")]
-		Task<string> HelloAsync(
-			CancellationToken cancellationToken = default);
+		Task<CustomersInventoryResponse> GetCustomerInventoryAsync(
+			CustomersInventoryRequest customerInventoryRequest,
+			CancellationToken cancellationToken);
 	}
 }

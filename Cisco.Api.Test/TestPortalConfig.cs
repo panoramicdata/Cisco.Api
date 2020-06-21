@@ -22,25 +22,23 @@ namespace Cisco.Api.Test
 
 			if (credentialsAppSetting == null)
 			{
-				throw new Exception($"No credentials found in AppSettings.config file for {credentialsName}.");
+				throw new Exception($"No credentials found in appsettings.json file for {credentialsName}.");
 			}
 
 			var credentials = credentialsAppSetting.Split(';');
 			if (credentials.Length != 2)
 			{
-				throw new Exception($"Expected to find credentials in the form ClientId;ClientSecret.  Found {credentialsAppSetting}");
+				throw new Exception($"Expected to find credentials in the form ClientId;ClientSecret.  Found '{credentialsAppSetting}'");
 			}
 
 			var credentialIndex = -1;
-			ClientId = credentials[++credentialIndex];
-			ClientSecret = credentials[++credentialIndex];
-			CiscoClient = new CiscoClient(new CiscoClientOptions { ClientId = ClientId, ClientSecret = ClientSecret }, logger);
+			CiscoClient = new CiscoClient(new CiscoClientOptions
+			{
+				ClientId = credentials[++credentialIndex],
+				ClientSecret = credentials[++credentialIndex],
+			}, logger);
 		}
 
 		internal CiscoClient CiscoClient { get; }
-
-		internal string ClientId { get; }
-
-		internal string ClientSecret { get; }
 	}
 }

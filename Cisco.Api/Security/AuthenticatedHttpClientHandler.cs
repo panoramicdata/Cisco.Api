@@ -13,43 +13,49 @@ namespace Cisco.Api.Security
 {
 	internal class AuthenticatedHttpClientHandler : HttpClientHandler
 	{
-		private string? _accessToken;
 		private AuthenticationHeaderValue? _authenticationHeaderValue;
+		private string? _accessToken;
 		private readonly ILogger _logger;
 		private readonly string _clientId;
 		private readonly string _clientSecret;
 		private const LogLevel LevelToLogAt = LogLevel.Trace;
+		private readonly string _url;
+		private readonly string _endpoint;
 
 		public AuthenticatedHttpClientHandler(
+			string url,
+			string endpoint,
 			string clientId,
 			string clientSecret,
 			string? accessToken,
 			ILogger logger)
 		{
+			_url = url;
+			_endpoint = endpoint;
 			_accessToken = accessToken;
 			_logger = logger;
 			_clientId = clientId;
 			_clientSecret = clientSecret;
 		}
 
-		public async Task AuthenticateAsync(CancellationToken cancellationToken)
+		private async Task<string> GetAccessTokenAsync(CancellationToken cancellationToken)
 		{
 			if (_accessToken != null)
 			{
-				throw new InvalidOperationException("Already authenticated.");
+				return _accessToken;
 			}
 
 			_logger.LogDebug("Authenticating...");
 			using var httpClient = new HttpClient
 			{
-				BaseAddress = new Uri("https://cloudsso.cisco.com/")
+				BaseAddress = new Uri(_url)
 			};
 			var stringContent = new StringContent(
 				$"client_id={_clientId}&grant_type=client_credentials&client_secret={_clientSecret}",
 				Encoding.UTF8,
 				"application/x-www-form-urlencoded");
 			var response = await httpClient
-				.PostAsync("as/token.oauth2", stringContent, cancellationToken)
+				.PostAsync(_endpoint, stringContent, cancellationToken)
 				.ConfigureAwait(false);
 			_logger.LogTrace($"{response}");
 			var contents = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -60,18 +66,18 @@ namespace Cisco.Api.Security
 				throw new SecurityException($"{accessTokenResponse.Error}: {accessTokenResponse.ErrorDescription}");
 			}
 			_logger.LogDebug("Authentication succeeded.");
-			_accessToken = accessTokenResponse.AccessToken;
-			_authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", _accessToken);
+			return accessTokenResponse.AccessToken!;
 		}
 
 		protected override async Task<HttpResponseMessage> SendAsync(
 			HttpRequestMessage request,
 			CancellationToken cancellationToken)
 		{
-			if (_accessToken is null)
+			if (_authenticationHeaderValue is null)
 			{
-				await AuthenticateAsync(cancellationToken)
+				_accessToken ??= await GetAccessTokenAsync(cancellationToken)
 					.ConfigureAwait(false);
+				_authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", _accessToken);
 			}
 
 			request.Headers.Authorization = _authenticationHeaderValue;

@@ -9,19 +9,9 @@ namespace Cisco.Api
 	public class CiscoClientOptions
 	{
 		/// <summary>
-		/// An HttpClient to use instead of the in-built one.
-		/// </summary>
-		public HttpClient? HttpClient { get; set; }
-
-		/// <summary>
 		/// The token to use
 		/// </summary>
 		public string? Token { get; set; }
-
-		/// <summary>
-		/// The URI
-		/// </summary>
-		public Uri Uri { get; set; } = new Uri("https://api.cisco.com/");
 
 		/// <summary>
 		/// The Client ID.  Must be provided when no HttpClient is provided.

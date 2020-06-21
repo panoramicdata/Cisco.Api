@@ -11,7 +11,8 @@ namespace Cisco.Api
 	public partial class CiscoClient : IDisposable
 	{
 		private readonly ILogger _logger;
-		private readonly HttpClient _httpClient;
+		private readonly HttpClient _restHttpClient;
+		private readonly HttpClient _soapHttpClient;
 		private readonly bool _shouldDisposeHttpClient;
 		private bool disposedValue;
 
@@ -19,32 +20,46 @@ namespace Cisco.Api
 			CiscoClientOptions options,
 			ILogger? logger = default)
 		{
+			_logger = logger ?? NullLogger.Instance;
+
 			if (options is null)
 			{
 				throw new ArgumentNullException(nameof(options));
 			}
-			_logger = logger ?? NullLogger.Instance;
+			if (options.ClientId is null)
+			{
+				throw new ArgumentException("Options ClientId must be set", nameof(options));
+			}
+			if (options.ClientSecret is null)
+			{
+				throw new ArgumentException("Options ClientSecret must be set", nameof(options));
+			}
 
-			if (options.HttpClient != null)
+			_restHttpClient = new HttpClient(
+				new AuthenticatedHttpClientHandler(
+					"https://cloudsso.cisco.com/",
+					"as/token.oauth2",
+					options.ClientId,
+					options.ClientSecret,
+					options.Token,
+					_logger)
+			)
 			{
-				// An HttpClient was provided to us.
-				_httpClient = options.HttpClient;
-			}
-			else
+				BaseAddress = new Uri("https://api.cisco.com/")
+			};
+
+			_soapHttpClient = new HttpClient(
+				new AuthenticatedHttpClientHandler(
+					"https://api.cisco.com/",
+					"pss/token",
+					options.ClientId,
+					options.ClientSecret,
+					options.Token,
+					_logger)
+			)
 			{
-				// We are creating an HttpClient (one was not provided), so set _httpClient so that we know to dispose of it later.
-				_httpClient = new HttpClient(
-					new AuthenticatedHttpClientHandler(
-						options.ClientId ?? throw new ArgumentException("Options ClientId must be set when no HttpClient is provided", nameof(options)),
-						options.ClientSecret ?? throw new ArgumentException("Options ClientSecret must be set when no HttpClient is provided", nameof(options)),
-						options.Token,
-						_logger)
-				)
-				{
-					BaseAddress = options.Uri ?? throw new ArgumentException("Options ClientId must not be null when no HttpClient is provided", nameof(options))
-				};
-				_shouldDisposeHttpClient = true;
-			}
+				BaseAddress = new Uri("https://api.cisco.com/pss/v1.0/")
+			};
 
 			var refitSettings = new RefitSettings
 			{
@@ -52,11 +67,11 @@ namespace Cisco.Api
 			};
 
 			// Interfaces
-			Eox = RestService.For<IEox>(_httpClient, refitSettings);
-			Hello = RestService.For<IHello>(_httpClient);
-			ProductInfo = RestService.For<IProductInfo>(_httpClient, refitSettings);
-			Pss = RestService.For<IPss>(_httpClient);
-			SerialNumberToInfo = RestService.For<ISerialNumberToInfo>(_httpClient, refitSettings);
+			Eox = RestService.For<IEox>(_restHttpClient, refitSettings);
+			Hello = RestService.For<IHello>(_restHttpClient);
+			ProductInfo = RestService.For<IProductInfo>(_restHttpClient, refitSettings);
+			Pss = new PssServices(_soapHttpClient);
+			SerialNumberToInfo = RestService.For<ISerialNumberToInfo>(_restHttpClient, refitSettings);
 		}
 
 		public IHello Hello { get; set; }
@@ -75,10 +90,8 @@ namespace Cisco.Api
 			{
 				if (disposing)
 				{
-					if (_shouldDisposeHttpClient)
-					{
-						_httpClient?.Dispose();
-					}
+					_restHttpClient?.Dispose();
+					_soapHttpClient?.Dispose();
 				}
 
 				disposedValue = true;

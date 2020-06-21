@@ -1,0 +1,150 @@
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema"  xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ns1="http://www.cisco.com/NPDRService" targetNamespace="http://www.cisco.com/NPDRService">
+<wsdl:types>
+
+<xs:schema xmlns:tns="http://www.cisco.com/NPDRService" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.cisco.com/NPDRService">
+
+            <xs:element name="NPDRRequest" type="tns:NPDRRequest"/>
+            <xs:element name="NPDRResponse" type="tns:NPDRResponse"/>			
+			<xs:complexType name="NPDRRequest">
+                <xs:sequence>
+                    <xs:element name="customerId" type="xs:string"/>
+                    <xs:element name="inventoryId" type="xs:string"/>
+					<xs:element name="applianceID" type="xs:string"/>
+					<xs:element name="uploadDateAndTime" type="xs:string"/>
+					<xs:element name="pageStart" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>	
+            <xs:complexType name="NPDRResponse">
+                <xs:sequence>
+					<xs:element name="pages" type="tns:Pages" minOccurs="0" maxOccurs="unbounded"/>				
+					<xs:element name="collections" type="tns:collections" />
+                    <xs:element name="responseTimestamp" nillable="true" type="xs:dateTime"/>
+                    <xs:element name="message" type="tns:Message" minOccurs="0" maxOccurs="unbounded" />
+                </xs:sequence>
+            </xs:complexType>		
+			<xs:complexType name="collections">
+				 <xs:sequence>
+					<xs:element name="collection" type="tns:collection"  minOccurs="0" maxOccurs="unbounded"  />
+				 </xs:sequence>
+			</xs:complexType>	 
+			
+			<xs:complexType name="collection">
+				 <xs:sequence>
+					<xs:element name="summaryInfo" type="tns:summaryInfo"/>
+                    <xs:element name="chassis" type="tns:chassis" />
+					<xs:element name="card" type="tns:card"/>
+				 </xs:sequence>
+				 <xs:attribute name="applianceID" type="xs:string" use="optional"/>				 
+			</xs:complexType>	 			
+			
+			<xs:complexType name="card">
+				 <xs:sequence>
+					<xs:element name="cardDetail" type="tns:cardDetail"  minOccurs="0" maxOccurs="unbounded"  />
+				 </xs:sequence>
+			</xs:complexType>
+			
+			<xs:complexType name="chassis">
+				 <xs:sequence>
+					<xs:element name="chassisDetail" type="tns:chassisDetail"  minOccurs="0" maxOccurs="unbounded"  />
+				 </xs:sequence>
+			</xs:complexType>			
+			
+            <xs:complexType name="summaryInfo">
+                <xs:sequence>
+                    <xs:element name="EntitledCompany" type="xs:string"/>
+                    <xs:element name="InventoryName" type="xs:string"/>
+                    <xs:element name="ApplianceID" type="xs:string"/>
+                    <xs:element name="ReportDate" type="xs:string"/>
+                    <xs:element name="UploadDateTime" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>			
+            <xs:complexType name="chassisDetail">
+                <xs:all minOccurs="0">
+					<xs:element name="DeviceID" type="xs:string"/>
+                    <xs:element name="HostName" type="xs:string"/>
+                    <xs:element name="IPAddress" type="xs:string"/>
+                    <xs:element name="SystemObjID" type="xs:string"/>
+                    <xs:element name="SystemDesc" type="xs:string"/>
+                    <xs:element name="ManufacturerOrVendorName" type="xs:string"/>
+                    <xs:element name="SerialNumberOrMACAddress" type="xs:string"/>
+                    <xs:element name="ProductID" type="xs:string"/>
+                    <xs:element name="ProductFamily" type="xs:string"/>
+                    <xs:element name="ProductModel" type="xs:string"/>
+      
+                </xs:all>
+            </xs:complexType>
+            <xs:complexType name="cardDetail">
+                <xs:all minOccurs="0">
+					<xs:element name="CardID" type="xs:string"/>
+                    <xs:element name="HostName" type="xs:string"/>
+                    <xs:element name="IPAddress" type="xs:string"/>
+                    <xs:element name="SystemObjID" type="xs:string"/>
+                    <xs:element name="ManufacturerOrVendorName" type="xs:string"/>
+                    <xs:element name="SerialNumberOrMACAddress" type="xs:string"/>
+                    <xs:element name="ProductID" type="xs:string"/>
+                    <xs:element name="ProductFamily" type="xs:string"/>
+                    <xs:element name="ProductModel" type="xs:string"/>
+
+				</xs:all>
+            </xs:complexType>	
+			
+            <xs:complexType name="Pages">
+			 <xs:all minOccurs="0">
+			  <xs:element name="pageCurrent" nillable="true" type="xs:string"/>
+			  <xs:element name="pageTotal" nillable="true" type="xs:string"/>
+			  <xs:element name="recordCount" nillable="true" type="xs:string"/>
+			  <xs:element name="pageSize" nillable="true" type="xs:string"/>			  
+			 </xs:all>
+			</xs:complexType>			
+
+            <xs:complexType name="Message">
+                <xs:all minOccurs="0">
+                    <xs:element name="messageType" nillable="true" type="xs:string"/>
+                    <xs:element name="messageDetail" nillable="true" type="xs:string"/>
+                </xs:all>
+            </xs:complexType>
+			
+		</xs:schema>
+	</wsdl:types>
+	
+	<wsdl:message name="NPDRRequest">
+		<wsdl:part name="parameters" element="ns1:NPDRRequest" />
+	</wsdl:message>
+
+	<wsdl:message name="NPDRResponse">
+		<wsdl:part name="parameters" element="ns1:NPDRResponse" />
+	</wsdl:message>	
+
+	<wsdl:portType name="NPDRServicePortType">
+		<wsdl:operation name="getNPDRDetails">
+			<wsdl:input message="ns1:NPDRRequest"
+				wsaw:Action="NPDRRequest" />
+			<wsdl:output message="ns1:NPDRResponse"
+				wsaw:Action="urn:NPDRResponse" />
+		</wsdl:operation>
+	</wsdl:portType>
+
+	<wsdl:binding name="NPDRServiceSOAP11Binding" type="ns1:NPDRServicePortType">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"
+			style="document" />
+	
+		<wsdl:operation name="getNPDRDetails">
+			<soap:operation soapAction="getNPDRDetails"
+				style="document" />
+			<wsdl:input>
+				<soap:body use="literal" parts="parameters" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" parts="parameters" />
+			</wsdl:output>
+		</wsdl:operation>		
+	</wsdl:binding>
+
+	<wsdl:service name="NPDRService">
+		<wsdl:port name="NPDRServiceSOAP11port_http" binding="ns1:NPDRServiceSOAP11Binding">
+			<soap:address location="https://api.cisco.com/pss/v1.0/NPDRService" />
+		</wsdl:port>
+
+
+	</wsdl:service>
+</wsdl:definitions>

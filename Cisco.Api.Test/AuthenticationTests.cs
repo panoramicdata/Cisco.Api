@@ -31,7 +31,7 @@ namespace Cisco.Api.Test
 			act
 				.Should()
 				.Throw<ArgumentException>()
-				.WithMessage("Options ClientId must be set when no HttpClient is provided (Parameter 'options')");
+				.WithMessage("Options ClientId must be set (Parameter 'options')");
 		}
 		[Fact]
 		public void NoClientSecret_ThrowsException()
@@ -51,7 +51,7 @@ namespace Cisco.Api.Test
 			act
 				.Should()
 				.Throw<ArgumentException>()
-				.WithMessage("Options ClientSecret must be set when no HttpClient is provided (Parameter 'options')");
+				.WithMessage("Options ClientSecret must be set (Parameter 'options')");
 		}
 	}
 }

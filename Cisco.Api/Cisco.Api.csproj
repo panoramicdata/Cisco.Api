@@ -24,12 +24,12 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
 		<PackageReference Include="refit" Version="5.1.67" />
 		<PackageReference Include="SecurityCodeScan" Version="3.5.3">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="SimpleSOAPClient" Version="2.1.0" />
 	</ItemGroup>
 
 	<ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
@@ -37,6 +37,14 @@
 	<ItemGroup>
 		<None Remove="Icon.png" />
 		<None Include="Icon.png" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <WCFMetadata Include="Connected Services" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Connected Services\" />
 	</ItemGroup>
 
 
