@@ -1,6 +1,7 @@
 ﻿using Cisco.Api.Data.Pss;
 using FluentAssertions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Xunit;
@@ -35,6 +36,24 @@ namespace Cisco.Api.Test
 			response.Message.MessageType.Should().NotBeNull();
 			response.Message.MessageDetail.Should().NotBeNull();
 		}
+
+		[Fact]
+		public async void GetCustomerInventoryAsync_OneCustomer_Succeeds()
+		{
+			var response = await CiscoClient
+				.Pss
+				.GetCustomerInventoryAsync(new CustomersInventoryRequest
+				{
+					CustomerIds = new List<string>
+					{
+						Config.TestCustomerId
+					}
+				}, CancellationToken.None)
+				.ConfigureAwait(false);
+
+			response.CustomerInventories.Should().HaveCount(1);
+		}
+
 
 		[Fact]
 		public async void GetCustomerInventoryDetailsRequest_Succeeds()

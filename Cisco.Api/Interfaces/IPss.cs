@@ -9,17 +9,43 @@ namespace Cisco.Api.Interfaces
 	/// </summary>
 	public interface IPss
 	{
-		Task<ContractCoverageResponse> GetContractCoverageAsync(ContractCoverageRequest request, CancellationToken cancellationToken);
-		Task<CustomerExtendedInventoryDetailsResponse> GetCustomerExtendedInventoryDetailsAsync(CustomerExtendedInventoryDetailsRequest request, CancellationToken cancellationToken);
+		Task<ContractCoverageResponse> GetContractCoverageAsync(
+			ContractCoverageRequest request,
+			CancellationToken cancellationToken);
+
+		Task<CustomerExtendedInventoryDetailsResponse> GetCustomerExtendedInventoryDetailsAsync(
+			CustomerExtendedInventoryDetailsRequest request,
+			CancellationToken cancellationToken);
+
 		Task<CustomersInventoryResponse> GetCustomerInventoryAsync(
 			CustomersInventoryRequest customerInventoryRequest,
 			CancellationToken cancellationToken);
-		Task<EoswmLifecycleResponse> GetEoswmLifecycleAsync(EoswmLifecycleRequest request, CancellationToken cancellationToken);
-		Task<FieldNoticesResponse> GetFieldNoticesAsync(FieldNoticesRequest request, CancellationToken cancellationToken);
-		Task<HardwareEoxResponse> GetHardwareEoxAsync(HardwareEoxRequest request, CancellationToken cancellationToken);
-		Task<HardwareEoxBulletinResponse> GetHardwareEoxBulletinResponse(HardwareEoxBulletinRequest request, CancellationToken cancellationToken);
-		Task<PsirtResponse> GetPsirtAsync(PsirtRequest request, CancellationToken cancellationToken);
-		Task<SoftwareEoxResponse> GetSoftwareEoxAsync(SoftwareEoxRequest request, CancellationToken cancellationToken);
-		Task<SoftwareEoxBulletinResponse> GetSoftwareEoxBulletinAsync(SoftwareEoxBulletinRequest request, CancellationToken cancellationToken);
+
+		Task<EoswmLifecycleResponse> GetEoswmLifecycleAsync(
+			EoswmLifecycleRequest request,
+			CancellationToken cancellationToken);
+
+		Task<FieldNoticesResponse> GetFieldNoticesAsync(
+			FieldNoticesRequest request,
+			CancellationToken cancellationToken);
+
+		Task<HardwareEoxResponse> GetHardwareEoxAsync(
+			HardwareEoxRequest request,
+			CancellationToken cancellationToken);
+
+		Task<HardwareEoxBulletinResponse> GetHardwareEoxBulletinResponse(
+			HardwareEoxBulletinRequest request,
+			CancellationToken cancellationToken);
+
+		Task<PsirtResponse> GetPsirtAsync(
+			PsirtRequest request,
+			CancellationToken cancellationToken);
+		Task<SoftwareEoxResponse> GetSoftwareEoxAsync(
+			SoftwareEoxRequest request,
+			CancellationToken cancellationToken);
+
+		Task<SoftwareEoxBulletinResponse> GetSoftwareEoxBulletinAsync(
+			SoftwareEoxBulletinRequest request,
+			CancellationToken cancellationToken);
 	}
 }
