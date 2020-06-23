@@ -61,8 +61,8 @@ namespace Cisco.Api
 			ContractCoverageRequest request,
 			CancellationToken cancellationToken)
 			=> GetAsync<ContractCoverageRequest, ContractCoverageResponse>(
-				"InventoryService",
-				"getCustomerExtendedInventoryDetails",
+				"ContractService",
+				"getContractCoverageDetails",
 				request,
 				cancellationToken);
 

@@ -72,5 +72,21 @@ namespace Cisco.Api.Test
 
 			// TODO - property tests
 		}
+
+		[Fact]
+		public async void GetContractCoverageDetailsAsync_Succeeds()
+		{
+			var response = await CiscoClient
+				.Pss
+				.GetContractCoverageAsync(new ContractCoverageRequest
+				{
+					CustomerId = Config.TestCustomerId,
+					InventoryId = Config.TestInventoryId
+				}, CancellationToken.None)
+				.ConfigureAwait(false);
+
+			response.Should().BeOfType<ContractCoverageResponse>();
+			response.Should().NotBeNull();
+		}
 	}
 }

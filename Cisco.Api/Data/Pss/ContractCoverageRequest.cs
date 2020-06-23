@@ -1,6 +1,9 @@
-﻿namespace Cisco.Api
+﻿using System.Xml.Serialization;
+
+namespace Cisco.Api.Data.Pss
 {
-	public class ContractCoverageRequest
+	[XmlRoot("ContractCoverageRequest", Namespace = "http://www.cisco.com/ContractService")]
+	public class ContractCoverageRequest : PssServiceRequest
 	{
 	}
 }
