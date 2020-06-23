@@ -48,12 +48,12 @@ namespace Cisco.Api
 				request,
 				cancellationToken);
 
-		public Task<CustomerExtendedInventoryDetailsResponse> GetCustomerExtendedInventoryDetailsAsync(
-			CustomerExtendedInventoryDetailsRequest request,
+		public Task<CustomerInventoryDetailPaginatedResponse> GetCustomerInventoryPaginatedDetailsAsync(
+			CustomerInventoryDetailPaginatedRequest request,
 			CancellationToken cancellationToken)
-			=> GetAsync<CustomerExtendedInventoryDetailsRequest, CustomerExtendedInventoryDetailsResponse>(
+			=> GetAsync<CustomerInventoryDetailPaginatedRequest, CustomerInventoryDetailPaginatedResponse>(
 				"InventoryService",
-				"getCustomerExtendedInventoryDetails",
+				"getCustomerInventoryPaginatedDetails",
 				request,
 				cancellationToken);
 

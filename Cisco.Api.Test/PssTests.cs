@@ -56,18 +56,18 @@ namespace Cisco.Api.Test
 
 
 		[Fact]
-		public async void GetCustomerInventoryDetailsRequest_Succeeds()
+		public async void GetCustomerInventoryPaginatedDetails_Succeeds()
 		{
 			var response = await CiscoClient
 				.Pss
-				.GetCustomerExtendedInventoryDetailsAsync(new CustomerExtendedInventoryDetailsRequest
+				.GetCustomerInventoryPaginatedDetailsAsync(new CustomerInventoryDetailPaginatedRequest
 				{
 					CustomerId = Config.TestCustomerId,
 					InventoryId = Config.TestInventoryId
 				}, CancellationToken.None)
 				.ConfigureAwait(false);
 
-			response.Should().BeOfType<CustomerExtendedInventoryDetailsResponse>();
+			response.Should().BeOfType<CustomerInventoryDetailPaginatedResponse>();
 			response.Should().NotBeNull();
 
 			// TODO - property tests

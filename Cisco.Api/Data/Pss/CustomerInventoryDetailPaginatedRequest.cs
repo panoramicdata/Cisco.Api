@@ -3,8 +3,8 @@ using System.Xml.Serialization;
 
 namespace Cisco.Api.Data.Pss
 {
-	[XmlRoot("CustomerExtendedInventoryDetailRequestInput", Namespace = "http://www.cisco.com/InventoryService")]
-	public class CustomerExtendedInventoryDetailsRequest
+	[XmlRoot("CustomerInventoryDetailPaginatedRequestInput", Namespace = "http://www.cisco.com/InventoryService")]
+	public class CustomerInventoryDetailPaginatedRequest
 	{
 		/// <summary>
 		/// This parameter is returned in the API service call getCustomersInventoryIds.

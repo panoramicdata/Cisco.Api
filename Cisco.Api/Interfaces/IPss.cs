@@ -13,8 +13,8 @@ namespace Cisco.Api.Interfaces
 			ContractCoverageRequest request,
 			CancellationToken cancellationToken);
 
-		Task<CustomerExtendedInventoryDetailsResponse> GetCustomerExtendedInventoryDetailsAsync(
-			CustomerExtendedInventoryDetailsRequest request,
+		Task<CustomerInventoryDetailPaginatedResponse> GetCustomerInventoryPaginatedDetailsAsync(
+			CustomerInventoryDetailPaginatedRequest request,
 			CancellationToken cancellationToken);
 
 		Task<CustomersInventoryResponse> GetCustomerInventoryAsync(
