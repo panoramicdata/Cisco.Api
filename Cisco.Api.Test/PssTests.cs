@@ -88,6 +88,8 @@ namespace Cisco.Api.Test
 
 			response.Should().BeOfType<ContractCoverageResponse>();
 			response.Should().NotBeNull();
+
+			// TODO - property tests
 		}
 	}
 }
