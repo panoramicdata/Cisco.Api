@@ -9,6 +9,7 @@ using Xunit.Abstractions;
 
 namespace Cisco.Api.Test
 {
+	[Collection("PssTests")]
 	public class PssTests : Test
 	{
 		public PssTests(ITestOutputHelper iTestOutputHelper) : base(iTestOutputHelper)
