@@ -55,6 +55,23 @@ namespace Cisco.Api.Test
 			response.CustomerInventories.Should().HaveCount(1);
 		}
 
+		[Fact]
+		public async void GetCustomerInventoryDetails_Succeeds()
+		{
+			var response = await CiscoClient
+				.Pss
+				.GetCustomerInventoryDetailsAsync(new CustomerInventoryDetailsRequest
+				{
+					CustomerId = Config.TestCustomerId,
+					InventoryId = Config.TestInventoryId
+				}, CancellationToken.None)
+				.ConfigureAwait(false);
+
+			response.Should().BeOfType<CustomerInventoryDetailsResponse>();
+			response.Should().NotBeNull();
+
+			// TODO - property tests
+		}
 
 		[Fact]
 		public async void GetCustomerInventoryPaginatedDetails_Succeeds()
