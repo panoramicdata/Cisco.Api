@@ -106,6 +106,31 @@ namespace Cisco.Api.Test
 
 			response.Should().BeOfType<SoftwareEoxResponse>();
 			response.Should().NotBeNull();
+
+			// TODO - property tests
+		}
+
+		[Fact]
+		public async void GetSoftwareEoxBulletinAsync_Succeeds()
+		{
+			var response = await CiscoClient
+				.Pss
+				.GetSoftwareEoxBulletinAsync(new SoftwareEoxBulletinRequest
+				{
+					SoftwareEoxIds = new List<SoftwareEoxId>
+					{
+						new SoftwareEoxId()
+						{
+							Id = Config.TestSoftwareEoxId
+						}
+					}
+				}, CancellationToken.None)
+				.ConfigureAwait(false);
+
+			response.Should().BeOfType<SoftwareEoxBulletinResponse>();
+			response.Should().NotBeNull();
+
+			// TODO - property tests
 		}
 	}
 }
