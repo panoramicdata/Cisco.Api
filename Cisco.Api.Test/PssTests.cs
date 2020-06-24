@@ -91,5 +91,21 @@ namespace Cisco.Api.Test
 
 			// TODO - property tests
 		}
+
+		[Fact]
+		public async void GetSoftwareEoxAsync_Succeeds()
+		{
+			var response = await CiscoClient
+				.Pss
+				.GetSoftwareEoxAsync(new SoftwareEoxRequest
+				{
+					CustomerId = Config.TestCustomerId,
+					InventoryId = Config.TestInventoryId
+				}, CancellationToken.None)
+				.ConfigureAwait(false);
+
+			response.Should().BeOfType<SoftwareEoxResponse>();
+			response.Should().NotBeNull();
+		}
 	}
 }

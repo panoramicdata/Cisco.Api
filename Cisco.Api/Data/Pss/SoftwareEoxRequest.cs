@@ -1,6 +1,10 @@
-﻿namespace Cisco.Api
+﻿using Cisco.Api.Data.Pss;
+using System.Xml.Serialization;
+
+namespace Cisco.Api
 {
-	public class SoftwareEoxRequest
+	[XmlRoot("SwEoxRequestInput", Namespace = "http://www.cisco.com/SwEoxAlertService")]
+	public class SoftwareEoxRequest : PssServiceRequest
 	{
 	}
 }

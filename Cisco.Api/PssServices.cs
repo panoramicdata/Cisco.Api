@@ -70,8 +70,8 @@ namespace Cisco.Api
 			SoftwareEoxRequest request,
 			CancellationToken cancellationToken)
 			=> GetAsync<SoftwareEoxRequest, SoftwareEoxResponse>(
-				"InventoryService",
-				"getCustomerExtendedInventoryDetails",
+				"SwEoxAlertService",
+				"getSoftwareEox",
 				request,
 				cancellationToken);
 

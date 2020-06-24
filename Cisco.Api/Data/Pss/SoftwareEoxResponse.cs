@@ -1,6 +1,16 @@
-﻿namespace Cisco.Api
+﻿using Cisco.Api.Data.Pss;
+using System.Collections.Generic;
+using System.Xml.Serialization;
+
+namespace Cisco.Api
 {
-	public class SoftwareEoxResponse
+	[XmlRoot("SwEoxResponseOutput", Namespace = "http://www.cisco.com/SwEoxAlertService")]
+	public class SoftwareEoxResponse : PssServiceResponse
 	{
+		/// <summary>
+		/// A list of Devices
+		/// </summary>
+		[XmlElement("DeviceSwEoxResponseDTO")]
+		public List<SoftwareEoxResponseDeviceDTO> Devices { get; set; } = null!;
 	}
 }
