@@ -188,6 +188,26 @@ namespace Cisco.Api.Test
 
 			response.Should().BeOfType<PsirtResponse>();
 			response.Should().NotBeNull();
+
+			// TODO - property tests
+		}
+
+		[Fact]
+		public async void GetFieldNoticesAsync_Succeeds()
+		{
+			var response = await CiscoClient
+				.Pss
+				.GetFieldNoticesAsync(new FieldNoticesRequest
+				{
+					CustomerId = Config.TestCustomerId,
+					InventoryId = Config.TestInventoryId
+				}, CancellationToken.None)
+				.ConfigureAwait(false);
+
+			response.Should().BeOfType<FieldNoticesResponse>();
+			response.Should().NotBeNull();
+
+			// TODO - property tests
 		}
 	}
 }

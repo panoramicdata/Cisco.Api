@@ -124,8 +124,8 @@ namespace Cisco.Api
 			FieldNoticesRequest request,
 			CancellationToken cancellationToken)
 			=> GetAsync<FieldNoticesRequest, FieldNoticesResponse>(
-				"InventoryService",
-				"getCustomerInventoryIds",
+				"FNAlertService",
+				"getFN",
 				request,
 				cancellationToken);
 	}

@@ -1,6 +1,9 @@
-﻿namespace Cisco.Api.Data.Pss
+﻿using System.Xml.Serialization;
+
+namespace Cisco.Api.Data.Pss
 {
-	public class FieldNoticesRequest
+	[XmlRoot("FNRequestInput", Namespace = "http://www.cisco.com/FNAlertService")]
+	public class FieldNoticesRequest : PssServiceRequest
 	{
 	}
 }
