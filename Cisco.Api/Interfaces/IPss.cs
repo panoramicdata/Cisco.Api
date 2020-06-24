@@ -33,7 +33,7 @@ namespace Cisco.Api.Interfaces
 			HardwareEoxRequest request,
 			CancellationToken cancellationToken);
 
-		Task<HardwareEoxBulletinResponse> GetHardwareEoxBulletinResponse(
+		Task<HardwareEoxBulletinResponse> GetHardwareEoxBulletinAsync(
 			HardwareEoxBulletinRequest request,
 			CancellationToken cancellationToken);
 

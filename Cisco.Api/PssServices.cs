@@ -93,12 +93,12 @@ namespace Cisco.Api
 				request,
 				cancellationToken);
 
-		public Task<HardwareEoxBulletinResponse> GetHardwareEoxBulletinResponse(
+		public Task<HardwareEoxBulletinResponse> GetHardwareEoxBulletinAsync(
 			HardwareEoxBulletinRequest request,
 			CancellationToken cancellationToken)
 			=> GetAsync<HardwareEoxBulletinRequest, HardwareEoxBulletinResponse>(
-				"InventoryService",
-				"getCustomerInventoryIds",
+				"HwEoxAlertService",
+				"getHwEoxBulletin",
 				request,
 				cancellationToken);
 

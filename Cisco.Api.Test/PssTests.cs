@@ -150,5 +150,28 @@ namespace Cisco.Api.Test
 
 			// TODO - property tests
 		}
+
+		[Fact]
+		public async void GetHwEoxBulletinAsync_Succeeds()
+		{
+			var response = await CiscoClient
+				.Pss
+				.GetHardwareEoxBulletinAsync(new HardwareEoxBulletinRequest
+				{
+					HardwareEoxIds = new List<HardwareEoxId>
+					{
+						new HardwareEoxId()
+						{
+							Id = Config.TestHardwareEoxId
+						}
+					}
+				}, CancellationToken.None)
+				.ConfigureAwait(false);
+
+			response.Should().BeOfType<HardwareEoxBulletinResponse>();
+			response.Should().NotBeNull();
+
+			// TODO - property tests
+		}
 	}
 }

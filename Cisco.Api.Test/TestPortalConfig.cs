@@ -41,11 +41,13 @@ namespace Cisco.Api.Test
 			TestCustomerId = configuration["TestCustomerId"];
 			TestInventoryId = configuration["TestInventoryId"];
 			TestSoftwareEoxId = configuration["TestSoftwareEoxId"];
+			TestHardwareEoxId = configuration["TestHardwareEoxId"];
 		}
 
 		internal CiscoClient CiscoClient { get; }
 		public string TestCustomerId { get; }
 		public string TestInventoryId { get; }
 		public string TestSoftwareEoxId { get; }
+		public string TestHardwareEoxId { get; }
 	}
 }
