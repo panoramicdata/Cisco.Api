@@ -115,8 +115,8 @@ namespace Cisco.Api
 			PsirtRequest request,
 			CancellationToken cancellationToken)
 			=> GetAsync<PsirtRequest, PsirtResponse>(
-				"InventoryService",
-				"getCustomerInventoryIds",
+				"PSIRTAlertService",
+				"getPSIRT",
 				request,
 				cancellationToken);
 

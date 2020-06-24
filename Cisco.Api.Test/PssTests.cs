@@ -173,5 +173,21 @@ namespace Cisco.Api.Test
 
 			// TODO - property tests
 		}
+
+		[Fact]
+		public async void GetPsirtTAsync_Succeeds()
+		{
+			var response = await CiscoClient
+				.Pss
+				.GetPsirtAsync(new PsirtRequest
+				{
+					CustomerId = Config.TestCustomerId,
+					InventoryId = Config.TestInventoryId
+				}, CancellationToken.None)
+				.ConfigureAwait(false);
+
+			response.Should().BeOfType<PsirtResponse>();
+			response.Should().NotBeNull();
+		}
 	}
 }
