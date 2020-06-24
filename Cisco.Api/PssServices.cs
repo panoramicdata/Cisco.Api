@@ -88,8 +88,8 @@ namespace Cisco.Api
 			HardwareEoxRequest request,
 			CancellationToken cancellationToken)
 			=> GetAsync<HardwareEoxRequest, HardwareEoxResponse>(
-				"InventoryService",
-				"getCustomerInventoryIds",
+				"HwEoxAlertService",
+				"getHwEox",
 				request,
 				cancellationToken);
 

@@ -1,6 +1,9 @@
-﻿namespace Cisco.Api.Data.Pss
+﻿using System.Xml.Serialization;
+
+namespace Cisco.Api.Data.Pss
 {
-	public class HardwareEoxRequest
+	[XmlRoot("HwEoxRequestInput", Namespace = "http://www.cisco.com/HwEoxAlertService")]
+	public class HardwareEoxRequest : PssServiceRequest
 	{
 	}
 }
