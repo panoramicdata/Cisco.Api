@@ -27,6 +27,12 @@ namespace Cisco.Api.Data.ProductInfo
 		public string Id { get; set; } = null!;
 
 		/// <summary>
+		/// Base product ID for a given serial number.
+		/// </summary>
+		[DataMember(Name = "base_pid")]
+		public string BasePid { get; set; } = null!;
+
+		/// <summary>
 		/// Orderable product ID for a given serial number.
 		/// </summary>
 		[DataMember(Name = "orderable_pid")]

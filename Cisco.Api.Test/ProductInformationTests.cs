@@ -33,6 +33,7 @@ namespace Cisco.Api.Test
 			productInformationPage.Products.Select(productInformation => productInformation.Dimensions.Value).Should().NotBeNull();
 			productInformationPage.Products.Select(productInformation => productInformation.FormFactor).Should().NotBeNull();
 			productInformationPage.Products.Select(productInformation => productInformation.Id).Should().NotBeNull();
+			productInformationPage.Products.Select(productInformation => productInformation.BasePid).Should().NotBeNull();
 			productInformationPage.Products.Select(productInformation => productInformation.OrderablePid).Should().NotBeNull();
 			productInformationPage.Products.Select(productInformation => productInformation.OrderableStatus).Should().NotBeNull();
 			productInformationPage.Products.Select(productInformation => productInformation.ProductCategory).Should().NotBeNull();
