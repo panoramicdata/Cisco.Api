@@ -55,6 +55,23 @@ namespace Cisco.Api.Test
 			response.CustomerInventories.Should().HaveCount(1);
 		}
 
+		[Fact]
+		public async void GetCustomerInventoryDetails_Succeeds()
+		{
+			var response = await CiscoClient
+				.Pss
+				.GetCustomerInventoryDetailsAsync(new CustomerInventoryDetailsRequest
+				{
+					CustomerId = Config.TestCustomerId,
+					InventoryId = Config.TestInventoryId
+				}, CancellationToken.None)
+				.ConfigureAwait(false);
+
+			response.Should().BeOfType<CustomerInventoryDetailsResponse>();
+			response.Should().NotBeNull();
+
+			// TODO - property tests
+		}
 
 		[Fact]
 		public async void GetCustomerInventoryPaginatedDetails_Succeeds()
@@ -169,6 +186,42 @@ namespace Cisco.Api.Test
 				.ConfigureAwait(false);
 
 			response.Should().BeOfType<HardwareEoxBulletinResponse>();
+			response.Should().NotBeNull();
+
+			// TODO - property tests
+		}
+
+		[Fact]
+		public async void GetPsirtTAsync_Succeeds()
+		{
+			var response = await CiscoClient
+				.Pss
+				.GetPsirtAsync(new PsirtRequest
+				{
+					CustomerId = Config.TestCustomerId,
+					InventoryId = Config.TestInventoryId
+				}, CancellationToken.None)
+				.ConfigureAwait(false);
+
+			response.Should().BeOfType<PsirtResponse>();
+			response.Should().NotBeNull();
+
+			// TODO - property tests
+		}
+
+		[Fact]
+		public async void GetFieldNoticesAsync_Succeeds()
+		{
+			var response = await CiscoClient
+				.Pss
+				.GetFieldNoticesAsync(new FieldNoticesRequest
+				{
+					CustomerId = Config.TestCustomerId,
+					InventoryId = Config.TestInventoryId
+				}, CancellationToken.None)
+				.ConfigureAwait(false);
+
+			response.Should().BeOfType<FieldNoticesResponse>();
 			response.Should().NotBeNull();
 
 			// TODO - property tests

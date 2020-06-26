@@ -48,6 +48,15 @@ namespace Cisco.Api
 				request,
 				cancellationToken);
 
+		public Task<CustomerInventoryDetailsResponse> GetCustomerInventoryDetailsAsync(
+			CustomerInventoryDetailsRequest request,
+			CancellationToken cancellationToken)
+			=> GetAsync<CustomerInventoryDetailsRequest, CustomerInventoryDetailsResponse>(
+				"InventoryService",
+				"getCustomerInventoryDetails",
+				request,
+				cancellationToken);
+
 		public Task<CustomerInventoryDetailPaginatedResponse> GetCustomerInventoryPaginatedDetailsAsync(
 			CustomerInventoryDetailPaginatedRequest request,
 			CancellationToken cancellationToken)
@@ -115,8 +124,8 @@ namespace Cisco.Api
 			PsirtRequest request,
 			CancellationToken cancellationToken)
 			=> GetAsync<PsirtRequest, PsirtResponse>(
-				"InventoryService",
-				"getCustomerInventoryIds",
+				"PSIRTAlertService",
+				"getPSIRT",
 				request,
 				cancellationToken);
 
@@ -124,8 +133,8 @@ namespace Cisco.Api
 			FieldNoticesRequest request,
 			CancellationToken cancellationToken)
 			=> GetAsync<FieldNoticesRequest, FieldNoticesResponse>(
-				"InventoryService",
-				"getCustomerInventoryIds",
+				"FNAlertService",
+				"getFN",
 				request,
 				cancellationToken);
 	}
