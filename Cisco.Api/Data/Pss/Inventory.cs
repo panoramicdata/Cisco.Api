@@ -12,7 +12,7 @@ namespace Cisco.Api.Data.Pss
 		/// A unique inventory name for a specific uploaded inventory.
 		/// </summary>
 		[XmlElement("inventoryId")]
-		public int Id { get; set; }
+		public string Id { get; set; }
 
 		/// <summary>
 		/// Inventory Name is name of the file which has the network device information collected by collectors.
