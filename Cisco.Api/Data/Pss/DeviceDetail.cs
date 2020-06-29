@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Xml.Serialization;
 
@@ -79,13 +80,13 @@ namespace Cisco.Api.Data.Pss
 		/// Date the original inventory was performed.
 		/// </summary>
 		[XmlElement("originalInventoryDate")]
-		public System.DateTime? OriginalInventoryDate;
+		public DateTime? OriginalInventoryDate;
 
 		/// <summary>
 		/// The date the last inventory was performed.
 		/// </summary>
 		[XmlElement("lastInventoryDate")]
-		public System.DateTime? lastInventoryDate;
+		public DateTime? LastInventoryDate;
 
 		/// <summary>
 		/// Base product id of the device.
