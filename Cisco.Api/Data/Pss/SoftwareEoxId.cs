@@ -2,6 +2,9 @@
 
 namespace Cisco.Api.Data.Pss
 {
+	/// <summary>
+	/// The SoftwareEoxId
+	/// </summary>
 	public class SoftwareEoxId
 	{
 		/// <summary>

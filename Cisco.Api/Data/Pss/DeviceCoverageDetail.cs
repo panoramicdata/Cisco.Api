@@ -2,6 +2,9 @@
 
 namespace Cisco.Api.Data.Pss
 {
+	/// <summary>
+	/// The DeviceCoverageDetail
+	/// </summary>
 	public class DeviceCoverageDetail
 	{
 		/// <summary>

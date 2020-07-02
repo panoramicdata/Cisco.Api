@@ -4,6 +4,9 @@ using System.Xml.Serialization;
 
 namespace Cisco.Api
 {
+	/// <summary>
+	/// The SoftwareEox Response
+	/// </summary>
 	[XmlRoot("SwEoxResponseOutput", Namespace = "http://www.cisco.com/SwEoxAlertService")]
 	public class SoftwareEoxResponse : PssServiceResponse
 	{

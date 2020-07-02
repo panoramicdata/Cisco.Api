@@ -2,6 +2,9 @@
 
 namespace Cisco.Api.Data.Pss
 {
+	/// <summary>
+	/// The Device when getting HardwareEox
+	/// </summary>
 	public class HardwareEoxDevice
 	{
 		/// <summary>

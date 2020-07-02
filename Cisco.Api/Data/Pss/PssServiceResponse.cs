@@ -3,6 +3,9 @@ using System.Xml.Serialization;
 
 namespace Cisco.Api.Data.Pss
 {
+	/// <summary>
+	/// The Pss Service Response
+	/// </summary>
 	public abstract class PssServiceResponse
 	{
 		/// <summary>

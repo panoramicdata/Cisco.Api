@@ -3,6 +3,9 @@ using System.Xml.Serialization;
 
 namespace Cisco.Api.Data.Pss
 {
+	/// <summary>
+	/// The HardwareEoxBulletin
+	/// </summary>
 	public class HardwareEoxBulletin
 	{
 		/// <summary>

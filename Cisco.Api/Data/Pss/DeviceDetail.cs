@@ -4,6 +4,9 @@ using System.Xml.Serialization;
 
 namespace Cisco.Api.Data.Pss
 {
+	/// <summary>
+	/// The DeviceDetail
+	/// </summary>
 	[DebuggerDisplay("{DeviceId}:{ValidatedSerialNumber}")]
 	[XmlRoot("deviceDetail", Namespace = "http://www.cisco.com/InventoryService")]
 	public class DeviceDetail

@@ -2,6 +2,9 @@
 
 namespace Cisco.Api.Data.Pss
 {
+	/// <summary>
+	/// The SiteIdAddress
+	/// </summary>
 	public class SiteIdAddress
 	{
 		/// <summary>

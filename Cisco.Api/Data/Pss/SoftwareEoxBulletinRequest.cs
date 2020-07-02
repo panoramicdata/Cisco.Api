@@ -3,6 +3,9 @@ using System.Xml.Serialization;
 
 namespace Cisco.Api.Data.Pss
 {
+	/// <summary>
+	/// The SoftwareEoxBulletin Request
+	/// </summary>
 	[XmlRoot("SwEoxBulletinRequestInput", Namespace = "http://www.cisco.com/SwEoxAlertService")]
 	public class SoftwareEoxBulletinRequest
 	{
