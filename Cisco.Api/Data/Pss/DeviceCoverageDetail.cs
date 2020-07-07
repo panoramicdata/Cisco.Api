@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace Cisco.Api.Data.Pss
 {
@@ -26,9 +27,9 @@ namespace Cisco.Api.Data.Pss
         public string? ProductId { get; set; }
 
         /// <summary>
-        /// CoverageDetail
+        /// List of CoverageDetails
         /// </summary>
         [XmlElement("coverageDetails")]
-        public CoverageDetail CoverageDetails { get; set; } = new CoverageDetail();
+        public List<CoverageDetail> CoverageDetails { get; set; } = new List<CoverageDetail>();
     }
 }
