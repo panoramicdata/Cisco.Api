@@ -42,6 +42,8 @@ namespace Cisco.Api.Test
 			TestInventoryId = configuration["TestInventoryId"];
 			TestSoftwareEoxId = configuration["TestSoftwareEoxId"];
 			TestHardwareEoxId = configuration["TestHardwareEoxId"];
+			TestFieldNoticesId1 = configuration["TestFieldNoticesId1"];
+			TestFieldNoticesId2 = configuration["TestFieldNoticesId2"];
 		}
 
 		internal CiscoClient CiscoClient { get; }
@@ -49,5 +51,7 @@ namespace Cisco.Api.Test
 		public string TestInventoryId { get; }
 		public string TestSoftwareEoxId { get; }
 		public string TestHardwareEoxId { get; }
+		public string TestFieldNoticesId1 { get; }
+		public string TestFieldNoticesId2 { get; }
 	}
 }

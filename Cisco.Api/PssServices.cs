@@ -137,5 +137,14 @@ namespace Cisco.Api
 				"getFN",
 				request,
 				cancellationToken);
+		public Task<FieldNoticesDetailsResponse> GetFieldNoticesDetailsAsync(
+			FieldNoticesDetailsRequest request,
+			CancellationToken cancellationToken)
+			=> GetAsync<FieldNoticesDetailsRequest, FieldNoticesDetailsResponse>(
+				"FNAlertService",
+				"getFNDetails",
+				request,
+				cancellationToken
+				);
 	}
 }

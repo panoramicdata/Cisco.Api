@@ -226,5 +226,26 @@ namespace Cisco.Api.Test
 
 			// TODO - property tests
 		}
+
+		[Fact]
+		public async void GetFieldNoticesDetailsAsync_Succeeds()
+		{
+			var response = await CiscoClient
+				.Pss
+				.GetFieldNoticesDetailsAsync(new FieldNoticesDetailsRequest
+				{
+					Ids = new List<string>
+					{
+						Config.TestFieldNoticesId1,
+						Config.TestFieldNoticesId2
+					}
+				}, CancellationToken.None)
+				.ConfigureAwait(false);
+
+			response.Should().BeOfType<FieldNoticesDetailsResponse>();
+			response.Should().NotBeNull();
+
+			// TODO - property tests
+		}
 	}
 }

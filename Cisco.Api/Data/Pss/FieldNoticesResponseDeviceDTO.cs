@@ -3,7 +3,7 @@
 namespace Cisco.Api.Data.Pss
 {
 	/// <summary>
-	/// The ResponseDTO when getting FN Details
+	/// The ResponseDTO when getting FieldNotices
 	/// </summary>
 	public class FieldNoticesResponseDeviceDTO
 	{

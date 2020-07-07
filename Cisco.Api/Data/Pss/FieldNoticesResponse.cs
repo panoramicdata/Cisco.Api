@@ -13,6 +13,6 @@ namespace Cisco.Api.Data.Pss
 		/// The list of Devices
 		/// </summary>
 		[XmlElement("DeviceFNResponseDTO")]
-		public List<FieldNoticesResponseDeviceDTO> Devices { get; set; } = null!;
+		public List<FieldNoticesResponseDeviceDTO> Devices { get; set; } = new List<FieldNoticesResponseDeviceDTO>();
 	}
 }

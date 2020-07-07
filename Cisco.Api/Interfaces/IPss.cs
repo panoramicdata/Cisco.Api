@@ -70,6 +70,16 @@ namespace Cisco.Api.Interfaces
 			CancellationToken cancellationToken);
 
 		/// <summary>
+		/// This API call fetches details about specified Field Notices.
+		/// </summary>
+		/// <param name="request"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
+		Task<FieldNoticesDetailsResponse> GetFieldNoticesDetailsAsync(
+			FieldNoticesDetailsRequest request,
+			CancellationToken cancellationToken);
+
+		/// <summary>
 		/// This API call returns the hardware end-of-life id and product id information.
 		/// </summary>
 		/// <param name="request"></param>
