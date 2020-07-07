@@ -1,19 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
 namespace Cisco.Api.Data.Pss
 {
-	/// <summary>
-	/// The HardwareEoxBulletin Request
-	/// </summary>
-	[XmlRoot("HwEoxBulletinRequestInput", Namespace = "http://www.cisco.com/HwEoxAlertService")]
-	public class HardwareEoxBulletinRequest
-	{
-		/// <summary>
-		/// Is the hardware end-of-life id and can have
-		/// any number of parameters listed in the API service call.
-		/// </summary>
-		[XmlElement("hwEoxIds")]
-		public List<HardwareEoxId> HardwareEoxIds { get; set; } = null!;
-	}
+    /// <summary>
+    /// The HardwareEoxBulletin Request
+    /// </summary>
+    [XmlRoot("HwEoxBulletinRequestInput", Namespace = "http://www.cisco.com/HwEoxAlertService")]
+    public class HardwareEoxBulletinRequest
+    {
+        /// <summary>
+        /// Is a list of hardware end-of-life ids and can have
+        /// any number of parameters listed in the API service call.
+        /// </summary>
+        [XmlElement("hwEoxIds")]
+        public HardwareEoxIds HardwareEoxIds { get; set; } = null!;
+    }
 }
