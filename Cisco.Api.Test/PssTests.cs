@@ -134,11 +134,11 @@ namespace Cisco.Api.Test
                 .Pss
                 .GetSoftwareEoxBulletinAsync(new SoftwareEoxBulletinRequest
                 {
-                    SoftwareEoxIds = new List<SoftwareEoxId>
+                    SoftwareEoxIds = new SoftwareEoxIds
                     {
-                        new SoftwareEoxId()
+                        Ids = new List<string>
                         {
-                            Id = Config.TestSoftwareEoxId
+                            Config.TestSoftwareEoxId
                         }
                     }
                 }, CancellationToken.None)
@@ -173,13 +173,14 @@ namespace Cisco.Api.Test
         {
             var response = await CiscoClient
                 .Pss
+                // Responses seem to be duplicated per HardwareEoxId
                 .GetHardwareEoxBulletinAsync(new HardwareEoxBulletinRequest
                 {
-                    HardwareEoxIds = new List<HardwareEoxId>
+                    HardwareEoxIds = new HardwareEoxIds
                     {
-                        new HardwareEoxId()
+                        Ids = new List<string>
                         {
-                            Id = Config.TestHardwareEoxId
+                            Config.TestHardwareEoxId
                         }
                     }
                 }, CancellationToken.None)
