@@ -33,6 +33,18 @@ namespace Cisco.Api.Interfaces
 			CancellationToken cancellationToken);
 
 		/// <summary>
+		/// This API service call returns a collection of Inventory elements
+		/// (device details, chassis details) for a given Inventory.
+		/// This is the third step in a four step process of obtaining service call related information.
+		/// </summary>
+		/// <param name="request"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
+		Task<CustomerExtendedInventoryDetailsResponse> GetCustomerExtendedInventoryDetailsAsync(
+			CustomerExtendedInventoryDetailsRequest request,
+			CancellationToken cancellationToken);
+
+		/// <summary>
 		/// This operation will return (in addition to what is returned by getCustomerInventoryDetails)
 		/// a new section at the beginning of the response called 'pages'. This section has four parts:
 		/// pageSize, pageCurrent, pageTotal, pidCount

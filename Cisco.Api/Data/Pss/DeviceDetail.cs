@@ -5,12 +5,16 @@ using System.Xml.Serialization;
 
 namespace Cisco.Api.Data.Pss
 {
+	public class DeviceDetail : DeviceDetail<CardDetail>
+	{
+	}
+
 	/// <summary>
 	/// The DeviceDetail
 	/// </summary>
 	[DebuggerDisplay("{DeviceId}:{ValidatedSerialNumber}")]
 	[XmlRoot("deviceDetail", Namespace = "http://www.cisco.com/InventoryService")]
-	public class DeviceDetail
+	public class DeviceDetail<TCardDetailType>
 	{
 		/// <summary>
 		/// Device id of the device contained in a specific
@@ -166,9 +170,9 @@ namespace Cisco.Api.Data.Pss
 		public string EquipmentType { get; set; } = null!;
 
 		/// <summary>
-		/// ???
+		/// Cards detail
 		/// </summary>
 		[XmlElement("cardDetail")]
-		public List<CardDetail> CardDetails { get; set; } = null!;
+		public List<TCardDetailType> CardDetails { get; set; } = null!;
 	}
 }

@@ -14,12 +14,11 @@ namespace Cisco.Api
 		private readonly SoapClient _soapClient;
 
 		public PssServices(HttpClient soapHttpClient)
-		{
-			_soapClient = SoapClient.Prepare(soapHttpClient);
-		}
+			=> _soapClient = SoapClient.Prepare(soapHttpClient);
+
 		private async Task<TResponse> GetAsync<TRequest, TResponse>(
-			string v1,
-			string v2,
+			string url,
+			string action,
 			TRequest request,
 			CancellationToken cancellationToken
 		)
@@ -29,8 +28,8 @@ namespace Cisco.Api
 				.Body(request);
 
 			var responseEnvelope = await _soapClient.SendAsync(
-				v1,
-				v2,
+				url,
+				action,
 				requestEnvelope,
 				cancellationToken)
 				.ConfigureAwait(false);
@@ -54,6 +53,15 @@ namespace Cisco.Api
 			=> GetAsync<CustomerInventoryDetailsRequest, CustomerInventoryDetailsResponse>(
 				"InventoryService",
 				"getCustomerInventoryDetails",
+				request,
+				cancellationToken);
+
+		public Task<CustomerExtendedInventoryDetailsResponse> GetCustomerExtendedInventoryDetailsAsync(
+			CustomerExtendedInventoryDetailsRequest request,
+			CancellationToken cancellationToken)
+			=> GetAsync<CustomerExtendedInventoryDetailsRequest, CustomerExtendedInventoryDetailsResponse>(
+				"InventoryService",
+				"getCustomerExtendedInventoryDetails",
 				request,
 				cancellationToken);
 
