@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -76,7 +77,7 @@ namespace Cisco.Api.Test
 		}
 
 		[Fact]
-		public async void GetExtendedCustomerInventoryDetails_Succeeds()
+		public async void GetExtendedCustomerInventoryDetails_FirstPage_Succeeds()
 		{
 			var response = await CiscoClient
 				  .Pss
@@ -85,7 +86,7 @@ namespace Cisco.Api.Test
 						{
 							CustomerId = Config.TestCustomerId,
 							InventoryId = Config.TestInventoryId,
-							PageStart = 2
+							PageStart = 1
 						},
 						CancellationToken.None)
 				  .ConfigureAwait(false);
@@ -94,6 +95,49 @@ namespace Cisco.Api.Test
 			response.Should().NotBeNull();
 
 			// TODO - property tests
+		}
+
+		[Fact]
+		public async void GetAllExtendedDeviceDetail_Succeeds()
+		{
+			var deviceDetails = await GetAllExtendedDeviceDetail(
+				CiscoClient,
+				Config.TestCustomerId,
+				Config.TestInventoryId,
+				CancellationToken.None)
+				  .ConfigureAwait(false);
+
+			deviceDetails.Should().NotBeNullOrEmpty();
+		}
+
+		// Example implementation of getting all ExtendedDeviceDetails
+		private static async Task<List<ExtendedDeviceDetail>> GetAllExtendedDeviceDetail(
+			CiscoClient client,
+			string CustomerId,
+			string InventoryId,
+			CancellationToken cancellationToken)
+		{
+			var deviceDetails = new List<ExtendedDeviceDetail>();
+			var page = 0;
+			int pageTotal;
+			do
+			{
+				page++;
+				var response = await client
+					  .Pss
+					  .GetCustomerExtendedInventoryDetailsAsync(
+							new CustomerExtendedInventoryDetailsRequest
+							{
+								CustomerId = CustomerId,
+								InventoryId = InventoryId,
+								PageStart = page
+							},
+							cancellationToken)
+					  .ConfigureAwait(false);
+				deviceDetails.AddRange(response.DeviceDetails);
+				pageTotal = response.Pages.PageTotal;
+			} while (page < pageTotal);
+			return deviceDetails;
 		}
 
 		[Fact]
