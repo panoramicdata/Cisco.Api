@@ -11,6 +11,5 @@ namespace Cisco.Api.Data.Pss
 		/// </summary>
 		[XmlElement("DeviceHwEoxResponseDTO")]
 		public List<HardwareEoxResponseDeviceDTO> Devices { get; set; } = null!;
-
 	}
 }

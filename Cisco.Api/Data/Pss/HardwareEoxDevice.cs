@@ -14,6 +14,6 @@ namespace Cisco.Api.Data.Pss
 		/// Product id and can have any number of parameters listed in the API service call.
 		/// </summary>
 		[XmlElement("productId")]
-		public string ProductId { get; set; } = null!;
+		public string? ProductId { get; set; } = null!;
 	}
 }
