@@ -3,13 +3,15 @@ using System.Xml.Serialization;
 
 namespace Cisco.Api.Data.Pss
 {
-    public class HardwareEoxIds
+    /// <summary>
+    /// The list of SoftwareEoxIds
+    /// </summary>
+    public class SoftwareEoxIds
     {
         /// <summary>
-        /// The list od hardware end-of-life ids and can have
-        /// any number of parameters listed in the API service call.
+        /// Was obtained from the getSoftwareEoX API service call.
         /// </summary>
-        [XmlElement("hwEoxId")]
+        [XmlElement("softwareEoxId")]
         public List<string> Ids { get; set; } = new List<string>();
     }
 }

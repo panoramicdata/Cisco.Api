@@ -2,6 +2,9 @@
 
 namespace Cisco.Api.Data.Pss
 {
+	/// <summary>
+	/// The ResponseDTO when getting SoftwareEox
+	/// </summary>
 	public class SoftwareEoxResponseDeviceDTO
 	{
 		/// <summary>

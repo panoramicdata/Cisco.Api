@@ -2,6 +2,9 @@
 
 namespace Cisco.Api.Data.Pss
 {
+	/// <summary>
+	/// The CustomerInventoryDetailPaginatedRequest
+	/// </summary>
 	[XmlRoot("CustomerInventoryDetailPaginatedRequestInput", Namespace = "http://www.cisco.com/InventoryService")]
 	public class CustomerInventoryDetailPaginatedRequest : PssServiceRequest
 	{

@@ -4,6 +4,9 @@ using System.Xml.Serialization;
 
 namespace Cisco.Api.Data.Pss
 {
+	/// <summary>
+	/// CustomersInventory Response
+	/// </summary>
 	[XmlRoot("CustomersInventoryResponse", Namespace = "http://www.cisco.com/InventoryService")]
 	public class CustomersInventoryResponse
 	{

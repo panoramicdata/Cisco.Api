@@ -6,7 +6,7 @@ namespace Cisco.Api.Data.Pss
 	/// <summary>
 	/// Paging information
 	/// </summary>
-	[DebuggerDisplay("{PageCount}/{PageTotal}")]
+	[DebuggerDisplay("{" + nameof(PageCurrent) + "}/{" + nameof(PageTotal) + "}")]
 	[XmlRoot("pages", Namespace = "http://www.cisco.com/InventoryService")]
 	public class Pages
 	{

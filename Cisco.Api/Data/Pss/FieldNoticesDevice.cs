@@ -2,6 +2,9 @@
 
 namespace Cisco.Api.Data.Pss
 {
+	/// <summary>
+	/// The Device when getting FN Details
+	/// </summary>
 	public class FieldNoticesDevice
 	{
 		/// <summary>

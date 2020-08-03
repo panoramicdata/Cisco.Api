@@ -3,7 +3,7 @@
 namespace Cisco.Api.Data.Pss
 {
 	/// <summary>
-	/// ???
+	/// The Card Details
 	/// </summary>
 	public class CardDetail
 	{

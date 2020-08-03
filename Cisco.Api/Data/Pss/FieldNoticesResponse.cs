@@ -3,6 +3,9 @@ using System.Xml.Serialization;
 
 namespace Cisco.Api.Data.Pss
 {
+	/// <summary>
+	/// The FieldNotices Response
+	/// </summary>
 	[XmlRoot("FNResponseOutput", Namespace = "http://www.cisco.com/FNAlertService")]
 	public class FieldNoticesResponse : PssServiceResponse
 	{
@@ -10,6 +13,6 @@ namespace Cisco.Api.Data.Pss
 		/// The list of Devices
 		/// </summary>
 		[XmlElement("DeviceFNResponseDTO")]
-		public List<FieldNoticesResponseDeviceDTO> Devices { get; set; } = null!;
+		public List<FieldNoticesResponseDeviceDTO> Devices { get; set; } = new List<FieldNoticesResponseDeviceDTO>();
 	}
 }

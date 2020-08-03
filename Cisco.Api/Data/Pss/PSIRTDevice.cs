@@ -2,6 +2,9 @@
 
 namespace Cisco.Api.Data.Pss
 {
+	/// <summary>
+	/// The PSIRT Device
+	/// </summary>
 	public class PsirtDevice
 	{
 		/// <summary>
