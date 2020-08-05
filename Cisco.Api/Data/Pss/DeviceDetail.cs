@@ -117,7 +117,7 @@ namespace Cisco.Api.Data.Pss
 		/// Software version of the device.
 		/// </summary>
 		[XmlElement("softwareVersion")]
-		public string SoftwareVersion { get; set; } = null!;
+		public string? SoftwareVersion { get; set; } = null!;
 
 		/// <summary>
 		/// OS type of the software.
