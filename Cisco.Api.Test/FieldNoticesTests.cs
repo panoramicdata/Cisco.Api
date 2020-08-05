@@ -18,8 +18,8 @@ namespace Cisco.Api.Test
 				await CiscoClient.Pss.GetFieldNoticesAsync(
 					new FieldNoticesRequest
 					{
-						CustomerId = "140194686",
-						InventoryId = "580328"
+						CustomerId = "xxx",
+						InventoryId = "xxx"
 					},
 					CancellationToken.None
 				)
