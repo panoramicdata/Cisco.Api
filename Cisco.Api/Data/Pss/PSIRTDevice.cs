@@ -35,6 +35,6 @@ namespace Cisco.Api.Data.Pss
 		///  Software version of the device in the PSIRT item.
 		/// </summary>
 		[XmlElement("softwareVersion")]
-		public string SoftwareVersion { get; set; } = null!;
+		public string? SoftwareVersion { get; set; }
 	}
 }

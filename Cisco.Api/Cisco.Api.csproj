@@ -16,7 +16,7 @@
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 
-    <PackageReleaseNotes>Allowed SoftwareVersion to be null.</PackageReleaseNotes>
+    <PackageReleaseNotes>Allowed SoftwareVersion to be null in other places.</PackageReleaseNotes>
   </PropertyGroup>
 
 	<ItemGroup>

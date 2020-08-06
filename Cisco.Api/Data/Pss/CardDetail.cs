@@ -92,7 +92,7 @@ namespace Cisco.Api.Data.Pss
 		/// Card’s software version number.
 		/// </summary>
 		[XmlElement("softwareVersion")]
-		public string SoftwareVersion { get; set; } = null!;
+		public string? SoftwareVersion { get; set; }
 
 		/// <summary>
 		/// Original Manufacturer of device.
