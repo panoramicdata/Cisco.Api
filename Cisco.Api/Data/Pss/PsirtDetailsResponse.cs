@@ -12,7 +12,7 @@ namespace Cisco.Api.Data.Pss
         /// <summary>
         /// The List of PsirtDetails
         /// </summary>
-        [XmlElement("PSIRTDetailsDTO")]
+        [XmlElement("PSIRTDetailsList")]
         public List<PsirtDetailsDTO> Details { get; set; } = new List<PsirtDetailsDTO>();
     }
 }

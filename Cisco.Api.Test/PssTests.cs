@@ -280,21 +280,23 @@ namespace Cisco.Api.Test
         [Fact]
         public async void GetPsirtDetailsAsync_Succeeds()
         {
+            var ids = new List<string>
+                {
+                            Config.TestPsirtId1,
+                            Config.TestPsirtId2
+                };
+
             var response = await CiscoClient
                   .Pss
                   .GetPsirtDetailsAsync(new PsirtDetailsRequest
                   {
-                      Ids = new List<string>
-                            {
-                                     Config.TestPsirtId1,
-                                     Config.TestPsirtId2
-                            }
+                      Ids = ids
                   }, CancellationToken.None)
                   .ConfigureAwait(false);
 
             response.Should().BeOfType<PsirtDetailsResponse>();
             response.Should().NotBeNull();
-
+            response.Details.Count.Should().Be(ids.Count);
             // TODO - property tests
         }
 
