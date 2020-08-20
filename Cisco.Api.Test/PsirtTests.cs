@@ -13,7 +13,7 @@ namespace Cisco.Api.Test
 		}
 
 		[Fact]
-		public async void GetCoverageStatusBySerialNumber()
+		public async void GetPsirtByCveId()
 		{
 			var advisoryResponse = await CiscoClient
 				.Psirt
@@ -27,7 +27,7 @@ namespace Cisco.Api.Test
 		}
 
 		[Fact]
-		public async void GetAllCoverageStatuses()
+		public async void GetAllPsirts()
 		{
 			var advisoryResponse = await CiscoClient
 				.Psirt
