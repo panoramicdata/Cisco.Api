@@ -69,13 +69,16 @@ namespace Cisco.Api
 			Eox = RestService.For<IEox>(_restHttpClient, refitSettings);
 			Hello = RestService.For<IHello>(_restHttpClient);
 			ProductInfo = RestService.For<IProductInfo>(_restHttpClient, refitSettings);
+			Psirt = RestService.For<IPsirt>(_restHttpClient, refitSettings);
 			Pss = new PssServices(_soapHttpClient);
 			SerialNumberToInfo = RestService.For<ISerialNumberToInfo>(_restHttpClient, refitSettings);
 		}
 
+		public IEox Eox { get; set; }
+
 		public IHello Hello { get; set; }
 
-		public IEox Eox { get; set; }
+		public IPsirt Psirt { get; set; }
 
 		public IProductInfo ProductInfo { get; set; }
 

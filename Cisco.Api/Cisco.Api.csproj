@@ -5,7 +5,7 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Company>Panoramic Data Limited</Company>
 		<Copyright>Copyright (c) Panoramic Data Limited 2020</Copyright>
-		<Description>Provides access to EOX, Product Information and Serial Number to Information APIs.  Requires client credentials.</Description>
+		<Description>Added PSIRT interface.</Description>
 		<Authors>Panoramic Data Limited</Authors>
 		<PackageProjectUrl>https://github.com/panoramicdata/Cisco.Api</PackageProjectUrl>
 		<PackageIcon>Icon.png</PackageIcon>

@@ -81,6 +81,7 @@ namespace Cisco.Api.Security
 			}
 
 			request.Headers.Authorization = _authenticationHeaderValue;
+			request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
 
 			// Only do diagnostic logging if we're at the level we want to enable for as this is more efficient
 			if (_logger.IsEnabled(LevelToLogAt))
