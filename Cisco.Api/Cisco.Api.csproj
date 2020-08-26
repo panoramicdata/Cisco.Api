@@ -16,7 +16,7 @@
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 
-    <PackageReleaseNotes>Add GetPsirtDetails.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed DevicePsirts on PsirtResponseDeviceDTO</PackageReleaseNotes>
   </PropertyGroup>
 
 	<ItemGroup>

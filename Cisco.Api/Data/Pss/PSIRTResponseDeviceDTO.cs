@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace Cisco.Api.Data.Pss
 {
@@ -14,9 +15,9 @@ namespace Cisco.Api.Data.Pss
 		public string DeviceId { get; set; } = null!;
 
 		/// <summary>
-		/// The Device
+		/// The list of device PSIRTS
 		/// </summary>
 		[XmlElement("devicePSIRT")]
-		public PsirtDevice Device { get; set; } = null!;
+		public List<DevicePsirt> DevicePsirts { get; set; } = null!;
 	}
 }

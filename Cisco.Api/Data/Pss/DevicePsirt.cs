@@ -5,7 +5,7 @@ namespace Cisco.Api.Data.Pss
 	/// <summary>
 	/// The PSIRT Device
 	/// </summary>
-	public class PsirtDevice
+	public class DevicePsirt
 	{
 		/// <summary>
 		///  PSIRT id of the device.
