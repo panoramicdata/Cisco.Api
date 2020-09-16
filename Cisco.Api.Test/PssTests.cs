@@ -177,27 +177,27 @@ namespace Cisco.Api.Test
         }
 
         // Test disabled as TestDeviceId not always set, so enable if needed
-        [Fact]
-        public async void GetContractCoverageDetailsForDeviceIdsAsync_Succeeds()
-        {
-            // Query upto 100 devices at a time
-            var deviceIds = new List<string> { Config.TestDeviceId };
+        //[Fact]
+        //public async void GetContractCoverageDetailsForDeviceIdsAsync_Succeeds()
+        //{
+        //    // Query upto 100 devices at a time
+        //    var deviceIds = new List<string> { Config.TestDeviceId };
 
-            var response = await CiscoClient
-                  .Pss
-                  .GetContractCoverageAsync(new ContractCoverageRequest
-                  {
-                      CustomerId = Config.TestCustomerId,
-                      InventoryId = Config.TestInventoryId,
-                      DeviceIds = deviceIds
-                  }, CancellationToken.None)
-                  .ConfigureAwait(false);
+        //    var response = await CiscoClient
+        //          .Pss
+        //          .GetContractCoverageAsync(new ContractCoverageRequest
+        //          {
+        //              CustomerId = Config.TestCustomerId,
+        //              InventoryId = Config.TestInventoryId,
+        //              DeviceIds = deviceIds
+        //          }, CancellationToken.None)
+        //          .ConfigureAwait(false);
 
-            response.Should().BeOfType<ContractCoverageResponse>();
-            response.Should().NotBeNull();
+        //    response.Should().BeOfType<ContractCoverageResponse>();
+        //    response.Should().NotBeNull();
 
-            // TODO - property tests
-        }
+        //    // TODO - property tests
+        //}
 
         [Fact]
         public async void GetSoftwareEoxAsync_Succeeds()
