@@ -4,7 +4,7 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Company>Panoramic Data Limited</Company>
-		<Copyright>Copyright (c) Panoramic Data Limited 2020</Copyright>
+		<Copyright>Copyright (c) Panoramic Data Limited 2021</Copyright>
 		<Description>Added PSIRT interface.</Description>
 		<Authors>Panoramic Data Limited</Authors>
 		<PackageProjectUrl>https://github.com/panoramicdata/Cisco.Api</PackageProjectUrl>
