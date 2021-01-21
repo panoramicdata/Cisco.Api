@@ -185,7 +185,7 @@ namespace Cisco.Api.Test
                   {
                       CustomerId = Config.TestCustomerId,
                       InventoryId = Config.TestInventoryId,
-                      DeviceIds = new List<string> { Config.Test }
+                      DeviceIds = new List<string> { Config.TestDeviceId }
                   }, CancellationToken.None)
                   .ConfigureAwait(false);
 
