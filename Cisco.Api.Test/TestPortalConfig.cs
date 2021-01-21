@@ -36,6 +36,7 @@ namespace Cisco.Api.Test
             {
                 ClientId = credentials[++credentialIndex],
                 ClientSecret = credentials[++credentialIndex],
+                MaxAttemptCount = 2
             }, logger);
 
             TestCustomerId = configuration["TestCustomerId"];

@@ -38,9 +38,7 @@ namespace Cisco.Api
 				new AuthenticatedHttpClientHandler(
 					"https://cloudsso.cisco.com/",
 					"as/token.oauth2",
-					options.ClientId,
-					options.ClientSecret,
-					options.Token,
+					options,
 					_logger)
 			)
 			{
@@ -51,9 +49,7 @@ namespace Cisco.Api
 				new AuthenticatedHttpClientHandler(
 					"https://api.cisco.com/",
 					"pss/token",
-					options.ClientId,
-					options.ClientSecret,
-					options.Token,
+					options,
 					_logger)
 			)
 			{
