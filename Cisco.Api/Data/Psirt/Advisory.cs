@@ -4,7 +4,6 @@ using System.Runtime.Serialization;
 
 namespace Cisco.Api.Data.Psirt
 {
-
 	[DataContract]
 	public partial class Advisory
 	{

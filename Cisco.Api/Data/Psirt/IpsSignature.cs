@@ -2,7 +2,6 @@
 
 namespace Cisco.Api.Data.Psirt
 {
-
 	[DataContract]
 	public class IpsSignature
 	{
