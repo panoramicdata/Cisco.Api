@@ -1,0 +1,156 @@
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ns1="http://www.cisco.com/ISAlertService" targetNamespace="http://www.cisco.com/ISAlertService">
+<wsdl:types>
+
+
+<xs:schema xmlns:tns="http://www.cisco.com/ISAlertService" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.cisco.com/ISAlertService">
+
+			<xs:complexType name="ISRequest">
+                <xs:sequence>
+                    <xs:element name="customerId" type="xs:string"/>
+                    <xs:element name="inventoryId" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="deviceIds" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Message">
+                <xs:sequence>
+                    <xs:element name="messageType" nillable="true" type="xs:string"/>
+                    <xs:element name="messageDetail" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ISRequestInput" type="tns:ISRequest"/>
+            <xs:complexType name="ISResponse">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="DeviceISResponseDTO" type="tns:DeviceISResponse"/>
+                    <xs:element name="responseTimestamp" nillable="true" type="xs:dateTime"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="message" type="tns:Message"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ISResponseOutput" type="tns:ISResponse"/>
+            <xs:complexType name="DeviceISResponse">
+                <xs:sequence>
+                    <xs:element name="deviceId" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="deviceIS" type="tns:DeviceIS"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="DeviceIS">
+                <xs:sequence>
+                    <xs:element name="isId" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="ISDetailsRequest">
+                <xs:sequence>
+                    <xs:element name="isIds">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element maxOccurs="unbounded" name="isId" type="xs:string"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ISDetailsRequestInput" type="tns:ISDetailsRequest"/>
+            <xs:complexType name="ISDetailsResponse">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="ISDetailsDTO" type="tns:ISDetails"/>
+                    <xs:element name="responseTimestamp" nillable="true" type="xs:dateTime"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="message" type="tns:Message"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ISDetailsResponseOutput" type="tns:ISDetailsResponse"/>
+            <xs:complexType name="ISDetails">
+                <xs:all minOccurs="0">
+                    <xs:element name="isId" type="xs:string"/>
+                    <xs:element name="psirtId" type="xs:string"/>
+                    <xs:element name="headlineName" type="xs:string"/>
+                    <xs:element name="credibilityCD" type="xs:string"/>
+                    <xs:element name="credibilityDescription" type="xs:string"/>
+                    <xs:element name="severityCD" type="xs:string"/>
+                    <xs:element name="severityDescription" type="xs:string"/>
+                    <xs:element name="urgencyCD" type="xs:string"/>
+                    <xs:element name="urgencyDescription" type="xs:string"/>
+                    <xs:element name="firstPublishedDate" type="xs:dateTime"/>
+                    <xs:element name="lastPublishedDate" type="xs:dateTime"/>
+                    <xs:element name="status" type="xs:string"/>
+                    <xs:element name="versionNumber" type="xs:string"/>
+                    <xs:element name="isURL" type="xs:string"/>
+                    <xs:element name="versionSummaryText" type="xs:string"/>
+                    <xs:element name="threatCategoryDescription" type="xs:string"/>
+                    <xs:element name="threatTechniqueDescription" type="xs:string"/>
+                    <xs:element name="cvssVectorName" type="xs:string"/>
+                    <xs:element name="cvssAuthenticationName" type="xs:string"/>
+                    <xs:element name="cvssExploitName" type="xs:string"/>
+                    <xs:element name="cvssBaseScoreAmount" type="xs:string"/>
+                    <xs:element name="cvssTemporalScoreAmount" type="xs:string"/>
+                    <xs:element name="cvssScoreVersionNumber" type="xs:string"/>
+                </xs:all>
+            </xs:complexType>
+			
+</xs:schema>
+</wsdl:types>
+
+<wsdl:message name="getISRequestMessage">
+<wsdl:part name="parameters" element="ns1:ISRequestInput"/>
+</wsdl:message>
+
+<wsdl:message name="getISResponseMessage">
+<wsdl:part name="parameters" element="ns1:ISResponseOutput"/>
+</wsdl:message>
+
+
+<wsdl:message name="getISDetailsRequestMessage">
+<wsdl:part name="parameters" element="ns1:ISDetailsRequestInput"/>
+</wsdl:message>
+
+<wsdl:message name="getISDetailsResponseMessage">
+<wsdl:part name="parameters" element="ns1:ISDetailsResponseOutput"/>
+</wsdl:message>
+
+<wsdl:portType name="ISAlertServicePortType">
+<wsdl:operation name="getIS">
+<wsdl:input message="ns1:getISRequestMessage" wsaw:Action="getIS"/>
+<wsdl:output message="ns1:getISResponseMessage" wsaw:Action="urn:getISResponse"/>
+
+</wsdl:operation>
+<wsdl:operation name="getISDetails">
+<wsdl:input message="ns1:getISDetailsRequestMessage" wsaw:Action="getISDetails"/>
+<wsdl:output message="ns1:getISDetailsResponseMessage" wsaw:Action="urn:getISDetailsResponse"/>
+
+</wsdl:operation>
+</wsdl:portType>
+
+<wsdl:binding name="ISAlertServiceSOAP11Binding" type="ns1:ISAlertServicePortType">
+<soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+<wsdl:operation name="getIS">
+<soap:operation soapAction="getIS" style="document"/>
+<wsdl:input>
+<soap:body use="literal" parts="parameters"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal" parts="parameters"/>
+</wsdl:output>
+
+</wsdl:operation>
+<wsdl:operation name="getISDetails">
+<soap:operation soapAction="getISDetails" style="document"/>
+<wsdl:input>
+<soap:body use="literal" parts="parameters"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal" parts="parameters"/>
+</wsdl:output>
+
+
+
+</wsdl:operation>
+</wsdl:binding>
+
+
+
+<wsdl:service name="ISAlertService">
+<wsdl:port name="ISAlertServiceSOAP11port_http" binding="ns1:ISAlertServiceSOAP11Binding">
+<soap:address location="https://api.cisco.com/pss/v1.0/ISAlertService"/>
+</wsdl:port>
+
+
+</wsdl:service>
+</wsdl:definitions>

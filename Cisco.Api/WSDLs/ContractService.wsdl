@@ -1,0 +1,141 @@
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+	xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+	xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ns1="http://www.cisco.com/ContractService"
+	targetNamespace="http://www.cisco.com/ContractService">
+	<wsdl:types>
+
+
+		<xs:schema xmlns:tns="http://www.cisco.com/ContractService"
+			attributeFormDefault="unqualified" elementFormDefault="qualified"
+			targetNamespace="http://www.cisco.com/ContractService">
+
+			<xs:element name="ContractCoverageRequest" type="tns:ContractCoverageDetailsRequest" />
+			<xs:element name="ContractCoverageResponse" type="tns:ContractCoverageDetailsResponse" />
+			<xs:complexType name="ContractCoverageDetailsRequest">
+				<xs:sequence>
+					<xs:element name="customerId" type="xs:string" />
+					<xs:element name="inventoryId" type="xs:string" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="deviceIds"
+						type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="DeviceCoverageDetail">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="deviceId" type="xs:string" />
+					<xs:element minOccurs="0" name="serialNumber" type="xs:string" />
+					<xs:element minOccurs="0" name="productId" type="xs:string" />
+					<xs:element maxOccurs="unbounded" minOccurs="0"
+						name="coverageDetails" type="tns:CoverageDetails" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="CoverageDetails">
+				<xs:all minOccurs="0">
+					<xs:element name="contractNumber" type="xs:string" />
+					<xs:element name="serviceLevel" type="xs:string" />
+					<xs:element name="coverageStatus" type="xs:string" />
+					<xs:element name="coverageStartDate" type="xs:dateTime" />
+					<xs:element name="coverageEndDate" type="xs:dateTime" />
+					<xs:element name="shipDate" type="xs:dateTime" />
+					<xs:element name="eosDate" type="xs:dateTime" />
+					<xs:element name="serviceableFlag" type="xs:string" />
+					<xs:element name="shipToSiteID" type="xs:string" />
+					<xs:element name="installAtSiteID" type="xs:string" />
+				</xs:all>
+			</xs:complexType>
+			<xs:complexType name="ContractDetail">
+				<xs:all minOccurs="0">
+					<xs:element name="contractNumber" type="xs:string" />
+					<xs:element name="serviceLevel" type="xs:string" />
+					<xs:element name="slaType" type="xs:string" />
+					<xs:element name="contractStartDate" type="xs:dateTime" />
+					<xs:element name="contractEndDate" type="xs:dateTime" />
+					<xs:element name="ContactNameOfVendor" type="xs:string" />
+					<xs:element name="BillToSiteID" type="xs:string" />
+				</xs:all>
+			</xs:complexType>
+			<xs:complexType name="SiteIdAddress">
+				<xs:all minOccurs="0">
+					<xs:element name="siteID" type="xs:string" />
+					<xs:element name="siteName" type="xs:string" />
+					<xs:element name="addressLine1" type="xs:string" />
+					<xs:element name="addressLine2" type="xs:string" />
+					<xs:element name="addressLine3" type="xs:string" />
+					<xs:element name="addressLine4" type="xs:string" />
+					<xs:element name="city" type="xs:string" />
+					<xs:element name="postalCode" type="xs:string" />
+					<xs:element name="state" type="xs:string" />
+					<xs:element name="province" type="xs:string" />
+					<xs:element name="country" type="xs:string" />
+				</xs:all>
+			</xs:complexType>
+			<xs:complexType name="Message">
+				<xs:sequence>
+					<xs:element name="messageType" nillable="true" type="xs:string" />
+					<xs:element name="messageDetail" nillable="true" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="ContractCoverageDetailsResponse">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0"
+						name="deviceCoverageDetail" type="tns:DeviceCoverageDetail" />
+					<xs:element maxOccurs="unbounded" minOccurs="0"
+						name="contractDetail" type="tns:ContractDetail" />
+					<xs:element maxOccurs="unbounded" minOccurs="0"
+						name="siteIdAddress" type="tns:SiteIdAddress" />
+					<xs:element name="responseTimestamp" nillable="true"
+						type="xs:dateTime" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="message"
+						type="tns:Message" />
+				</xs:sequence>
+			</xs:complexType>
+
+		</xs:schema>
+	</wsdl:types>
+
+	<wsdl:message name="getContractCoverageDetailsRequestMessage">
+		<wsdl:part name="parameters" element="ns1:ContractCoverageRequest" />
+	</wsdl:message>
+
+	<wsdl:message name="getContractCoverageDetailsResponseMessage">
+		<wsdl:part name="parameters" element="ns1:ContractCoverageResponse" />
+	</wsdl:message>
+
+
+	<wsdl:portType name="ContractServicePortType">
+		<wsdl:operation name="getContractCoverageDetails">
+			<wsdl:input message="ns1:getContractCoverageDetailsRequestMessage"
+				wsaw:Action="getContractCoverageDetails" />
+			<wsdl:output message="ns1:getContractCoverageDetailsResponseMessage"
+				wsaw:Action="urn:getContractCoverageDetailsResponse" />
+
+		</wsdl:operation>
+	</wsdl:portType>
+
+
+	<wsdl:binding name="ContractServiceSOAP11Binding" type="ns1:ContractServicePortType">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"
+			style="document" />
+		<wsdl:operation name="getContractCoverageDetails">
+			<soap:operation soapAction="getContractCoverageDetails"
+				style="document" />
+			<wsdl:input>
+				<soap:body use="literal" parts="parameters" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" parts="parameters" />
+			</wsdl:output>
+
+		</wsdl:operation>
+	</wsdl:binding>
+
+
+	<wsdl:service name="ContractService">
+		<wsdl:port name="ContractServiceSOAP11port_http" binding="ns1:ContractServiceSOAP11Binding">
+			<soap:address location="https://api.cisco.com/pss/v1.0/ContractService" />
+		</wsdl:port>
+
+	</wsdl:service>
+</wsdl:definitions>

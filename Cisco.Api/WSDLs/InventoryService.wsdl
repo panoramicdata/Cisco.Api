@@ -1,0 +1,327 @@
+<wsdl:definitions 
+	xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+	xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+	xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ns1="http://www.cisco.com/InventoryService"
+	targetNamespace="http://www.cisco.com/InventoryService">
+	<wsdl:types>
+
+		<xs:schema xmlns:tns="http://www.cisco.com/InventoryService"
+			attributeFormDefault="unqualified" elementFormDefault="qualified"
+			targetNamespace="http://www.cisco.com/InventoryService">
+
+            <xs:element name="CustomerInventoryRequest" type="tns:CustomerIdsRequest"/>
+            <xs:element name="CustomersInventoryResponse" type="tns:CustomersInventoryResponse"/>
+            <xs:complexType name="Message">
+                <xs:sequence>
+                    <xs:element name="messageType" nillable="true" type="xs:string"/>
+                    <xs:element name="messageDetail" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Pages">
+			 <xs:sequence>
+			  <xs:element name="pageSize" nillable="true" type="xs:string"/>
+			  <xs:element name="pageCurrent" nillable="true" type="xs:string"/>
+			  <xs:element name="pageTotal" nillable="true" type="xs:string"/>
+			  <xs:element name="pidCount" nillable="true" type="xs:string"/>
+			 </xs:sequence>
+			</xs:complexType>			
+            <xs:complexType name="Customer">
+                <xs:sequence>
+                    <xs:element name="customerId" type="xs:string"/>
+                    <xs:element name="customerName" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Inventory">
+                <xs:sequence>
+                    <xs:element name="inventoryId" type="xs:string"/>
+                    <xs:element name="inventoryName" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="applianceIds" type="xs:string"/>
+                    <xs:element name="uploadTime" nillable="true" type="xs:dateTime"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="CustomerInventory">
+                <xs:sequence>
+                    <xs:element name="customer" type="tns:Customer"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="inventory" type="tns:Inventory"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="CustomersInventoryResponse">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="customerInventory" type="tns:CustomerInventory"/>
+                    <xs:element name="responseTimestamp" nillable="true" type="xs:dateTime"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="message" type="tns:Message"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="CustomerIdsRequest">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="customerIds" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="CustomerInventoryDetailRequestInput" type="tns:CustomerInventoryDetail"/>
+            <xs:element name="CustomerInventoryDetailResponseOutput" type="tns:CustomerInventoryDetailResponse"/>
+            <xs:element name="CustomerInventoryDetailPaginatedRequestInput" type="tns:CustomerInventoryPaginatedDetail"/>
+            <xs:element name="CustomerInventoryDetailPaginatedResponseOutput" type="tns:CustomerInventoryDetailPaginatedResponse"/>	
+			<xs:element name="CustomerExtendedInventoryDetailRequestInput" type="tns:CustomerExtendedInventoryDetail"/>
+			<xs:element name="CustomerExtendedInventoryDetailResponseOutput" type="tns:CustomerExtendedInventoryDetailResponse"/>		
+            <xs:complexType name="CustomerInventoryDetail">
+                <xs:sequence>
+                    <xs:element name="customerId" type="xs:string"/>
+                    <xs:element name="inventoryId" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="deviceIds" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+           <xs:complexType name="CustomerInventoryPaginatedDetail">
+                <xs:sequence>
+                    <xs:element name="customerId" type="xs:string"/>
+                    <xs:element name="inventoryId" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="deviceIds" type="xs:string"/>
+					<xs:element name="pageStart" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>			
+			<xs:complexType name="CustomerExtendedInventoryDetail">
+				<xs:sequence>
+					<xs:element name="customerId" type="xs:string" />
+					<xs:element name="inventoryId" type="xs:string" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="deviceIds" type="xs:string" />
+					<xs:element name="pageStart" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+            <xs:complexType name="DeviceDetail">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="deviceId" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hostName" type="xs:string"/>
+                    <xs:element minOccurs="0" name="ipAddress" type="xs:string"/>
+                    <xs:element minOccurs="0" name="originalSerialNumber" type="xs:string"/>
+                    <xs:element minOccurs="0" name="validatedSerialNumber" type="xs:string"/>
+                    <xs:element minOccurs="0" name="productId" type="xs:string"/>
+                    <xs:element minOccurs="0" name="productDescription" type="xs:string"/>
+                    <xs:element minOccurs="0" name="productFamily" type="xs:string"/>
+                    <xs:element minOccurs="0" name="productName" type="xs:string"/>
+                    <xs:element minOccurs="0" name="productModel" type="xs:string"/>
+                    <xs:element minOccurs="0" name="elementType" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cardDetail" type="tns:CardDetail"/>
+                    <xs:element name="originalInventoryDate" nillable="true" type="xs:dateTime"/>
+                    <xs:element name="lastInventoryDate" nillable="true" type="xs:dateTime"/>
+                    <xs:element minOccurs="0" name="baseProductId" type="xs:string"/>
+                    <xs:element minOccurs="0" name="installedMemory" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hardWareVersion" type="xs:string"/>
+                    <xs:element minOccurs="0" name="softwareVersion" type="xs:string"/>
+                    <xs:element minOccurs="0" name="softwareType" type="xs:string"/>
+                    <xs:element minOccurs="0" name="flashMemory" type="xs:string"/>					
+					<xs:element minOccurs="0" name="manufacturer" type="xs:string"/>
+					<xs:element minOccurs="0" name="c3instanceid" type="xs:string"/>
+					<xs:element minOccurs="0" name="shipDate" type="xs:string"/>
+					<xs:element minOccurs="0" name="osVersion" type="xs:string"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="exceptionDetail" type="tns:ExceptionDetail" />
+					<xs:element minOccurs="0" name="bootVersion" type="xs:string" />
+					<xs:element minOccurs="0" name="featureSet" type="xs:string" />
+					<xs:element minOccurs="0" name="categoryName" type="xs:string" />
+					<xs:element minOccurs="0" name="categoryShortName" type="xs:string" />
+					<xs:element minOccurs="0" name="itemType" type="xs:string" />
+					<xs:element minOccurs="0" name="snmpLocation" type="xs:string" />
+					<xs:element minOccurs="0" name="shipToAddress" type="xs:string" />
+					<xs:element minOccurs="0" name="installAtAddress" type="xs:string" />
+					<xs:element minOccurs="0" name="billToName" type="xs:string" />
+					<xs:element minOccurs="0" name="systemContact" type="xs:string" />
+					<xs:element minOccurs="0" name="selectionType" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="CardDetail">
+                <xs:all minOccurs="0">
+                    <xs:element name="cardId" type="xs:string"/>
+                    <xs:element name="deviceId" type="xs:string"/>
+                    <xs:element name="cardDescription" type="xs:string"/>
+                    <xs:element name="cardFamily" type="xs:string"/>
+                    <xs:element name="productId" type="xs:string"/>
+                    <xs:element name="productDescription" type="xs:string"/>
+                    <xs:element name="productFamily" type="xs:string"/>
+                    <xs:element name="fruFlag" type="xs:string"/>
+                    <xs:element name="originalSerialNumber" type="xs:string"/>
+                    <xs:element name="validatedSerialNumber" type="xs:string"/>
+                    <xs:element name="slotNumber" type="xs:string"/>
+                    <xs:element name="firmwareVersionNumber" type="xs:string"/>
+                    <xs:element name="hardwareVersionNumber" type="xs:string"/>
+                    <xs:element name="softwareVersion" type="xs:string"/>
+					<xs:element name="manufacturer" type="xs:string"/>
+					<xs:element name="c3instanceid" type="xs:string"/>
+					<xs:element name="shipDate" type="xs:string"/>
+					<xs:element name="cardType" type="xs:string" />
+					<xs:element name="baseProductId" type="xs:string" />
+					<xs:element name="exception" type="xs:string" />
+					<xs:element name="selectionType" type="xs:string" />
+					<xs:element name="categoryName" type="xs:string" />
+					<xs:element name="categoryShortName" type="xs:string" />
+					<xs:element name="itemType" minOccurs="0" type="xs:string" />
+                </xs:all>
+            </xs:complexType>
+            <xs:complexType name="ExceptionDetail">
+				<xs:all minOccurs="0">
+					<xs:element name="exception" type="xs:string" />					
+				</xs:all>
+			</xs:complexType>
+            <xs:complexType name="CustomerInventoryDetailResponse">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="deviceDetail" type="tns:DeviceDetail"/>
+                    <xs:element name="responseTimestamp" nillable="true" type="xs:dateTime"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="message" type="tns:Message"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="CustomerInventoryDetailPaginatedResponse">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="deviceDetail" type="tns:DeviceDetail"/>
+                    <xs:element name="responseTimestamp" nillable="true" type="xs:dateTime"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="message" type="tns:Message"/>
+					<xs:element maxOccurs="unbounded" name="pages" type="tns:Pages"/>
+                </xs:sequence>
+            </xs:complexType>			
+			<!-- Start ANU added new api getCustomerExtendedInventoryDetails() -->
+			<xs:complexType name="CustomerExtendedInventoryDetailResponse">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="deviceDetail"	type="tns:DeviceDetail" />
+					<xs:element name="responseTimestamp" nillable="true" type="xs:dateTime" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="message" type="tns:Message"/>					
+					<xs:element maxOccurs="unbounded" name="pages" type="tns:Pages" />
+				</xs:sequence>
+			</xs:complexType>
+			<!-- End ANU added new api getCustomerExtendedInventoryDetails() -->
+			
+		</xs:schema>
+	</wsdl:types>
+
+	<wsdl:message name="getCustomerInventoryDetailsRequestMessage">
+		<wsdl:part name="parameters" element="ns1:CustomerInventoryDetailRequestInput" />
+	</wsdl:message>
+
+	<wsdl:message name="getCustomerInventoryDetailsResponseMessage">
+		<wsdl:part name="parameters" element="ns1:CustomerInventoryDetailResponseOutput" />
+	</wsdl:message>
+
+	<wsdl:message name="getCustomersInventoryIdsRequestMessage">
+		<wsdl:part name="parameters" element="ns1:CustomerInventoryRequest" />
+	</wsdl:message>
+
+	<wsdl:message name="getCustomersInventoryIdsResponseMessage">
+		<wsdl:part name="parameters" element="ns1:CustomersInventoryResponse" />
+	</wsdl:message>
+	
+	
+	<wsdl:message name="getCustomerInventoryDetailsPaginatedRequestMessage">
+		<wsdl:part name="parameters" element="ns1:CustomerInventoryDetailPaginatedRequestInput" />
+	</wsdl:message>
+
+	<wsdl:message name="getCustomerInventoryDetailsPaginatedResponseMessage">
+		<wsdl:part name="parameters" element="ns1:CustomerInventoryDetailPaginatedResponseOutput" />
+	</wsdl:message>	
+	
+	<!-- Start ANU added new api getCustomerExtendedInventoryDetails() -->
+		<wsdl:message name="getCustomerExtendedInventoryDetailsRequestMessage">
+			<wsdl:part name="parameters" element="ns1:CustomerExtendedInventoryDetailRequestInput" />
+		</wsdl:message>
+		
+		<wsdl:message name="getCustomerExtendedInventoryDetailsResponseMessage">
+			<wsdl:part name="parameters" element="ns1:CustomerExtendedInventoryDetailResponseOutput" />
+		</wsdl:message>
+		<!-- Start ANU added new api getCustomerExtendedInventoryDetails() -->
+	
+
+	<wsdl:portType name="InventoryServicePortType">
+		<wsdl:operation name="getCustomerInventoryDetails">
+			<wsdl:input message="ns1:getCustomerInventoryDetailsRequestMessage"
+				wsaw:Action="getCustomerInventoryDetails" />
+			<wsdl:output message="ns1:getCustomerInventoryDetailsResponseMessage"
+				wsaw:Action="urn:getCustomerInventoryDetailsResponse" />
+
+		</wsdl:operation>
+		<wsdl:operation name="getCustomerInventoryPaginatedDetails">
+			<wsdl:input message="ns1:getCustomerInventoryDetailsPaginatedRequestMessage"
+				wsaw:Action="getCustomerInventoryPaginatedDetails" />
+			<wsdl:output message="ns1:getCustomerInventoryDetailsPaginatedResponseMessage"
+				wsaw:Action="urn:getCustomerInventoryDetailsPaginatedResponse" />				
+
+		</wsdl:operation>	
+		
+		<!-- Start ANU added new api getCustomerExtendedInventoryDetails() -->
+
+		<wsdl:operation name="getCustomerExtendedInventoryDetails">
+			<wsdl:input message="ns1:getCustomerExtendedInventoryDetailsRequestMessage"
+				wsaw:Action="getCustomerExtendedInventoryDetails" />
+			<wsdl:output message="ns1:getCustomerExtendedInventoryDetailsResponseMessage"
+				wsaw:Action="urn:getCustomerExtendedInventoryDetailsResponse" />
+		</wsdl:operation>
+		<!--End ANU added new api getCustomerExtendedInventoryDetails() -->
+			
+		<wsdl:operation name="getCustomersInventoryIds">
+			<wsdl:input message="ns1:getCustomersInventoryIdsRequestMessage"
+				wsaw:Action="getCustomersInventoryIds" />
+			<wsdl:output message="ns1:getCustomersInventoryIdsResponseMessage"
+				wsaw:Action="urn:getCustomersInventoryIdsResponse" />
+
+		</wsdl:operation>
+	</wsdl:portType>
+
+	<wsdl:binding name="InventoryServiceSOAP11Binding" type="ns1:InventoryServicePortType">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"
+			style="document" />
+		<wsdl:operation name="getCustomerInventoryDetails">
+			<soap:operation soapAction="getCustomerInventoryDetails"
+				style="document" />
+			<wsdl:input>
+				<soap:body use="literal" parts="parameters" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" parts="parameters" />
+			</wsdl:output>
+		</wsdl:operation>
+		
+		<wsdl:operation name="getCustomersInventoryIds">
+			<soap:operation soapAction="getCustomersInventoryIds"
+				style="document" />
+			<wsdl:input>
+				<soap:body use="literal" parts="parameters" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" parts="parameters" />
+			</wsdl:output>
+		</wsdl:operation>
+		
+		<wsdl:operation name="getCustomerInventoryPaginatedDetails">
+			<soap:operation soapAction="getCustomerInventoryPaginatedDetails"
+				style="document" />
+			<wsdl:input>
+				<soap:body use="literal" parts="parameters" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" parts="parameters" />
+			</wsdl:output>
+
+		</wsdl:operation>
+		
+
+		<wsdl:operation name="getCustomerExtendedInventoryDetails">
+			<soap:operation soapAction="getCustomerExtendedInventoryDetails"
+				style="document" />
+			<wsdl:input>
+				<soap:body use="literal" parts="parameters" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" parts="parameters" />
+			</wsdl:output>
+			
+		</wsdl:operation>
+		
+		
+		
+	</wsdl:binding>
+
+
+	<wsdl:service name="InventoryService">
+		<wsdl:port name="InventoryServiceSOAP11port_http" binding="ns1:InventoryServiceSOAP11Binding">
+			<soap:address location="https://api.cisco.com/pss/v1.0/InventoryService" />
+		</wsdl:port>
+
+
+	</wsdl:service>
+</wsdl:definitions>

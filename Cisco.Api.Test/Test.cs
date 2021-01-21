@@ -10,10 +10,13 @@ namespace Cisco.Api.Test
 		protected Test(ITestOutputHelper iTestOutputHelper)
 		{
 			Logger = iTestOutputHelper.BuildLoggerFor<Test>();
-			CiscoClient = new TestPortalConfig(null, Logger).CiscoClient;
+			Config = new TestPortalConfig(null, Logger);
+			CiscoClient = Config.CiscoClient;
 			Stopwatch = Stopwatch.StartNew();
 		}
 		protected ILogger Logger { get; }
+
+		internal TestPortalConfig Config { get; }
 
 		private Stopwatch Stopwatch { get; }
 
