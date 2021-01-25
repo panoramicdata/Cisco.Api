@@ -129,6 +129,8 @@ namespace Cisco.Api.Security
                         case HttpStatusCode.InternalServerError:
                         case HttpStatusCode.RequestTimeout:
                         case HttpStatusCode.ServiceUnavailable:
+                        // Adding this because it seems that Cisco can return Unauthorized for no reason
+                        case HttpStatusCode.Unauthorized:
                             if (++attemptCount < _options.MaxAttemptCount)
                             {
                                 _logger.Log(LevelToLogAt, $"Attempt {attemptCount}/{_options.MaxAttemptCount} failed, retrying...");
