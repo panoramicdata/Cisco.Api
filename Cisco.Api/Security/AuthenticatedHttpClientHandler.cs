@@ -111,17 +111,9 @@ namespace Cisco.Api.Security
                 {
                     var statusCode = httpResponseMessage.StatusCode;
                     var content = httpResponseMessage.Content;
-                    if (content != null)
-                    {
-                        var responseBody = await content
-                            .ReadAsStringAsync()
-                            .ConfigureAwait(false);
-                        _logger.LogError($"{statusCode}: {responseBody}");
-                    }
-                    else
-                    {
-                        _logger.LogError(statusCode.ToString());
-                    }
+
+                    var message = await GetResponseContent(statusCode, content).ConfigureAwait(false);
+
                     switch (httpResponseMessage.StatusCode)
                     {
                         case HttpStatusCode.BadGateway:
@@ -133,16 +125,34 @@ namespace Cisco.Api.Security
                         case HttpStatusCode.Unauthorized:
                             if (++attemptCount < _options.MaxAttemptCount)
                             {
-                                _logger.Log(LevelToLogAt, $"Attempt {attemptCount}/{_options.MaxAttemptCount} failed, retrying...");
+                                _logger.LogWarning($"Attempt {attemptCount}/{_options.MaxAttemptCount} failed, retrying...");
                                 await Task.Delay(_options.RetryDelay, cancellationToken).ConfigureAwait(false);
                                 continue;
                             }
+
                             break;
                     }
+                    // If no retries or retries exhausted, log as error
+                    _logger.LogError(message);
                     throw new CiscoApiException(httpResponseMessage);
                 }
 
                 return httpResponseMessage;
+            }
+        }
+
+        private async Task<string> GetResponseContent(HttpStatusCode statusCode, HttpContent? content)
+        {
+            if (content != null)
+            {
+                var responseBody = await content
+                    .ReadAsStringAsync()
+                    .ConfigureAwait(false);
+                return $"{statusCode}: {responseBody}";
+            }
+            else
+            {
+                return statusCode.ToString();
             }
         }
     }
