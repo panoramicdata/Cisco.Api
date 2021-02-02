@@ -60,6 +60,12 @@ namespace Cisco.Api.Security
             if (accessTokenResponse.ErrorDescription != null || accessTokenResponse.Error != null)
             {
                 _logger.LogDebug("Authentication failed.");
+
+                // If reponse not yet logged and OnErrorEnsureRequestResponseHeadersLogged is set, then log as error
+                if (LevelToLogAt != LogLevel.Trace && _options.OnErrorEnsureRequestResponseHeadersLogged)
+                {
+                    await LogResponseHeaders(response, true).ConfigureAwait(false);
+                }
                 throw new SecurityException($"{accessTokenResponse.Error}: {accessTokenResponse.ErrorDescription}");
             }
             _logger.LogDebug("Authentication succeeded.");
