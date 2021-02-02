@@ -131,8 +131,8 @@ namespace Cisco.Api.Security
                     // then log them both. Avoids need for verbose logging of all queries.
                     if (!_logger.IsEnabled(LevelToLogAt) && _options.OnErrorEnsureRequestResponseHeadersLogged)
                     {
-                        await LogRequestHeaders(request).ConfigureAwait(false);
-                        await LogRequestHeaders(request).ConfigureAwait(false);
+                        await LogRequestHeaders(request, true).ConfigureAwait(false);
+                        await LogResponseHeaders(httpResponseMessage, true).ConfigureAwait(false);
                     }
 
                     _logger.LogError(message);
@@ -143,21 +143,23 @@ namespace Cisco.Api.Security
             }
         }
 
-        private async Task LogResponseHeaders(HttpResponseMessage httpResponseMessage)
+        private async Task LogRequestHeaders(HttpRequestMessage request, bool LogAsError = false)
         {
-            _logger.Log(LevelToLogAt, $"Response\r\n{httpResponseMessage}");
-            if (httpResponseMessage.Content != null)
+            // Use logging override if set
+            _logger.Log(LogAsError ? LogLevel.Error : LevelToLogAt, $"Request\r\n{request}");
+            if (request.Content != null)
             {
-                _logger.Log(LevelToLogAt, "ResponseContent\r\n" + await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+                _logger.Log(LogAsError ? LogLevel.Error : LevelToLogAt, "RequestContent\r\n" + await request.Content.ReadAsStringAsync().ConfigureAwait(false));
             }
         }
 
-        private async Task LogRequestHeaders(HttpRequestMessage request)
+        private async Task LogResponseHeaders(HttpResponseMessage httpResponseMessage, bool LogAsError = false)
         {
-            _logger.Log(LevelToLogAt, $"Request\r\n{request}");
-            if (request.Content != null)
+            // Use logging override if set
+            _logger.Log(LogAsError ? LogLevel.Error : LevelToLogAt, $"Response\r\n{httpResponseMessage}");
+            if (httpResponseMessage.Content != null)
             {
-                _logger.Log(LevelToLogAt, "RequestContent\r\n" + await request.Content.ReadAsStringAsync().ConfigureAwait(false));
+                _logger.Log(LogAsError ? LogLevel.Error : LevelToLogAt, "ResponseContent\r\n" + await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
             }
         }
 
