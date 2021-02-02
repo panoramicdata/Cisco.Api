@@ -129,7 +129,7 @@ namespace Cisco.Api.Security
 
                     // If request/response headers haven't been logged so far, but OnErrorEnsureRequestResponseHeadersShown is true,
                     // then log them both. Avoids need for verbose logging of all queries.
-                    if (!_logger.IsEnabled(LevelToLogAt) && _options.OnErrorEnsureRequestResponseHeadersShown)
+                    if (!_logger.IsEnabled(LevelToLogAt) && _options.OnErrorEnsureRequestResponseHeadersLogged)
                     {
                         await LogRequestHeaders(request).ConfigureAwait(false);
                         await LogRequestHeaders(request).ConfigureAwait(false);

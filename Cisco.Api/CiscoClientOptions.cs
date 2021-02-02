@@ -33,8 +33,8 @@ namespace Cisco.Api
         public TimeSpan RetryDelay { get; set; } = TimeSpan.FromSeconds(5);
 
         /// <summary>
-        /// Allow force logging of headers on error
+        /// Allow force logging of headers on error, even if Verbose logging not enabled.
         /// </summary>
-        public bool OnErrorEnsureRequestResponseHeadersShown { get; set; }
+        public bool OnErrorEnsureRequestResponseHeadersLogged { get; set; }
     }
 }
