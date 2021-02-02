@@ -43,33 +43,57 @@ namespace Cisco.Api.Security
             }
 
             _logger.LogDebug("Authenticating...");
-            using var httpClient = new HttpClient
-            {
-                BaseAddress = new Uri(_url)
-            };
-            var stringContent = new StringContent(
-                $"client_id={_options.ClientId}&grant_type=client_credentials&client_secret={_options.ClientSecret}",
-                Encoding.UTF8,
-                "application/x-www-form-urlencoded");
-            var response = await httpClient
-                .PostAsync(_endpoint, stringContent, cancellationToken)
-                .ConfigureAwait(false);
-            _logger.LogTrace($"{response}");
-            var contents = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var accessTokenResponse = JsonConvert.DeserializeObject<AccessTokenResponse>(contents);
-            if (accessTokenResponse.ErrorDescription != null || accessTokenResponse.Error != null)
-            {
-                _logger.LogDebug("Authentication failed.");
 
-                // If reponse not yet logged and OnErrorEnsureRequestResponseHeadersLogged is set, then log as error
-                if (LevelToLogAt != LogLevel.Trace && _options.OnErrorEnsureRequestResponseHeadersLogged)
+            var attemptCount = 0;
+            while (true)
+            {
+                using var httpClient = new HttpClient
                 {
-                    await LogResponseHeaders(response, true).ConfigureAwait(false);
+                    BaseAddress = new Uri(_url),
+                    Timeout = TimeSpan.FromSeconds(15)
+                };
+                var stringContent = new StringContent(
+                    $"client_id={_options.ClientId}&grant_type=client_credentials&client_secret={_options.ClientSecret}",
+                    Encoding.UTF8,
+                    "application/x-www-form-urlencoded");
+
+                HttpResponseMessage httpResponseMessage;
+                try
+                {
+                    httpResponseMessage = await httpClient
+                        .PostAsync(_endpoint, stringContent, cancellationToken)
+                        .ConfigureAwait(false);
+                    _logger.LogTrace($"{httpResponseMessage}");
                 }
-                throw new SecurityException($"{accessTokenResponse.Error}: {accessTokenResponse.ErrorDescription}");
+                catch (TaskCanceledException ex)
+                {
+                    if (++attemptCount < _options.MaxAttemptCount)
+                    {
+                        _logger.LogWarning($"Attempt {attemptCount}/{_options.MaxAttemptCount} failed, retrying...");
+                        await Task.Delay(_options.RetryDelay, cancellationToken).ConfigureAwait(false);
+                        continue;
+                    }
+                    _logger.LogError(ex, $"{ex.Message} after {_options.MaxAttemptCount} attempts.");
+                    throw new CiscoApiException("Timeout during authentication.", ex);
+                }
+
+                var contents = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var accessTokenResponse = JsonConvert.DeserializeObject<AccessTokenResponse>(contents);
+                if (accessTokenResponse.ErrorDescription != null || accessTokenResponse.Error != null)
+                {
+                    _logger.LogDebug("Authentication failed.");
+
+                    // If reponse not yet logged and OnErrorEnsureRequestResponseHeadersLogged is set, then log as error
+                    if (!_logger.IsEnabled(LevelToLogAt) && _options.OnErrorEnsureRequestResponseHeadersLogged)
+                    {
+                        await LogResponseHeaders(httpResponseMessage, true).ConfigureAwait(false);
+                    }
+                    throw new SecurityException($"{accessTokenResponse.Error}: {accessTokenResponse.ErrorDescription}");
+                }
+
+                _logger.LogDebug("Authentication succeeded.");
+                return accessTokenResponse.AccessToken!;
             }
-            _logger.LogDebug("Authentication succeeded.");
-            return accessTokenResponse.AccessToken!;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(
@@ -149,23 +173,23 @@ namespace Cisco.Api.Security
             }
         }
 
-        private async Task LogRequestHeaders(HttpRequestMessage request, bool LogAsError = false)
+        private async Task LogRequestHeaders(HttpRequestMessage request, bool logAsError = false)
         {
             // Use logging override if set
-            _logger.Log(LogAsError ? LogLevel.Error : LevelToLogAt, $"Request\r\n{request}");
+            _logger.Log(logAsError ? LogLevel.Error : LevelToLogAt, $"Request\r\n{request}");
             if (request.Content != null)
             {
-                _logger.Log(LogAsError ? LogLevel.Error : LevelToLogAt, "RequestContent\r\n" + await request.Content.ReadAsStringAsync().ConfigureAwait(false));
+                _logger.Log(logAsError ? LogLevel.Error : LevelToLogAt, "RequestContent\r\n" + await request.Content.ReadAsStringAsync().ConfigureAwait(false));
             }
         }
 
-        private async Task LogResponseHeaders(HttpResponseMessage httpResponseMessage, bool LogAsError = false)
+        private async Task LogResponseHeaders(HttpResponseMessage httpResponseMessage, bool logAsError = false)
         {
             // Use logging override if set
-            _logger.Log(LogAsError ? LogLevel.Error : LevelToLogAt, $"Response\r\n{httpResponseMessage}");
+            _logger.Log(logAsError ? LogLevel.Error : LevelToLogAt, $"Response\r\n{httpResponseMessage}");
             if (httpResponseMessage.Content != null)
             {
-                _logger.Log(LogAsError ? LogLevel.Error : LevelToLogAt, "ResponseContent\r\n" + await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+                _logger.Log(logAsError ? LogLevel.Error : LevelToLogAt, "ResponseContent\r\n" + await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
             }
         }
 
