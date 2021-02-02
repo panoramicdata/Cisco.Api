@@ -83,11 +83,7 @@ namespace Cisco.Api.Security
             // Only do diagnostic logging if we're at the level we want to enable for as this is more efficient
             if (_logger.IsEnabled(LevelToLogAt))
             {
-                _logger.Log(LevelToLogAt, $"Request\r\n{request}");
-                if (request.Content != null)
-                {
-                    _logger.Log(LevelToLogAt, "RequestContent\r\n" + await request.Content.ReadAsStringAsync().ConfigureAwait(false));
-                }
+                await LogRequestHeaders(request).ConfigureAwait(false);
             }
 
             var attemptCount = 0;
@@ -100,11 +96,7 @@ namespace Cisco.Api.Security
                 // Only do diagnostic logging if we're at the level we want to enable for as this is more efficient
                 if (_logger.IsEnabled(LevelToLogAt))
                 {
-                    _logger.Log(LevelToLogAt, $"Response\r\n{httpResponseMessage}");
-                    if (httpResponseMessage.Content != null)
-                    {
-                        _logger.Log(LevelToLogAt, "ResponseContent\r\n" + await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
-                    }
+                    await LogResponseHeaders(httpResponseMessage).ConfigureAwait(false);
                 }
 
                 if (!httpResponseMessage.IsSuccessStatusCode)
@@ -132,12 +124,40 @@ namespace Cisco.Api.Security
 
                             break;
                     }
-                    // If no retries or retries exhausted, log as error
+
+                    // Retries not enabled or retries exhausted, so log as error
+
+                    // If request/response headers haven't been logged so far, but OnErrorEnsureRequestResponseHeadersShown is true,
+                    // then log them both. Avoids need for verbose logging of all queries.
+                    if (!_logger.IsEnabled(LevelToLogAt) && _options.OnErrorEnsureRequestResponseHeadersShown)
+                    {
+                        await LogRequestHeaders(request).ConfigureAwait(false);
+                        await LogRequestHeaders(request).ConfigureAwait(false);
+                    }
+
                     _logger.LogError(message);
                     throw new CiscoApiException(httpResponseMessage);
                 }
 
                 return httpResponseMessage;
+            }
+        }
+
+        private async Task LogResponseHeaders(HttpResponseMessage httpResponseMessage)
+        {
+            _logger.Log(LevelToLogAt, $"Response\r\n{httpResponseMessage}");
+            if (httpResponseMessage.Content != null)
+            {
+                _logger.Log(LevelToLogAt, "ResponseContent\r\n" + await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+            }
+        }
+
+        private async Task LogRequestHeaders(HttpRequestMessage request)
+        {
+            _logger.Log(LevelToLogAt, $"Request\r\n{request}");
+            if (request.Content != null)
+            {
+                _logger.Log(LevelToLogAt, "RequestContent\r\n" + await request.Content.ReadAsStringAsync().ConfigureAwait(false));
             }
         }
 

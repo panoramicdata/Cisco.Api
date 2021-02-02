@@ -31,5 +31,10 @@ namespace Cisco.Api
         /// Delay between retry attempts
         /// </summary>
         public TimeSpan RetryDelay { get; set; } = TimeSpan.FromSeconds(5);
+
+        /// <summary>
+        /// Allow force logging of headers on error
+        /// </summary>
+        public bool OnErrorEnsureRequestResponseHeadersShown { get; set; }
     }
 }
