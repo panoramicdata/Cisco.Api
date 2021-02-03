@@ -63,6 +63,7 @@ namespace Cisco.Api.Security
                     httpResponseMessage = await httpClient
                         .PostAsync(_endpoint, stringContent, cancellationToken)
                         .ConfigureAwait(false);
+
                     _logger.LogTrace($"{httpResponseMessage}");
                 }
                 catch (TaskCanceledException ex)
@@ -119,9 +120,34 @@ namespace Cisco.Api.Security
             var attemptCount = 0;
             while (true)
             {
-                var httpResponseMessage = await base
-                    .SendAsync(request, cancellationToken)
-                    .ConfigureAwait(false);
+                HttpResponseMessage httpResponseMessage;
+                try
+                {
+                    httpResponseMessage = await base
+                        .SendAsync(request, cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    if (++attemptCount < _options.MaxAttemptCount)
+                    {
+                        _logger.LogWarning($"Attempt {attemptCount}/{_options.MaxAttemptCount} failed, retrying...");
+                        await Task.Delay(_options.RetryDelay, cancellationToken).ConfigureAwait(false);
+                        continue;
+                    }
+
+                    // Retries not enabled or retries exhausted, so log as error
+
+                    // If request headers haven't been logged so far, but OnErrorEnsureRequestResponseHeadersShown is true,
+                    // then log them. Avoids need for verbose logging of all queries.
+                    if (!_logger.IsEnabled(LevelToLogAt) && _options.OnErrorEnsureRequestResponseHeadersLogged)
+                    {
+                        await LogRequestHeaders(request, true).ConfigureAwait(false);
+                    }
+
+                    _logger.LogError(ex, $"{ex.Message} after {_options.MaxAttemptCount} attempts.");
+                    throw new CiscoApiException(ex.Message, ex);
+                }
 
                 // Only do diagnostic logging if we're at the level we want to enable for as this is more efficient
                 if (_logger.IsEnabled(LevelToLogAt))
@@ -165,7 +191,8 @@ namespace Cisco.Api.Security
                         await LogResponseHeaders(httpResponseMessage, true).ConfigureAwait(false);
                     }
 
-                    _logger.LogError(message);
+                    _logger.LogError($"{message} after {_options.MaxAttemptCount} attempts.");
+
                     throw new CiscoApiException(httpResponseMessage);
                 }
 
