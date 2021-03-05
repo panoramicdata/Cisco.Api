@@ -16,7 +16,7 @@
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 
-    <PackageReleaseNotes>Add retry support to queries. Updated NuGet packages.</PackageReleaseNotes>
+    <PackageReleaseNotes>Add PSS message response type.</PackageReleaseNotes>
   </PropertyGroup>
 
 	<ItemGroup>
