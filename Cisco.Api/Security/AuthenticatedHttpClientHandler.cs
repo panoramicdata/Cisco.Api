@@ -21,6 +21,7 @@ namespace Cisco.Api.Security
         private readonly string _endpoint;
         private readonly CiscoClientOptions _options;
         private string? _accessToken;
+        private DateTimeOffset? _accessTokenExpiryDateTimeOffset;
 
         public AuthenticatedHttpClientHandler(
             string url,
@@ -37,11 +38,6 @@ namespace Cisco.Api.Security
 
         private async Task<string> GetAccessTokenAsync(CancellationToken cancellationToken)
         {
-            if (_accessToken != null)
-            {
-                return _accessToken;
-            }
-
             _logger.LogDebug("Authenticating...");
 
             var attemptCount = 0;
@@ -93,6 +89,15 @@ namespace Cisco.Api.Security
                 }
 
                 _logger.LogDebug("Authentication succeeded.");
+
+                var expireInSeconds = accessTokenResponse.ExpiresInSeconds;
+                // If there is an expiry, try to take 1 minute off it unless it is already less than a minute
+                if (accessTokenResponse.ExpiresInSeconds is not null && accessTokenResponse.ExpiresInSeconds - 60 > 0)
+                {
+                    expireInSeconds -= 60;
+                }
+                // If not yet set, set expiry to default timeout of the 1 hour max limit, minus a minute.
+                _accessTokenExpiryDateTimeOffset = DateTimeOffset.UtcNow.AddSeconds(expireInSeconds ?? 3540);
                 return accessTokenResponse.AccessToken!;
             }
         }
@@ -101,6 +106,13 @@ namespace Cisco.Api.Security
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
+            // There might be an auth token already that is about to expire so check first.
+            if (_accessTokenExpiryDateTimeOffset is not null && _accessTokenExpiryDateTimeOffset <= DateTimeOffset.UtcNow)
+            {
+                _accessToken = await GetAccessTokenAsync(cancellationToken)
+                    .ConfigureAwait(false);
+            }
+
             if (_authenticationHeaderValue is null)
             {
                 _accessToken ??= await GetAccessTokenAsync(cancellationToken)

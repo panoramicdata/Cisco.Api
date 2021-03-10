@@ -24,7 +24,7 @@ namespace Cisco.Api.Security
 		/// The number of ? to expiry
 		/// </summary>
 		[DataMember(Name = "expires_in")]
-		public int? ExpiresIn { get; set; }
+		public int? ExpiresInSeconds { get; set; }
 
 		/// <summary>
 		/// The error description
