@@ -118,7 +118,7 @@ namespace Cisco.Api.Security
             // There might be an auth token already that is about to expire so check first.
             if (_accessTokenExpiryDateTimeOffset is not null && _accessTokenExpiryDateTimeOffset <= DateTimeOffset.UtcNow)
             {
-                _logger.LogDebug($"The access token expiry date time ('{_accessTokenExpiryDateTimeOffset}') has just expired. Getting a new auth token...");
+                _logger.LogDebug($"SendAsync(): The access token expiry date time ('{_accessTokenExpiryDateTimeOffset}') has just expired. Getting a new auth token...");
                 _accessToken = await GetAccessTokenAsync(cancellationToken)
                     .ConfigureAwait(false);
             }
@@ -129,6 +129,8 @@ namespace Cisco.Api.Security
                     .ConfigureAwait(false);
                 _authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", _accessToken);
             }
+
+            _logger.LogDebug($"SendAsync(): About to send query. The access token expiry date time is '{_accessTokenExpiryDateTimeOffset}'.");
 
             request.Headers.Authorization = _authenticationHeaderValue;
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
