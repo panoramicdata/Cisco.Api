@@ -91,13 +91,22 @@ namespace Cisco.Api.Security
                 _logger.LogDebug("Authentication succeeded.");
 
                 var expireInSeconds = accessTokenResponse.ExpiresInSeconds;
+                _logger.LogDebug($"Access token will expire in {expireInSeconds} seconds.");
                 // If there is an expiry, try to take 1 minute off it unless it is already less than a minute
                 if (accessTokenResponse.ExpiresInSeconds is not null && accessTokenResponse.ExpiresInSeconds - 60 > 0)
                 {
                     expireInSeconds -= 60;
+                    _logger.LogDebug("Since expiry > 60 seconds, it has been reduced further by 1 minute to give time to trigger refresh of token.");
                 }
                 // If not yet set, set expiry to default timeout of the 1 hour max limit, minus a minute.
-                _accessTokenExpiryDateTimeOffset = DateTimeOffset.UtcNow.AddSeconds(expireInSeconds ?? 3540);
+                if (expireInSeconds is null)
+                {
+                    _logger.LogDebug("The access token 'ExpiresInSeconds' was null, setting to 3540 seconds.");
+                    expireInSeconds = 3540;
+                }
+                _accessTokenExpiryDateTimeOffset = DateTimeOffset.UtcNow.AddSeconds((double)expireInSeconds);
+                _logger.LogDebug($"The access token expiry date time is '{_accessTokenExpiryDateTimeOffset}'");
+
                 return accessTokenResponse.AccessToken!;
             }
         }
@@ -109,6 +118,7 @@ namespace Cisco.Api.Security
             // There might be an auth token already that is about to expire so check first.
             if (_accessTokenExpiryDateTimeOffset is not null && _accessTokenExpiryDateTimeOffset <= DateTimeOffset.UtcNow)
             {
+                _logger.LogDebug($"The access token expiry date time ('{_accessTokenExpiryDateTimeOffset}') has just expired. Getting a new auth token...");
                 _accessToken = await GetAccessTokenAsync(cancellationToken)
                     .ConfigureAwait(false);
             }
