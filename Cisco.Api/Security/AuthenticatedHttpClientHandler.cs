@@ -121,6 +121,7 @@ namespace Cisco.Api.Security
                 _logger.LogDebug($"SendAsync(): The access token expiry date time ('{_accessTokenExpiryDateTimeOffset}') has just expired. Getting a new auth token...");
                 _accessToken = await GetAccessTokenAsync(cancellationToken)
                     .ConfigureAwait(false);
+                _authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", _accessToken);
             }
 
             if (_authenticationHeaderValue is null)

@@ -16,7 +16,7 @@
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 
-    <PackageReleaseNotes>Added extra debug logging to GetAccessTokenAsync()</PackageReleaseNotes>
+    <PackageReleaseNotes>Fix for renewal of expired auth token.</PackageReleaseNotes>
   </PropertyGroup>
 
 	<ItemGroup>
