@@ -105,7 +105,7 @@ namespace Cisco.Api.Security
                     expireInSeconds = 3540;
                 }
                 _accessTokenExpiryDateTimeOffset = DateTimeOffset.UtcNow.AddSeconds((double)expireInSeconds);
-                _logger.LogDebug($"The access token expiry date time is '{_accessTokenExpiryDateTimeOffset}'");
+                _logger.LogDebug($"The access token '{accessTokenResponse.AccessToken!}' expiry date time is '{_accessTokenExpiryDateTimeOffset}'");
 
                 return accessTokenResponse.AccessToken!;
             }
