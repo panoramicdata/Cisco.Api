@@ -42,7 +42,8 @@ namespace Cisco.Api
 					_logger)
 			)
 			{
-				BaseAddress = new Uri("https://api.cisco.com/")
+				BaseAddress = new Uri("https://api.cisco.com/"),
+				Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
 			};
 
 			_soapHttpClient = new HttpClient(
@@ -53,7 +54,8 @@ namespace Cisco.Api
 					_logger)
 			)
 			{
-				BaseAddress = new Uri("https://api.cisco.com/pss/v1.0/")
+				BaseAddress = new Uri("https://api.cisco.com/pss/v1.0/"),
+				Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
 			};
 
 			var refitSettings = new RefitSettings
