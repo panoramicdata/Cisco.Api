@@ -12,6 +12,27 @@ namespace Cisco.Api.Test
         }
 
         [Fact]
+        public async void GetBySerialNumberAsync_Fails()
+        {
+            // Note: If no serials are found, then Products will have 1 empty record (yet totals say 0) that also has ErrorResponse set
+            var productInformationPage = await CiscoClient
+                .ProductInfo
+                .GetBySerialNumbersAsync(new[] { "`" })
+                .ConfigureAwait(false);
+
+            productInformationPage.Should().NotBeNull();
+
+            productInformationPage.PaginationResponseRecord.Should().NotBeNull();
+            productInformationPage.PaginationResponseRecord.LastIndex.Should().Be(0);
+            productInformationPage.PaginationResponseRecord.PageIndex.Should().Be(0);
+            productInformationPage.PaginationResponseRecord.PageRecords.Should().Be(0);
+            productInformationPage.PaginationResponseRecord.TotalRecords.Should().Be(0);
+
+            productInformationPage.Products.Should().NotBeNull();
+            productInformationPage.Products.Select(productInformation => productInformation.ErrorResponse).Should().NotBeNull();
+        }
+
+        [Fact]
         public async void GetBySerialNumberAsync_Succeeds()
         {
             // Note: Serial numbers can be up to 40 chars long.

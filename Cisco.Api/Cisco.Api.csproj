@@ -15,8 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-
-		<PackageReleaseNotes>CiscoClientOptions now allows specification of HttpClientTimeoutSeconds.</PackageReleaseNotes>
+		<PackageReleaseNotes>ProductInfo.GetBySerialNumbersAsync() now includes ErrorResponse (e.g. if no matching serials found)</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>

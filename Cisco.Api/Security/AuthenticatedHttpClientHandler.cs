@@ -180,12 +180,18 @@ namespace Cisco.Api.Security
                     await LogResponseHeaders(httpResponseMessage).ConfigureAwait(false);
                 }
 
+                // Make response stream content accessible in debug
+                var statusCode = httpResponseMessage.StatusCode;
+                var content = httpResponseMessage.Content;
+#if DEBUG
+                var message = await GetResponseContent(statusCode, content).ConfigureAwait(false);
+#endif
+
                 if (!httpResponseMessage.IsSuccessStatusCode)
                 {
-                    var statusCode = httpResponseMessage.StatusCode;
-                    var content = httpResponseMessage.Content;
-
+#if !DEBUG
                     var message = await GetResponseContent(statusCode, content).ConfigureAwait(false);
+#endif
 
                     switch (httpResponseMessage.StatusCode)
                     {
