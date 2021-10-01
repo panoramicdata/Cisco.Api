@@ -308,8 +308,8 @@ namespace Cisco.Api.Test
                   .Pss
                   .GetPsirtAsync(new PsirtRequest
                   {
-                      CustomerId = Config.TestCustomerId,
-                      InventoryId = Config.TestInventoryId
+                      CustomerId = "PSS_3151974", // Config.TestCustomerId,
+                      InventoryId = "3232417", // Config.TestInventoryId
                   }, CancellationToken.None)
                   .ConfigureAwait(false);
 
