@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>ProductInfo.GetBySerialNumbersAsync() now includes ErrorResponse (e.g. if no matching serials found)</PackageReleaseNotes>
+		<PackageReleaseNotes>Upgraded Refit.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
