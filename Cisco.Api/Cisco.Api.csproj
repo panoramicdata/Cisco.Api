@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>Upgraded Refit.</PackageReleaseNotes>
+		<PackageReleaseNotes>Upgraded dependencies.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
