@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>Upgraded dependencies.</PackageReleaseNotes>
+		<PackageReleaseNotes>Resolve erroneous ERR_403_DEVELOPER_INACTIVE responses.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>

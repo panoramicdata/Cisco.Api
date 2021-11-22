@@ -204,6 +204,16 @@ namespace Cisco.Api.Security
                         case HttpStatusCode.Unauthorized:
                             if (++attemptCount < _options.MaxAttemptCount)
                             {
+                                if (message.Contains("ERR_403_DEVELOPER_INACTIVE"))
+                                {
+                                    // Cisco API can return an incorrect 403 if their load balancer hasn't got access to 
+                                    // the latest state of a token. Request a new token so that followup retry probably works.
+                                    _logger.LogDebug($"SendAsync(): ERR_403_DEVELOPER_INACTIVE received - could be a bad API response, requesting a new token.");
+                                    _accessToken = await GetAccessTokenAsync(cancellationToken)
+                                        .ConfigureAwait(false);
+                                    _authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", _accessToken);
+                                }
+
                                 _logger.LogWarning($"Attempt {attemptCount}/{_options.MaxAttemptCount} failed, retrying...");
                                 await Task.Delay(_options.RetryDelay, cancellationToken).ConfigureAwait(false);
                                 continue;
