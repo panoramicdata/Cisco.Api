@@ -30,7 +30,7 @@ namespace Cisco.Api.Test
 
 			act
 				.Should()
-				.Throw<ArgumentException>()
+				.ThrowAsync<ArgumentException>()
 				.WithMessage("Options ClientId must be set (Parameter 'options')");
 		}
 		[Fact]
@@ -50,7 +50,7 @@ namespace Cisco.Api.Test
 
 			act
 				.Should()
-				.Throw<ArgumentException>()
+				.ThrowAsync<ArgumentException>()
 				.WithMessage("Options ClientSecret must be set (Parameter 'options')");
 		}
 	}
