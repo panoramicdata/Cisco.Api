@@ -212,6 +212,7 @@ namespace Cisco.Api.Security
                                     _accessToken = await GetAccessTokenAsync(cancellationToken)
                                         .ConfigureAwait(false);
                                     _authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", _accessToken);
+                                    request.Headers.Authorization = _authenticationHeaderValue;
                                 }
 
                                 _logger.LogWarning($"Attempt {attemptCount}/{_options.MaxAttemptCount} failed, retrying...");
