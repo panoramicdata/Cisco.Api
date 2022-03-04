@@ -1,5 +1,7 @@
 # Cisco.Api
 
+[![Nuget](https://img.shields.io/nuget/v/Cisco.Api)](https://www.nuget.org/packages/Cisco.Api/)
+
 You must have an SNTC or PSS account in order to be able to use this library.
 
 To use the Cisco nuget package:
