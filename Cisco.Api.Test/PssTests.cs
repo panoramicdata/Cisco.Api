@@ -22,7 +22,7 @@ namespace Cisco.Api.Test
         {
             var response = await CiscoClient
                   .Pss
-                  .GetCustomerInventoryAsync(new CustomersInventoryRequest(), CancellationToken.None)
+                  .GetCustomersInventoryIdsAsync(new CustomersInventoryRequest(), CancellationToken.None)
                   .ConfigureAwait(false);
 
             response.Should().BeOfType<CustomersInventoryResponse>();
@@ -44,7 +44,7 @@ namespace Cisco.Api.Test
         {
             var response = await CiscoClient
                   .Pss
-                  .GetCustomerInventoryAsync(new CustomersInventoryRequest
+                  .GetCustomersInventoryIdsAsync(new CustomersInventoryRequest
                   {
                       CustomerIds = new List<string>
                          {

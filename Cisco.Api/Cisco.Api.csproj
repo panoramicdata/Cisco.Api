@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>GetCustomerInventoryAsync() changed - each customer now returns a list of inventories.</PackageReleaseNotes>
+		<PackageReleaseNotes>GetCustomerInventoryAsync() renamed to GetCustomersInventoryIdsAsync() and now returns a list of inventories.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>

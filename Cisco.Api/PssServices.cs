@@ -38,7 +38,7 @@ namespace Cisco.Api
                 .Body<TResponse>();
         }
 
-        public Task<CustomersInventoryResponse> GetCustomerInventoryAsync(
+        public Task<CustomersInventoryResponse> GetCustomersInventoryIdsAsync(
             CustomersInventoryRequest request,
             CancellationToken cancellationToken)
             => GetAsync<CustomersInventoryRequest, CustomersInventoryResponse>(

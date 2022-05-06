@@ -63,7 +63,7 @@ namespace Cisco.Api.Interfaces
         /// <param name="customerInventoryRequest"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<CustomersInventoryResponse> GetCustomerInventoryAsync(
+        Task<CustomersInventoryResponse> GetCustomersInventoryIdsAsync(
             CustomersInventoryRequest customerInventoryRequest,
             CancellationToken cancellationToken);
 
