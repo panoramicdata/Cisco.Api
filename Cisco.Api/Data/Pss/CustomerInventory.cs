@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Xml.Serialization;
 
 namespace Cisco.Api.Data.Pss
@@ -20,6 +21,6 @@ namespace Cisco.Api.Data.Pss
 		/// The inventory
 		/// </summary>
 		[XmlElement("inventory")]
-		public Inventory Inventory { get; set; } = null!;
+		public List<Inventory> Inventory { get; set; } = null!;
 	}
 }
