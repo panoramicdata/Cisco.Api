@@ -43,7 +43,7 @@ namespace Cisco.Api
             CancellationToken cancellationToken)
             => GetAsync<CustomersInventoryRequest, CustomersInventoryResponse>(
                 "InventoryService",
-                "getCustomerInventoryIds",
+                "getCustomersInventoryIds",
                 request,
                 cancellationToken);
 

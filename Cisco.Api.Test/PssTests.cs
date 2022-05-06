@@ -18,7 +18,7 @@ namespace Cisco.Api.Test
         }
 
         [Fact]
-        public async void GetCustomerInventoryAsync_Succeeds()
+        public async void GetCustomersInventoryIdsAsync_Succeeds()
         {
             var response = await CiscoClient
                   .Pss

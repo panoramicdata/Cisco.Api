@@ -21,6 +21,17 @@ namespace Cisco.Api.Interfaces
             CancellationToken cancellationToken);
 
         /// <summary>
+        /// This API call fetches a list of Customer ID’s, and Inventory ID’s.
+        /// This is the second step in a four step process of obtaining service call related information.
+        /// </summary>
+        /// <param name="customersInventoryRequest"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<CustomersInventoryResponse> GetCustomersInventoryIdsAsync(
+            CustomersInventoryRequest customersInventoryRequest,
+            CancellationToken cancellationToken);
+
+        /// <summary>
         /// This API service call returns a collection of Inventory elements
         /// (device details, chassis details) for a given Inventory.
         /// This is the third step in a four step process of obtaining service call related information.
@@ -54,17 +65,6 @@ namespace Cisco.Api.Interfaces
         /// <returns></returns>
         Task<CustomerInventoryDetailPaginatedResponse> GetCustomerInventoryPaginatedDetailsAsync(
             CustomerInventoryDetailPaginatedRequest request,
-            CancellationToken cancellationToken);
-
-        /// <summary>
-        /// This API call fetches a list of Customer ID’s, and Inventory ID’s.
-        /// This is the second step in a four step process of obtaining service call related information.
-        /// </summary>
-        /// <param name="customerInventoryRequest"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task<CustomersInventoryResponse> GetCustomersInventoryIdsAsync(
-            CustomersInventoryRequest customerInventoryRequest,
             CancellationToken cancellationToken);
 
         //Task<EoswmLifecycleResponse> GetEoswmLifecycleAsync(
