@@ -91,21 +91,21 @@ namespace Cisco.Api.Security
                 _logger.LogDebug("Authentication succeeded.");
 
                 var expireInSeconds = accessTokenResponse.ExpiresInSeconds;
-                _logger.LogDebug($"Access token will expire in {expireInSeconds} seconds.");
+                //_logger.LogDebug($"Access token will expire in {expireInSeconds} seconds.");
                 // If there is an expiry, try to take 1 minute off it unless it is already less than a minute
                 if (accessTokenResponse.ExpiresInSeconds is not null && accessTokenResponse.ExpiresInSeconds - 60 > 0)
                 {
                     expireInSeconds -= 60;
-                    _logger.LogDebug("Since expiry > 60 seconds, it has been reduced further by 1 minute to give time to trigger refresh of token.");
+                    //_logger.LogDebug("Since expiry > 60 seconds, it has been reduced further by 1 minute to give time to trigger refresh of token.");
                 }
                 // If not yet set, set expiry to default timeout of the 1 hour max limit, minus a minute.
                 if (expireInSeconds is null)
                 {
-                    _logger.LogDebug("The access token 'ExpiresInSeconds' was null, setting to 3540 seconds.");
+                    //_logger.LogDebug("The access token 'ExpiresInSeconds' was null, setting to 3540 seconds.");
                     expireInSeconds = 3540;
                 }
-                _accessTokenExpiryDateTimeOffset = DateTimeOffset.UtcNow.AddSeconds((double)expireInSeconds);
-                _logger.LogDebug($"The access token '{accessTokenResponse.AccessToken!}' expiry date time is '{_accessTokenExpiryDateTimeOffset}'");
+                //_accessTokenExpiryDateTimeOffset = DateTimeOffset.UtcNow.AddSeconds((double)expireInSeconds);
+                //_logger.LogDebug($"The access token '{accessTokenResponse.AccessToken!}' expiry date time is '{_accessTokenExpiryDateTimeOffset}'");
 
                 return accessTokenResponse.AccessToken!;
             }
@@ -118,7 +118,7 @@ namespace Cisco.Api.Security
             // There might be an auth token already that is about to expire so check first.
             if (_accessTokenExpiryDateTimeOffset is not null && _accessTokenExpiryDateTimeOffset <= DateTimeOffset.UtcNow)
             {
-                _logger.LogDebug($"SendAsync(): The access token expiry date time ('{_accessTokenExpiryDateTimeOffset}') has just expired. Getting a new auth token...");
+                //_logger.LogDebug("SendAsync(): The access token expiry date time ('{AccessTokenExpiryDateTimeOffset}') has just expired. Getting a new auth token...", _accessTokenExpiryDateTimeOffset);
                 _accessToken = await GetAccessTokenAsync(cancellationToken)
                     .ConfigureAwait(false);
                 _authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", _accessToken);
@@ -131,7 +131,7 @@ namespace Cisco.Api.Security
                 _authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", _accessToken);
             }
 
-            _logger.LogDebug($"SendAsync(): About to send query. The access token expiry date time is '{_accessTokenExpiryDateTimeOffset}'.");
+            //_logger.LogDebug($"SendAsync(): About to send query. The access token expiry date time is '{_accessTokenExpiryDateTimeOffset}'.");
 
             request.Headers.Authorization = _authenticationHeaderValue;
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
