@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>GetCustomerInventoryAsync() renamed to GetCustomersInventoryIdsAsync() and now returns a list of inventories.</PackageReleaseNotes>
+		<PackageReleaseNotes>Fix for expired access token not trying to auto-renew.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
