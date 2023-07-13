@@ -5,10 +5,12 @@ using System.IO;
 
 namespace Cisco.Api.Test
 {
-	internal class TestPortalConfig
+	internal sealed class TestPortalConfig
 	{
 		internal TestPortalConfig(
-			 string credentialsName, ILogger logger)
+			 string? credentialsName,
+			 ILogger logger
+		)
 		{
 			var builder = new ConfigurationBuilder()
 				 .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../../.."))

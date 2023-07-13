@@ -47,6 +47,6 @@ namespace Cisco.Api.Data.Pss
 		/// Id of the software slated for end of life.
 		/// </summary>
 		[XmlElement("softwareEoXId")]
-		public string SoftwareEoXId { get; set; } = null!;
+		public string SoftwareEoxId { get; set; } = null!;
 	}
 }

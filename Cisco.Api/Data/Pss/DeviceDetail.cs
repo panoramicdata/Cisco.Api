@@ -141,7 +141,7 @@ namespace Cisco.Api.Data.Pss
 		/// Unique association between PID and SN
 		/// </summary>
 		[XmlElement("c3instanceid")]
-		public string C3instanceid { get; set; } = null!;
+		public string C3InstanceId { get; set; } = null!;
 
 		/// <summary>
 		/// Ship Date of device

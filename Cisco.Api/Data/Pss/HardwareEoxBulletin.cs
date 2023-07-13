@@ -84,7 +84,7 @@ namespace Cisco.Api.Data.Pss
 		/// Hardware end-of-life id obtained from the previous API call.
 		/// </summary>
 		[XmlElement("hwEoXId")]
-		public string HwEoXId { get; set; } = null!;
+		public string HwEoxId { get; set; } = null!;
 
 		/// <summary>
 		/// SVC attach end date.

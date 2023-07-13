@@ -41,25 +41,24 @@ namespace Cisco.Api
 
 			_restHttpClient = new HttpClient(
 				new AuthenticatedHttpClientHandler(
-					"https://cloudsso.cisco.com/",
-					"as/token.oauth2",
+					new("https://id.cisco.com/oauth2/default/v1/token"),
 					options,
 					_logger)
 			)
 			{
-				BaseAddress = new Uri("https://api.cisco.com/"),
+				BaseAddress = new("https://apix.cisco.com/"),
 				Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
 			};
 
+
 			_soapHttpClient = new HttpClient(
 				new AuthenticatedHttpClientHandler(
-					"https://api.cisco.com/",
-					"pss/token",
+					new("https://api.cisco.com/pss/token"),
 					options,
 					_logger)
 			)
 			{
-				BaseAddress = new Uri("https://api.cisco.com/pss/v1.0/"),
+				BaseAddress = new("https://api.cisco.com/pss/v1.0/"),
 				Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
 			};
 

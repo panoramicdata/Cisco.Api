@@ -1,6 +1,7 @@
 using Cisco.Api.Data.Eox;
 using FluentAssertions;
 using System;
+using System.Globalization;
 using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -18,7 +19,9 @@ namespace Cisco.Api.Test
 		{
 			var eoxInfoPage = await CiscoClient
 				.Eox
-				.GetByDatesAsync(DateTime.Parse("2017-01-01"), DateTime.Parse("2018-01-01"))
+				.GetByDatesAsync(
+					DateTime.Parse("2017-01-01", CultureInfo.InvariantCulture),
+					DateTime.Parse("2018-01-01", CultureInfo.InvariantCulture))
 				.ConfigureAwait(false);
 			CheckEoxInfoPage(eoxInfoPage);
 		}

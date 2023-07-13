@@ -17,20 +17,17 @@ namespace Cisco.Api.Security
 		private AuthenticationHeaderValue? _authenticationHeaderValue;
 		private readonly ILogger _logger;
 		private const LogLevel LevelToLogAt = LogLevel.Trace;
-		private readonly string _url;
-		private readonly string _endpoint;
+		private readonly Uri _authUri;
 		private readonly CiscoClientOptions _options;
 		private string? _accessToken;
 		private DateTimeOffset? _accessTokenExpiryDateTimeOffset;
 
 		public AuthenticatedHttpClientHandler(
-			string url,
-			string endpoint,
+			Uri authenticationUri,
 			CiscoClientOptions options,
 			ILogger logger)
 		{
-			_url = url;
-			_endpoint = endpoint;
+			_authUri = authenticationUri;
 			_options = options;
 			_accessToken = options.Token;
 			_logger = logger;
@@ -45,7 +42,7 @@ namespace Cisco.Api.Security
 			{
 				using var httpClient = new HttpClient
 				{
-					BaseAddress = new Uri(_url),
+					BaseAddress = _authUri,
 					Timeout = TimeSpan.FromSeconds(15)
 				};
 				var stringContent = new StringContent(
@@ -57,7 +54,7 @@ namespace Cisco.Api.Security
 				try
 				{
 					httpResponseMessage = await httpClient
-						.PostAsync(_endpoint, stringContent, cancellationToken)
+						.PostAsync(string.Empty, stringContent, cancellationToken)
 						.ConfigureAwait(false);
 
 					_logger.LogTrace("{HttpResponseMessage}", httpResponseMessage);
@@ -141,7 +138,7 @@ namespace Cisco.Api.Security
 			HttpRequestMessage request,
 			CancellationToken cancellationToken)
 		{
-			// There might be an auth token already that is about to expire so check first.
+			// There might be an authentication token already that is about to expire so check first.
 			if (_accessTokenExpiryDateTimeOffset is not null && _accessTokenExpiryDateTimeOffset <= DateTimeOffset.UtcNow)
 			{
 				_logger.LogDebug("SendAsync(): The access token expiry date time ('{AccessTokenExpiryDateTimeOffset}') has expired - getting a new token...", _accessTokenExpiryDateTimeOffset);
