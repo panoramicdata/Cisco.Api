@@ -28,10 +28,12 @@ namespace Cisco.Api
 			{
 				throw new ArgumentNullException(nameof(options));
 			}
+
 			if (options.ClientId is null)
 			{
 				throw new ArgumentException("Options ClientId must be set", nameof(options));
 			}
+
 			if (options.ClientSecret is null)
 			{
 				throw new ArgumentException("Options ClientSecret must be set", nameof(options));

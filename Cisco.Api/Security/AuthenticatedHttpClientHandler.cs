@@ -60,31 +60,48 @@ namespace Cisco.Api.Security
 						.PostAsync(_endpoint, stringContent, cancellationToken)
 						.ConfigureAwait(false);
 
-					_logger.LogTrace($"{httpResponseMessage}");
+					_logger.LogTrace("{HttpResponseMessage}", httpResponseMessage);
 				}
 				catch (TaskCanceledException ex)
 				{
 					if (++attemptCount < _options.MaxAttemptCount)
 					{
-						_logger.LogWarning("GetAccessTokenAsync(): Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...", attemptCount, _options.MaxAttemptCount);
-						await Task.Delay(_options.RetryDelay, cancellationToken).ConfigureAwait(false);
+						_logger.LogWarning("GetAccessTokenAsync(): Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...",
+							attemptCount,
+							_options.MaxAttemptCount
+						);
+
+						await Task.Delay(_options.RetryDelay, cancellationToken)
+							.ConfigureAwait(false);
+
 						continue;
 					}
-					_logger.LogError(ex, $"GetAccessTokenAsync(): {ex.Message} after {_options.MaxAttemptCount} attempts.");
+
+					_logger.LogError(
+						ex,
+						"GetAccessTokenAsync(): {Message} after {MaxAttemptCount} attempts.",
+						ex.Message,
+						_options.MaxAttemptCount);
 					throw new CiscoApiException("Timeout during authentication.", ex);
 				}
 
-				var contents = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
-				var accessTokenResponse = JsonConvert.DeserializeObject<AccessTokenResponse>(contents);
+				var contents = await httpResponseMessage
+					.Content
+					.ReadAsStringAsync(cancellationToken)
+					.ConfigureAwait(false);
+
+				var accessTokenResponse = JsonConvert.DeserializeObject<AccessTokenResponse>(contents)
+					?? throw new FormatException("Unable to deserialize access token response");
 				if (accessTokenResponse.ErrorDescription != null || accessTokenResponse.Error != null)
 				{
 					_logger.LogDebug("Authentication failed.");
 
-					// If reponse not yet logged and OnErrorEnsureRequestResponseHeadersLogged is set, then log as error
+					// If response not yet logged and OnErrorEnsureRequestResponseHeadersLogged is set, then log as error
 					if (!_logger.IsEnabled(LevelToLogAt) && _options.OnErrorEnsureRequestResponseHeadersLogged)
 					{
 						await LogResponseHeaders(httpResponseMessage, true).ConfigureAwait(false);
 					}
+
 					throw new SecurityException($"{accessTokenResponse.Error}: {accessTokenResponse.ErrorDescription}");
 				}
 
@@ -108,9 +125,13 @@ namespace Cisco.Api.Security
                 }
                 */
 
-				// Set  expiry
-				_accessTokenExpiryDateTimeOffset = DateTimeOffset.UtcNow.AddSeconds((double)expireInSeconds);
-				_logger.LogDebug($"The access token '{accessTokenResponse.AccessToken!}' expiry date time is '{_accessTokenExpiryDateTimeOffset}'");
+				// Set expiry, defaulting to 1 hour if not set
+				_accessTokenExpiryDateTimeOffset = DateTimeOffset.UtcNow.AddSeconds(expireInSeconds ?? 3600);
+				_logger.LogDebug(
+					"The access token '{AccessToken}' expiry date time is '{ExpiryDateTimeUtc}'",
+					accessTokenResponse.AccessToken!,
+					_accessTokenExpiryDateTimeOffset
+				);
 
 				return accessTokenResponse.AccessToken!;
 			}
@@ -161,8 +182,14 @@ namespace Cisco.Api.Security
 				{
 					if (++attemptCount < _options.MaxAttemptCount)
 					{
-						_logger.LogWarning($"Attempt {attemptCount}/{_options.MaxAttemptCount} failed, retrying...");
-						await Task.Delay(_options.RetryDelay, cancellationToken).ConfigureAwait(false);
+						_logger.LogWarning(
+							"Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...",
+							attemptCount,
+							_options.MaxAttemptCount);
+
+						await Task.Delay(_options.RetryDelay, cancellationToken)
+							.ConfigureAwait(false);
+
 						continue;
 					}
 
@@ -175,7 +202,11 @@ namespace Cisco.Api.Security
 						await LogRequestHeaders(request, true).ConfigureAwait(false);
 					}
 
-					_logger.LogError(ex, $"{ex.Message} after {_options.MaxAttemptCount} attempts.");
+					_logger.LogError(
+						ex, "{Message} after {MaxAttemptCount} attempts.",
+						ex.Message,
+						_options.MaxAttemptCount
+						);
 					throw new CiscoApiException(ex.Message, ex);
 				}
 
@@ -211,8 +242,8 @@ namespace Cisco.Api.Security
 							{
 								if (message.Contains("Developer Inactive"))
 								{
-									// Cisco API can return an incorrect 403 if their load balancer hasn't got access to 
-									// the latest state of a token. Request a new token so that followup retry probably works.
+									// Cisco API can return an incorrect 403 if their load balancer hasn't got access to
+									// the latest state of a token. Request a new token so that follow-up retry probably works.
 									_logger.LogDebug($"SendAsync(): Response content was Developer Inactive - could be a bad API response, requesting a new token.");
 									_accessToken = await GetAccessTokenAsync(cancellationToken)
 										.ConfigureAwait(false);
@@ -220,8 +251,14 @@ namespace Cisco.Api.Security
 									request.Headers.Authorization = _authenticationHeaderValue;
 								}
 
-								_logger.LogWarning($"Attempt {attemptCount}/{_options.MaxAttemptCount} failed, retrying...");
-								await Task.Delay(_options.RetryDelay, cancellationToken).ConfigureAwait(false);
+								_logger.LogWarning(
+									"Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...",
+									attemptCount,
+									_options.MaxAttemptCount);
+
+								await Task.Delay(_options.RetryDelay, cancellationToken)
+									.ConfigureAwait(false);
+
 								continue;
 							}
 
@@ -238,7 +275,11 @@ namespace Cisco.Api.Security
 						await LogResponseHeaders(httpResponseMessage, true).ConfigureAwait(false);
 					}
 
-					_logger.LogError($"{message} after {_options.MaxAttemptCount} attempts.");
+					_logger.LogError(
+						"{Message} after {MaxAttemptCount} attempts.",
+						message,
+						_options.MaxAttemptCount
+					);
 
 					throw new CiscoApiException(httpResponseMessage);
 				}
@@ -250,24 +291,50 @@ namespace Cisco.Api.Security
 		private async Task LogRequestHeaders(HttpRequestMessage request, bool logAsError = false)
 		{
 			// Use logging override if set
-			_logger.Log(logAsError ? LogLevel.Error : LevelToLogAt, $"Request\r\n{request}");
+			_logger.Log(
+				logAsError ? LogLevel.Error : LevelToLogAt,
+				"Request\r\n{Request}",
+				request
+			);
 			if (request.Content != null)
 			{
-				_logger.Log(logAsError ? LogLevel.Error : LevelToLogAt, "RequestContent\r\n" + await request.Content.ReadAsStringAsync().ConfigureAwait(false));
+				var content = await request
+					.Content
+					.ReadAsStringAsync()
+					.ConfigureAwait(false);
+
+				_logger.Log(
+					logAsError ? LogLevel.Error : LevelToLogAt,
+					"RequestContent\r\n{RequestContext}",
+					content
+				);
 			}
 		}
 
 		private async Task LogResponseHeaders(HttpResponseMessage httpResponseMessage, bool logAsError = false)
 		{
 			// Use logging override if set
-			_logger.Log(logAsError ? LogLevel.Error : LevelToLogAt, $"Response\r\n{httpResponseMessage}");
+			_logger.Log(
+				logAsError ? LogLevel.Error : LevelToLogAt,
+				"Response\r\n{Response}",
+				httpResponseMessage
+			);
+
 			if (httpResponseMessage.Content != null)
 			{
-				_logger.Log(logAsError ? LogLevel.Error : LevelToLogAt, "ResponseContent\r\n" + await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+				var content = await httpResponseMessage
+					.Content
+					.ReadAsStringAsync()
+					.ConfigureAwait(false);
+
+				_logger.Log(
+					logAsError ? LogLevel.Error : LevelToLogAt,
+					"ResponseContent\r\n{ResponseContent}",
+					content);
 			}
 		}
 
-		private async Task<string> GetResponseContent(HttpStatusCode statusCode, HttpContent? content)
+		private static async Task<string> GetResponseContent(HttpStatusCode statusCode, HttpContent? content)
 		{
 			if (content != null)
 			{
