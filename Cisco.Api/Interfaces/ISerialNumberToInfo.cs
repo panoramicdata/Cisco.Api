@@ -27,8 +27,8 @@ namespace Cisco.Api.Interfaces
 		/// </summary>
 		/// <param name="serialNumbers">The serial numbers</param>
 		/// <param name="cancellationToken">An optional cancellation token</param>
-		/// <returns>The coverage status</returns>
-		[Get("/sn2info/v2/coverage/status/serial_numbers/{serialNumbers}")]
+		/// <returns>The coverage summary</returns>
+		[Get("/sn2info/v2/coverage/summary/serial_numbers/{serialNumbers}")]
 		Task<CoverageSummaryCollection> GetCoverageSummaryBySerialNumbersAsync(
 			IEnumerable<string> serialNumbers,
 			CancellationToken cancellationToken = default);
