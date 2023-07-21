@@ -20,6 +20,7 @@
 			You will need to create a new application in the Cisco API Console.
 			See https://apiconsole.cisco.com/docs/read/overview/Migrating_Applications for details.
 			Minor breaking changes to property names for corrected capitalization.
+			Fixed broken GetCoverageSummaryBySerialNumbersAsync method.
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
