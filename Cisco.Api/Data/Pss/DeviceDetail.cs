@@ -87,13 +87,13 @@ namespace Cisco.Api.Data.Pss
 		/// Date the original inventory was performed.
 		/// </summary>
 		[XmlElement("originalInventoryDate")]
-		public DateTime? OriginalInventoryDate;
+		private DateTime? _originalInventoryDate;
 
 		/// <summary>
 		/// The date the last inventory was performed.
 		/// </summary>
 		[XmlElement("lastInventoryDate")]
-		public DateTime? LastInventoryDate;
+		private DateTime? _lastInventoryDate;
 
 		/// <summary>
 		/// Base product id of the device.
