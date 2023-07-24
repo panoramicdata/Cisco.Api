@@ -1,17 +1,17 @@
-﻿using Cisco.Api.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using Cisco.Api.Interfaces;
 using Cisco.Api.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Refit;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
 
 namespace Cisco.Api
 {
-	public partial class CiscoClient : IDisposable
+	public class CiscoClient : IDisposable
 	{
 		private readonly ILogger _logger;
 		private readonly HttpClient _restHttpClient;

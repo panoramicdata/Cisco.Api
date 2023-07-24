@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace Cisco.Api.Data.Psirt
 {
 	[DataContract]
-	public partial class Advisory
+	public class Advisory
 	{
 		[DataMember(Name = "advisoryId")]
 		public string AdvisoryId { get; set; } = null!;
