@@ -1,8 +1,9 @@
-using Cisco.Api.Data.Eox;
-using FluentAssertions;
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
+using Cisco.Api.Data.Eox;
+using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,7 +16,7 @@ namespace Cisco.Api.Test
 		}
 
 		[Fact]
-		public async void GetByDatesAsync_Succeeds()
+		public async Task GetByDatesAsync_Succeeds()
 		{
 			var eoxInfoPage = await CiscoClient
 				.Eox
@@ -27,7 +28,7 @@ namespace Cisco.Api.Test
 		}
 
 		[Fact]
-		public async void GetByProductIdAsync_Succeeds()
+		public async Task GetByProductIdAsync_Succeeds()
 		{
 			var eoxInfoPage = await CiscoClient
 				.Eox
@@ -37,7 +38,7 @@ namespace Cisco.Api.Test
 		}
 
 		[Fact]
-		public async void GetBySerialNumberAsync_Succeeds()
+		public async Task GetBySerialNumberAsync_Succeeds()
 		{
 			var eoxInfoPage = await CiscoClient
 				.Eox
@@ -47,7 +48,7 @@ namespace Cisco.Api.Test
 		}
 
 		[Fact]
-		public async void GetBySoftwareReleaseStringAsync_Succeeds()
+		public async Task GetBySoftwareReleaseStringAsync_Succeeds()
 		{
 			var eoxInfoPage = await CiscoClient
 				.Eox

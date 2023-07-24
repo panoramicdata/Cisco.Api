@@ -1,6 +1,7 @@
+using System.Threading;
+using System.Threading.Tasks;
 using Cisco.Api.Data.Psirt;
 using FluentAssertions;
-using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,7 +14,7 @@ namespace Cisco.Api.Test
 		}
 
 		[Fact]
-		public async void GetPsirtByCveId()
+		public async Task GetPsirtByCveId()
 		{
 			var advisoryResponse = await CiscoClient
 				.Psirt
@@ -27,7 +28,7 @@ namespace Cisco.Api.Test
 		}
 
 		[Fact]
-		public async void GetAllPsirts()
+		public async Task GetAllPsirts()
 		{
 			var advisoryResponse = await CiscoClient
 				.Psirt

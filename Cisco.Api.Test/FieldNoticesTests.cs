@@ -1,5 +1,6 @@
-﻿using Cisco.Api.Data.Pss;
-using System.Threading;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Cisco.Api.Data.Pss;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -12,9 +13,9 @@ namespace Cisco.Api.Test
 		}
 
 		[Fact]
-		public async void Get_Succeeds()
+		public async Task Get_Succeeds()
 		{
-			var _ =
+			_ =
 				await CiscoClient.Pss.GetFieldNoticesAsync(
 					new FieldNoticesRequest
 					{

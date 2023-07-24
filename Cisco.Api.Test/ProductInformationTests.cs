@@ -1,5 +1,6 @@
-using FluentAssertions;
 using System.Linq;
+using System.Threading.Tasks;
+using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -12,7 +13,7 @@ namespace Cisco.Api.Test
 		}
 
 		[Fact]
-		public async void GetBySerialNumberAsync_Fails()
+		public async Task GetBySerialNumberAsync_Fails()
 		{
 			// Note: If no serials are found, then Products will have 1 empty record (yet totals say 0) that also has ErrorResponse set
 			var productInformationPage = await CiscoClient
@@ -33,7 +34,7 @@ namespace Cisco.Api.Test
 		}
 
 		[Fact]
-		public async void GetBySerialNumberAsync_Succeeds()
+		public async Task GetBySerialNumberAsync_Succeeds()
 		{
 			// Note: Serial numbers can be up to 40 chars long.
 			var productInformationPage = await CiscoClient
@@ -73,7 +74,7 @@ namespace Cisco.Api.Test
 		}
 
 		[Fact]
-		public async void GetBySerialNumberMultipleAsync_Succeeds()
+		public async Task GetBySerialNumberMultipleAsync_Succeeds()
 		{
 			// Note: Serial numbers can be up to 40 chars long.
 			var productInformationPage = await CiscoClient
