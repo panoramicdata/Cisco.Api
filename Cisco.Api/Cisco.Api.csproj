@@ -16,11 +16,7 @@
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<PackageReleaseNotes>
-			Moved to new 2023 URLs and authentication.
-			You will need to create a new application in the Cisco API Console.
-			See https://apiconsole.cisco.com/docs/read/overview/Migrating_Applications for details.
-			Minor breaking changes to property names for corrected capitalization.
-			Fixed broken GetCoverageSummaryBySerialNumbersAsync method.
+			Changed the software and hardware EoX to allow nullable DateTime values.
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
