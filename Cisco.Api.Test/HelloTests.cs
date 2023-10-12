@@ -1,4 +1,5 @@
-﻿using Cisco.Api.Data.Hello;
+﻿using System.Threading.Tasks;
+using Cisco.Api.Data.Hello;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
@@ -12,7 +13,7 @@ namespace Cisco.Api.Test
 		}
 
 		[Fact]
-		public async void Hello_Succeeds()
+		public async Task Hello_Succeeds()
 		{
 			var response = await CiscoClient
 				.Hello

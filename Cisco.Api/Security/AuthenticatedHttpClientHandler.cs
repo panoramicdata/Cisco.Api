@@ -1,7 +1,4 @@
-﻿using Cisco.Api.Exceptions;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -9,6 +6,9 @@ using System.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Cisco.Api.Exceptions;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Cisco.Api.Security
 {
@@ -106,22 +106,6 @@ namespace Cisco.Api.Security
 
 				var expireInSeconds = accessTokenResponse.ExpiresInSeconds;
 
-				/*
-                _logger.LogDebug($"Access token will expire in {expireInSeconds} seconds.");
-                // If there is an expiry, try to take 1 minute off it unless it is already less than a minute
-                if (accessTokenResponse.ExpiresInSeconds is not null && accessTokenResponse.ExpiresInSeconds - 60 > 0)
-                {
-                    expireInSeconds -= 60;
-                    //_logger.LogDebug("Since expiry > 60 seconds, it has been reduced further by 1 minute to give time to trigger refresh of token.");
-                }
-                // If not yet set, set expiry to default timeout of the 1 hour max limit, minus a minute.
-                if (expireInSeconds is null)
-                {
-                    //_logger.LogDebug("The access token 'ExpiresInSeconds' was null, setting to 3540 seconds.");
-                    expireInSeconds = 3540;
-                }
-                */
-
 				// Set expiry, defaulting to 1 hour if not set
 				_accessTokenExpiryDateTimeOffset = DateTimeOffset.UtcNow.AddSeconds(expireInSeconds ?? 3600);
 				_logger.LogDebug(
@@ -153,8 +137,6 @@ namespace Cisco.Api.Security
 					.ConfigureAwait(false);
 				_authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", _accessToken);
 			}
-
-			//_logger.LogDebug($"SendAsync(): About to send query. The access token expiry date time is '{_accessTokenExpiryDateTimeOffset}'.");
 
 			request.Headers.Authorization = _authenticationHeaderValue;
 			request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
@@ -223,7 +205,7 @@ namespace Cisco.Api.Security
 				if (!httpResponseMessage.IsSuccessStatusCode)
 				{
 #if !DEBUG
-                    var message = await GetResponseContent(statusCode, content).ConfigureAwait(false);
+					var message = await GetResponseContent(statusCode, content).ConfigureAwait(false);
 #endif
 
 					switch (httpResponseMessage.StatusCode)
