@@ -29,10 +29,9 @@ namespace Cisco.Api.Test
 			softwareSuggestionPage.PaginationResponseRecord.PageRecords.Should().Be(4);
 			softwareSuggestionPage.PaginationResponseRecord.TotalRecords.Should().Be(4);
 
-			softwareSuggestionPage.Suggestions.Should().NotBeNull();
-			softwareSuggestionPage.Suggestions.Select(suggestion => suggestion.Suggestions).Should().NotBeNull();
-			softwareSuggestionPage.Suggestions.Select(suggestion => suggestion.Product).Should().NotBeNull();
-			softwareSuggestionPage.Suggestions.Select(suggestion => suggestion.Id).Should().NotBeNullOrEmpty();
+			softwareSuggestionPage.Products.Should().NotBeNull();
+			softwareSuggestionPage.Products.Select(suggestion => suggestion.Suggestions).Should().NotBeNull();
+			softwareSuggestionPage.Products.Select(suggestion => suggestion.Product).Should().NotBeNull();
 		}
 	}
 }

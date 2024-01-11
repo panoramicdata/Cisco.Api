@@ -16,12 +16,6 @@ namespace Cisco.Api.Data.SoftwareSuggestion
 		public SoftwareSuggestionProduct? Product { get; set; }
 
 		/// <summary>
-		/// ID
-		/// </summary>
-		[DataMember(Name = "id")]
-		public int Id { get; set; }
-
-		/// <summary>
 		/// Record number in a result set.
 		/// </summary>
 		[DataMember(Name = "suggestions")]
