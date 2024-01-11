@@ -19,6 +19,6 @@ public class FieldNoticesTests(ITestOutputHelper iTestOutputHelper) : Test(iTest
 				},
 				CancellationToken.None
 			)
-			.ConfigureAwait(false);
+			.ConfigureAwait(true);
 	}
 }

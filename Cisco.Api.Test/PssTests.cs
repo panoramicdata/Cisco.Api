@@ -19,7 +19,7 @@ namespace Cisco.Api.Test;
             var response = await CiscoClient
                   .Pss
                   .GetCustomersInventoryIdsAsync(new CustomersInventoryRequest(), CancellationToken.None)
-                  .ConfigureAwait(false);
+                  .ConfigureAwait(true);
 
             response.Should().BeOfType<CustomersInventoryResponse>();
             response.Should().NotBeNull();
@@ -47,7 +47,7 @@ namespace Cisco.Api.Test;
                                           Config.TestCustomerId
                          }
                   }, CancellationToken.None)
-                  .ConfigureAwait(false);
+                  .ConfigureAwait(true);
 
             response.CustomerInventories.Should().HaveCount(1);
         }
@@ -64,7 +64,7 @@ namespace Cisco.Api.Test;
                             InventoryId = Config.TestInventoryId
                         },
                         CancellationToken.None)
-                  .ConfigureAwait(false);
+                  .ConfigureAwait(true);
 
             response.Should().BeOfType<CustomerInventoryDetailsResponse>();
             response.Should().NotBeNull();
@@ -85,7 +85,7 @@ namespace Cisco.Api.Test;
                             PageStart = 1
                         },
                         CancellationToken.None)
-                  .ConfigureAwait(false);
+                  .ConfigureAwait(true);
 
             response.Should().BeOfType<CustomerExtendedInventoryDetailsResponse>();
             response.Should().NotBeNull();
@@ -101,7 +101,7 @@ namespace Cisco.Api.Test;
                 Config.TestCustomerId,
                 Config.TestInventoryId,
                 CancellationToken.None)
-                  .ConfigureAwait(false);
+                  .ConfigureAwait(true);
 
             deviceDetails.Should().NotBeNullOrEmpty();
         }
@@ -129,7 +129,7 @@ namespace Cisco.Api.Test;
                                 PageStart = page
                             },
                             cancellationToken)
-                      .ConfigureAwait(false);
+                      .ConfigureAwait(true);
                 deviceDetails.AddRange(response.DeviceDetails);
                 pageTotal = response.Pages.PageTotal;
             } while (page < pageTotal);
@@ -146,7 +146,7 @@ namespace Cisco.Api.Test;
                       CustomerId = Config.TestCustomerId,
                       InventoryId = Config.TestInventoryId
                   }, CancellationToken.None)
-                  .ConfigureAwait(false);
+                  .ConfigureAwait(true);
 
             response.Should().BeOfType<CustomerInventoryDetailPaginatedResponse>();
             response.Should().NotBeNull();
@@ -164,7 +164,7 @@ namespace Cisco.Api.Test;
                       CustomerId = Config.TestCustomerId,
                       InventoryId = Config.TestInventoryId
                   }, CancellationToken.None)
-                  .ConfigureAwait(false);
+                  .ConfigureAwait(true);
 
             response.Should().BeOfType<ContractCoverageResponse>();
             response.Should().NotBeNull();
@@ -183,7 +183,7 @@ namespace Cisco.Api.Test;
                       InventoryId = Config.TestInventoryId,
                       DeviceIds = new List<string> { Config.TestDeviceId }
                   }, CancellationToken.None)
-                  .ConfigureAwait(false);
+                  .ConfigureAwait(true);
 
             response.Should().BeOfType<ContractCoverageResponse>();
             response.Should().NotBeNull();
@@ -206,7 +206,7 @@ namespace Cisco.Api.Test;
         //              InventoryId = Config.TestInventoryId,
         //              DeviceIds = deviceIds
         //          }, CancellationToken.None)
-        //          .ConfigureAwait(false);
+        //          .ConfigureAwait(true);
 
         //    response.Should().BeOfType<ContractCoverageResponse>();
         //    response.Should().NotBeNull();
@@ -224,7 +224,7 @@ namespace Cisco.Api.Test;
                       CustomerId = Config.TestCustomerId,
                       InventoryId = Config.TestInventoryId
                   }, CancellationToken.None)
-                  .ConfigureAwait(false);
+                  .ConfigureAwait(true);
 
             response.Should().BeOfType<SoftwareEoxResponse>();
             response.Should().NotBeNull();
@@ -247,7 +247,7 @@ namespace Cisco.Api.Test;
                                       }
                       }
                   }, CancellationToken.None)
-                  .ConfigureAwait(false);
+                  .ConfigureAwait(true);
 
             response.Should().BeOfType<SoftwareEoxBulletinResponse>();
             response.Should().NotBeNull();
@@ -265,7 +265,7 @@ namespace Cisco.Api.Test;
                       CustomerId = Config.TestCustomerId,
                       InventoryId = Config.TestInventoryId
                   }, CancellationToken.None)
-                  .ConfigureAwait(false);
+                  .ConfigureAwait(true);
 
             response.Should().BeOfType<HardwareEoxResponse>();
             response.Should().NotBeNull();
@@ -289,7 +289,7 @@ namespace Cisco.Api.Test;
                                  }
                       }
                   }, CancellationToken.None)
-                  .ConfigureAwait(false);
+                  .ConfigureAwait(true);
 
             response.Should().BeOfType<HardwareEoxBulletinResponse>();
             response.Should().NotBeNull();
@@ -307,7 +307,7 @@ namespace Cisco.Api.Test;
                       CustomerId = "PSS_3151974", // Config.TestCustomerId,
                       InventoryId = "3232417", // Config.TestInventoryId
                   }, CancellationToken.None)
-                  .ConfigureAwait(false);
+                  .ConfigureAwait(true);
 
             response.Should().BeOfType<PsirtResponse>();
             response.Should().NotBeNull();
@@ -330,7 +330,7 @@ namespace Cisco.Api.Test;
                   {
                       Ids = ids
                   }, CancellationToken.None)
-                  .ConfigureAwait(false);
+                  .ConfigureAwait(true);
 
             response.Should().BeOfType<PsirtDetailsResponse>();
             response.Should().NotBeNull();
@@ -348,7 +348,7 @@ namespace Cisco.Api.Test;
                       CustomerId = Config.TestCustomerId,
                       InventoryId = Config.TestInventoryId
                   }, CancellationToken.None)
-                  .ConfigureAwait(false);
+                  .ConfigureAwait(true);
 
             response.Should().BeOfType<FieldNoticesResponse>();
             response.Should().NotBeNull();
@@ -369,7 +369,7 @@ namespace Cisco.Api.Test;
                                      Config.TestFieldNoticesId2
                             }
                   }, CancellationToken.None)
-                  .ConfigureAwait(false);
+                  .ConfigureAwait(true);
 
             response.Should().BeOfType<FieldNoticesDetailsResponse>();
             response.Should().NotBeNull();

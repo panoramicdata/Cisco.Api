@@ -13,7 +13,7 @@ public class HelloTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputH
 		var response = await CiscoClient
 			.Hello
 			.HelloAsync()
-			.ConfigureAwait(false);
+			.ConfigureAwait(true);
 		response.Should().BeOfType<Response>();
 		response.HelloResponse.Should().NotBeNull();
 		response.HelloResponse.Response.Should().Be("Hello World!");

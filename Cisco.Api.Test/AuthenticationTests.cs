@@ -20,7 +20,7 @@ public class AuthenticationTests(ITestOutputHelper iTestOutputHelper) : Test(iTe
 			})
 			.Hello
 			.HelloAsync()
-			.ConfigureAwait(false);
+			.ConfigureAwait(true);
 		};
 
 		act
@@ -40,7 +40,7 @@ public class AuthenticationTests(ITestOutputHelper iTestOutputHelper) : Test(iTe
 			})
 			.Hello
 			.HelloAsync()
-			.ConfigureAwait(false);
+			.ConfigureAwait(true);
 		};
 
 		act

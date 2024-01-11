@@ -14,7 +14,7 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 		var productInformationPage = await CiscoClient
 			.ProductInfo
 			.GetBySerialNumbersAsync(new[] { "`" })
-			.ConfigureAwait(false);
+			.ConfigureAwait(true);
 
 		productInformationPage.Should().NotBeNull();
 
@@ -35,7 +35,7 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 		var productInformationPage = await CiscoClient
 			.ProductInfo
 			.GetBySerialNumbersAsync(new[] { "FTX1910100B" })
-			.ConfigureAwait(false);
+			.ConfigureAwait(true);
 
 		productInformationPage.Should().NotBeNull();
 
@@ -75,7 +75,7 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 		var productInformationPage = await CiscoClient
 			.ProductInfo
 			.GetBySerialNumbersAsync(new[] { "FCW2234L10F", "FCW2234L12V" })
-			.ConfigureAwait(false);
+			.ConfigureAwait(true);
 
 		productInformationPage.Should().NotBeNull();
 
@@ -184,7 +184,7 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 	//            productInformationPage = await CiscoClient
 	//            .ProductInfo
 	//            .GetBySerialNumbersAsync(new[] { serialNumber })
-	//            .ConfigureAwait(false);
+	//            .ConfigureAwait(true);
 
 	//            basePids.Add(productInformationPage.Products.First().BasePid);
 	//        }

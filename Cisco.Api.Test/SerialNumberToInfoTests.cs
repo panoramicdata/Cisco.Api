@@ -13,7 +13,7 @@ public class SerialNumberToInfoTests(ITestOutputHelper iTestOutputHelper) : Test
 		var coverageStatusCollection = await CiscoClient
 			.SerialNumberToInfo
 			.GetCoverageStatusBySerialNumbersAsync(new[] { "FTX1910100B" })
-			.ConfigureAwait(false);
+			.ConfigureAwait(true);
 
 		coverageStatusCollection.Should().NotBeNull();
 		coverageStatusCollection.CoverageStatuses.Select(c => c.CoverageEndDate).Should().NotBeNullOrEmpty();
@@ -27,7 +27,7 @@ public class SerialNumberToInfoTests(ITestOutputHelper iTestOutputHelper) : Test
 		var coverageSummaryCollection = await CiscoClient
 			.SerialNumberToInfo
 			.GetCoverageSummaryBySerialNumbersAsync(new[] { "FTX1910100B" })
-			.ConfigureAwait(false);
+			.ConfigureAwait(true);
 		coverageSummaryCollection.Should().NotBeNull();
 		coverageSummaryCollection.CoverageSummaries.Select(cs => cs.BasePid).Should().NotBeNullOrEmpty();
 		coverageSummaryCollection.CoverageSummaries.Select(cs => cs.ContractSiteAddress1).Should().NotBeNullOrEmpty();
@@ -53,7 +53,7 @@ public class SerialNumberToInfoTests(ITestOutputHelper iTestOutputHelper) : Test
 		var serialNumberOrderablePids = await CiscoClient
 			.SerialNumberToInfo
 			.GetOrderableProductIdentifiersBySerialNumbersAsync(new[] { "FTX1910100B" })
-			.ConfigureAwait(false);
+			.ConfigureAwait(true);
 		serialNumberOrderablePids.Should().NotBeNull();
 		serialNumberOrderablePids.SerialNumberOrderablePids.Select(p => p.SerialNumber).Should().NotBeNullOrEmpty();
 		serialNumberOrderablePids.SerialNumberOrderablePids.Select(p => p.IsCovered).Should().NotBeNullOrEmpty();

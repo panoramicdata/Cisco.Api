@@ -14,7 +14,7 @@ public class PsirtTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputH
 		var advisoryResponse = await CiscoClient
 			.Psirt
 			.GetByCveIdAsync("CVE-2020-3433", CancellationToken.None)
-			.ConfigureAwait(false);
+			.ConfigureAwait(true);
 
 		advisoryResponse.Should().NotBeNull();
 		advisoryResponse.Should().BeOfType<AdvisoriesResponse>();
@@ -28,7 +28,7 @@ public class PsirtTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputH
 		var advisoryResponse = await CiscoClient
 			.Psirt
 			.GetAllAsync(CancellationToken.None)
-			.ConfigureAwait(false);
+			.ConfigureAwait(true);
 
 		advisoryResponse.Should().NotBeNull();
 		advisoryResponse.Should().BeOfType<AdvisoriesResponse>();
