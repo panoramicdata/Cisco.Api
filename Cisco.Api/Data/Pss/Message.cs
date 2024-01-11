@@ -1,7 +1,7 @@
 ﻿using System.Xml.Serialization;
 
-namespace Cisco.Api.Data.Pss
-{
+namespace Cisco.Api.Data.Pss;
+
     /// <summary>
     /// The same message format is used by different API’s
     /// and is where the error information is placed in the event of an ERROR;
@@ -16,4 +16,3 @@ namespace Cisco.Api.Data.Pss
         [XmlElement("messageDetail")]
         public string? MessageDetail { get; set; }
     }
-}

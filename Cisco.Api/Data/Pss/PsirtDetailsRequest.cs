@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace Cisco.Api.Data.Pss
-{
+namespace Cisco.Api.Data.Pss;
+
     /// <summary>
     /// The PsirtDetails Request
     /// </summary>
@@ -16,4 +16,3 @@ namespace Cisco.Api.Data.Pss
         [XmlArrayItem("psirtId")]
         public List<string> Ids { get; set; } = null!;
     }
-}

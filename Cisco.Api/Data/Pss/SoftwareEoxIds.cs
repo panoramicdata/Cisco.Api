@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace Cisco.Api.Data.Pss
-{
+namespace Cisco.Api.Data.Pss;
+
     /// <summary>
     /// The list of SoftwareEoxIds
     /// </summary>
@@ -14,4 +14,3 @@ namespace Cisco.Api.Data.Pss
         [XmlElement("softwareEoxId")]
         public List<string> Ids { get; set; } = new List<string>();
     }
-}

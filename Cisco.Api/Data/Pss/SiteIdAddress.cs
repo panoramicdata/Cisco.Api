@@ -1,7 +1,7 @@
 ﻿using System.Xml.Serialization;
 
-namespace Cisco.Api.Data.Pss
-{
+namespace Cisco.Api.Data.Pss;
+
     /// <summary>
     /// The SiteIdAddress
     /// </summary>
@@ -73,4 +73,3 @@ namespace Cisco.Api.Data.Pss
         [XmlElement("country")]
         public string? Country { get; set; }
     }
-}

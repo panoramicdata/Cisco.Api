@@ -1,7 +1,7 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Cisco.Api.Data.ProductInfo
-{
+namespace Cisco.Api.Data.ProductInfo;
+
     /// <summary>
     /// An API error
     /// </summary>
@@ -26,4 +26,3 @@ namespace Cisco.Api.Data.ProductInfo
         [DataMember(Name = "SuggestedAction")]
         public string SuggestedAction { get; set; } = null!;
     }
-}

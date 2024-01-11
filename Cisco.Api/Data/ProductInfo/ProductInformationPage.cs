@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace Cisco.Api.Data.ProductInfo
-{
+namespace Cisco.Api.Data.ProductInfo;
+
     /// <summary>
     /// A product information page
     /// </summary>
@@ -21,4 +21,3 @@ namespace Cisco.Api.Data.ProductInfo
         [DataMember(Name = "product_list")]
         public List<ProductInformation> Products { get; set; } = null!;
     }
-}

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace Cisco.Api.Data.SoftwareSuggestion
-{
+namespace Cisco.Api.Data.SoftwareSuggestion;
+
     /// <summary>
     /// A Software information page
     /// </summary>
@@ -21,16 +21,15 @@ namespace Cisco.Api.Data.SoftwareSuggestion
         [DataMember(Name = "productList")]
         public List<SoftwareSuggestionProductList> Products { get; set; } = [];
 
-		/// <summary>
-		/// The error details response
-		/// </summary>
-		[DataMember(Name = "errorDetailsResponse")]
-		public ErrorDetailsResponse? ErrorDetailsResponse { get; set; }
+	/// <summary>
+	/// The error details response
+	/// </summary>
+	[DataMember(Name = "errorDetailsResponse")]
+	public ErrorDetailsResponse? ErrorDetailsResponse { get; set; }
 
-		/// <summary>
-		/// The status
-		/// </summary>
-		[DataMember(Name = "status")]
-		public string Status { get; set; } = string.Empty;
-	}
+	/// <summary>
+	/// The status
+	/// </summary>
+	[DataMember(Name = "status")]
+	public string Status { get; set; } = string.Empty;
 }

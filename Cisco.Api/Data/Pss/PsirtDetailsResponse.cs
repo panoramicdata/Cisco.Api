@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace Cisco.Api.Data.Pss
-{
+namespace Cisco.Api.Data.Pss;
+
     /// <summary>
     /// The PsirtDetails Response
     /// </summary>
@@ -15,4 +15,3 @@ namespace Cisco.Api.Data.Pss
         [XmlElement("PSIRTDetailsList")]
         public List<PsirtDetailsDTO> Details { get; set; } = new List<PsirtDetailsDTO>();
     }
-}

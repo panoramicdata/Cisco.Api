@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace Cisco.Api.Data.Pss
-{
+namespace Cisco.Api.Data.Pss;
+
     public class HardwareEoxIds
     {
         /// <summary>
@@ -12,4 +12,3 @@ namespace Cisco.Api.Data.Pss
         [XmlElement("hwEoxId")]
         public List<string> Ids { get; set; } = new List<string>();
     }
-}

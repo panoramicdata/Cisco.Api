@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace Cisco.Api.Data.Pss
-{
+namespace Cisco.Api.Data.Pss;
+
     /// <summary>
     /// The ResponseDTO when getting FN Details
     /// </summary>
@@ -17,4 +17,3 @@ namespace Cisco.Api.Data.Pss
         [XmlElement("deviceFN")]
         public List<FieldNoticesDevice> FieldNotices { get; set; } = null!;
     }
-}

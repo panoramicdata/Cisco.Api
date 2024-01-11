@@ -7,8 +7,8 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Cisco.Api
-{
+namespace Cisco.Api;
+
     public class PssServices : IPss
     {
         private readonly SoapClient _soapClient;
@@ -165,4 +165,3 @@ namespace Cisco.Api
                 cancellationToken
                 );
     }
-}

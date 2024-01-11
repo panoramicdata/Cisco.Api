@@ -1,7 +1,7 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Cisco.Api.Data.Psirt
-{
+namespace Cisco.Api.Data.Psirt;
+
     [DataContract]
     public enum SecurityImpactRating
     {
@@ -23,4 +23,3 @@ namespace Cisco.Api.Data.Psirt
         [EnumMember(Value = "NA")]
         Na
     };
-}

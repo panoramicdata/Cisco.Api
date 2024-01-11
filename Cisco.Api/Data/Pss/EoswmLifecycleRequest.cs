@@ -1,6 +1,5 @@
-﻿namespace Cisco.Api.Data.Pss
+﻿namespace Cisco.Api.Data.Pss;
+
+public class EoswmLifecycleRequest
 {
-	public class EoswmLifecycleRequest
-	{
-	}
 }

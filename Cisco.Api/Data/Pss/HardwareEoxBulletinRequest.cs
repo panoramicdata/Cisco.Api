@@ -1,7 +1,7 @@
 ﻿using System.Xml.Serialization;
 
-namespace Cisco.Api.Data.Pss
-{
+namespace Cisco.Api.Data.Pss;
+
     /// <summary>
     /// The HardwareEoxBulletin Request
     /// </summary>
@@ -15,4 +15,3 @@ namespace Cisco.Api.Data.Pss
         [XmlElement("hwEoxIds")]
         public HardwareEoxIds HardwareEoxIds { get; set; } = null!;
     }
-}

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace Cisco.Api.Data.Pss
-{
+namespace Cisco.Api.Data.Pss;
+
     /// <summary>
     /// The Contract Coverage response
     /// </summary>
@@ -28,4 +28,3 @@ namespace Cisco.Api.Data.Pss
         [XmlElement("siteIdAddress")]
         public List<SiteIdAddress> SiteIdAddresses { get; set; } = null!;
     }
-}

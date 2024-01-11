@@ -1,7 +1,7 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Cisco.Api.Data.ProductInfo
-{
+namespace Cisco.Api.Data.ProductInfo;
+
     /// <summary>
     /// Product information associated with a serial number
     /// </summary>
@@ -119,4 +119,3 @@ namespace Cisco.Api.Data.ProductInfo
         [DataMember(Name = "ErrorResponse")]
         public ErrorResponse? ErrorResponse { get; set; }
     }
-}

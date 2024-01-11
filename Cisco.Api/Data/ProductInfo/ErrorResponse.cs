@@ -1,7 +1,7 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Cisco.Api.Data.ProductInfo
-{
+namespace Cisco.Api.Data.ProductInfo;
+
     /// <summary>
     /// An error response
     /// </summary>
@@ -14,4 +14,3 @@ namespace Cisco.Api.Data.ProductInfo
         [DataMember(Name = "APIError")]
         public ApiError ApiError { get; set; } = null!;
     }
-}

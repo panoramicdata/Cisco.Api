@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Cisco.Api.Test
-{
+namespace Cisco.Api.Test;
+
     [Collection("PssTests")]
     public class PssTests : Test
     {
@@ -381,4 +381,3 @@ namespace Cisco.Api.Test
             // TODO - property tests
         }
     }
-}

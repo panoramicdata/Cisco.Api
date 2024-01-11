@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Xml.Serialization;
 
-namespace Cisco.Api.Data.Pss
-{
+namespace Cisco.Api.Data.Pss;
+
     /// <summary>
     /// The CoverageDetail element
     /// </summary>
@@ -77,4 +77,3 @@ namespace Cisco.Api.Data.Pss
         [XmlElement("installAtSiteID")]
         public string? InstallAtSiteID { get; set; }
     }
-}

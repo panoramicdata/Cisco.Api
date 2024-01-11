@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace Cisco.Api.Data.Pss
-{
+namespace Cisco.Api.Data.Pss;
+
     /// <summary>
     /// The DeviceCoverageDetail
     /// </summary>
@@ -32,4 +32,3 @@ namespace Cisco.Api.Data.Pss
         [XmlElement("coverageDetails")]
         public List<CoverageDetail> CoverageDetails { get; set; } = new List<CoverageDetail>();
     }
-}

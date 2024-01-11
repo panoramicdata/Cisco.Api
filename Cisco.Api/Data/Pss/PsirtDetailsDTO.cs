@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Xml.Serialization;
 
-namespace Cisco.Api.Data.Pss
-{
+namespace Cisco.Api.Data.Pss;
+
     /// <summary>
     /// The ResponseDTO when getting PsirtDetails
     /// </summary>
@@ -56,4 +56,3 @@ namespace Cisco.Api.Data.Pss
         [XmlElement("revisionNumber")]
         public string RevisionNumber { get; set; } = null!;
     }
-}
