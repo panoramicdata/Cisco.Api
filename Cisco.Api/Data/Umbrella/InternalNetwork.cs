@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 
 namespace Cisco.Api.Data.Umbrella;
 
 [DataContract]
+[DebuggerDisplay("{Name} ({IpAddress}/{PrefixLength})")]
 public class InternalNetwork
 {
 	[DataMember(Name = "originId")]

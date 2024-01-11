@@ -54,7 +54,7 @@ public partial class CiscoClient : IDisposable
 		// Umbrella uses a different endpoint
 		// https://docs.umbrella.com/umbrella-api/docs/umbrella-api-quick-start
 		_restUmbrellaClient = new HttpClient(
-			new AuthenticatedHttpClientHandler(
+			new UmbrellaHttpClientHandler(
 				new("https://api.umbrella.com/auth/v2/token"),
 				options,
 				_logger))
