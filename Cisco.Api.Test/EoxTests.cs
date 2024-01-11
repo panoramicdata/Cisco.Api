@@ -8,12 +8,8 @@ using Xunit.Abstractions;
 
 namespace Cisco.Api.Test;
 
-public class EoxTests : Test
+public class EoxTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
-	public EoxTests(ITestOutputHelper iTestOutputHelper) : base(iTestOutputHelper)
-	{
-	}
-
 	[Fact]
 	public async void GetByDatesAsync_Succeeds()
 	{

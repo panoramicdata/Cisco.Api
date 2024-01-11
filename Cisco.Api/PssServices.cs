@@ -9,14 +9,11 @@ using System.Threading.Tasks;
 
 namespace Cisco.Api;
 
-    public class PssServices : IPss
+    public class PssServices(HttpClient soapHttpClient) : IPss
     {
-        private readonly SoapClient _soapClient;
+        private readonly SoapClient _soapClient = SoapClient.Prepare(soapHttpClient);
 
-        public PssServices(HttpClient soapHttpClient)
-            => _soapClient = SoapClient.Prepare(soapHttpClient);
-
-        private async Task<TResponse> GetAsync<TRequest, TResponse>(
+	private async Task<TResponse> GetAsync<TRequest, TResponse>(
             string url,
             string action,
             TRequest request,

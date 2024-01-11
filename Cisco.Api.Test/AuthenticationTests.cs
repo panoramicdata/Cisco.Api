@@ -6,13 +6,8 @@ using Xunit.Abstractions;
 
 namespace Cisco.Api.Test;
 
-public class AuthenticationTests : Test
+public class AuthenticationTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
-	public AuthenticationTests(ITestOutputHelper iTestOutputHelper)
-		: base(iTestOutputHelper)
-	{
-	}
-
 	[Fact]
 	public void NoClientId_ThrowsException()
 	{

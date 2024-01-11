@@ -11,13 +11,9 @@ using Xunit.Abstractions;
 namespace Cisco.Api.Test;
 
     [Collection("PssTests")]
-    public class PssTests : Test
+    public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
     {
-        public PssTests(ITestOutputHelper iTestOutputHelper) : base(iTestOutputHelper)
-        {
-        }
-
-        [Fact]
+	[Fact]
         public async void GetCustomersInventoryIdsAsync_Succeeds()
         {
             var response = await CiscoClient

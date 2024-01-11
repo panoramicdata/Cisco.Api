@@ -5,12 +5,8 @@ using Xunit.Abstractions;
 
 namespace Cisco.Api.Test;
 
-public class HelloTests : Test
+public class HelloTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
-	public HelloTests(ITestOutputHelper iTestOutputHelper) : base(iTestOutputHelper)
-	{
-	}
-
 	[Fact]
 	public async void Hello_Succeeds()
 	{

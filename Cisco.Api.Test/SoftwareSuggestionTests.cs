@@ -6,12 +6,8 @@ using Xunit.Abstractions;
 
 namespace Cisco.Api.Test;
 
-public class SoftwareSuggestionTests : Test
+public class SoftwareSuggestionTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
-	public SoftwareSuggestionTests(ITestOutputHelper iTestOutputHelper) : base(iTestOutputHelper)
-	{
-	}
-
 	[Fact]
 	public async Task GetByProductNumbersAsync_Succeeds()
 	{

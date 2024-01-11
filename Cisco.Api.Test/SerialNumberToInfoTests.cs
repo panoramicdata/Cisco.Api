@@ -5,12 +5,8 @@ using Xunit.Abstractions;
 
 namespace Cisco.Api.Test;
 
-public class SerialNumberToInfoTests : Test
+public class SerialNumberToInfoTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
-	public SerialNumberToInfoTests(ITestOutputHelper iTestOutputHelper) : base(iTestOutputHelper)
-	{
-	}
-
 	[Fact]
 	public async void GetCoverageStatusBySerialNumber()
 	{

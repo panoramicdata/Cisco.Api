@@ -6,12 +6,8 @@ using Xunit.Abstractions;
 
 namespace Cisco.Api.Test;
 
-public class PsirtTests : Test
+public class PsirtTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
-	public PsirtTests(ITestOutputHelper iTestOutputHelper) : base(iTestOutputHelper)
-	{
-	}
-
 	[Fact]
 	public async void GetPsirtByCveId()
 	{

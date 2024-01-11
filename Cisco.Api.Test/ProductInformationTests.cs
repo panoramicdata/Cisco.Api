@@ -5,12 +5,8 @@ using Xunit.Abstractions;
 
 namespace Cisco.Api.Test;
 
-public class ProductInformationTests : Test
+public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
-	public ProductInformationTests(ITestOutputHelper iTestOutputHelper) : base(iTestOutputHelper)
-	{
-	}
-
 	[Fact]
 	public async void GetBySerialNumberAsync_Fails()
 	{

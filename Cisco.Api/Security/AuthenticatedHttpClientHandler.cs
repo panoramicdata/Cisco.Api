@@ -12,26 +12,18 @@ using System.Threading.Tasks;
 
 namespace Cisco.Api.Security;
 
-internal class AuthenticatedHttpClientHandler : HttpClientHandler
+internal class AuthenticatedHttpClientHandler(
+	Uri authenticationUri,
+	CiscoClientOptions options,
+	ILogger logger) : HttpClientHandler
 {
 	private AuthenticationHeaderValue? _authenticationHeaderValue;
-	private readonly ILogger _logger;
+	private readonly ILogger _logger = logger;
 	private const LogLevel LevelToLogAt = LogLevel.Trace;
-	private readonly Uri _authUri;
-	private readonly CiscoClientOptions _options;
-	private string? _accessToken;
+	private readonly Uri _authUri = authenticationUri;
+	private readonly CiscoClientOptions _options = options;
+	private string? _accessToken = options.Token;
 	private DateTimeOffset? _accessTokenExpiryDateTimeOffset;
-
-	public AuthenticatedHttpClientHandler(
-		Uri authenticationUri,
-		CiscoClientOptions options,
-		ILogger logger)
-	{
-		_authUri = authenticationUri;
-		_options = options;
-		_accessToken = options.Token;
-		_logger = logger;
-	}
 
 	private async Task<string> GetAccessTokenAsync(CancellationToken cancellationToken)
 	{
