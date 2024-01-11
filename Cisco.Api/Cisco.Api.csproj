@@ -4,8 +4,8 @@
 		<TargetFramework>net7.0</TargetFramework>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Company>Panoramic Data Limited</Company>
-		<Copyright>Copyright © Panoramic Data Limited 2021-2023</Copyright>
-		<Description>Provides access to EoX, Product Information, PSIRT, PSS and Serial Number to Information APIs.  Requires client credentials.</Description>
+		<Copyright>Copyright © Panoramic Data Limited 2021-2024</Copyright>
+		<Description>Provides access to EoX, Product Information, PSIRT, PSS, Serial Number to Information and Umbrella APIs.  Requires client credentials.</Description>
 		<Authors>Panoramic Data Limited</Authors>
 		<PackageProjectUrl>https://github.com/panoramicdata/Cisco.Api</PackageProjectUrl>
 		<PackageIcon>Icon.png</PackageIcon>
@@ -16,7 +16,7 @@
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<PackageReleaseNotes>
-			Added the SoftwareSuggestion interface and methods to the client, and updated nuget packages.
+			Added initial Umbrella support.
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
