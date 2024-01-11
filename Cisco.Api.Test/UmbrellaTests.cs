@@ -20,4 +20,17 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 		response.Should().NotBeEmpty();
 		response.Should().HaveCountGreaterThan(0);
 	}
+
+	[Fact]
+	public async void GetAllPolicies_Succeeds()
+	{
+		var response = await CiscoClient
+			.Umbrella
+			.GetAllPoliciesAsync(default)
+			.ConfigureAwait(true);
+
+		response.Should().BeOfType<List<Policy>>();
+		response.Should().NotBeEmpty();
+		response.Should().HaveCountGreaterThan(0);
+	}
 }
