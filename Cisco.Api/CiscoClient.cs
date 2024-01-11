@@ -15,6 +15,7 @@ public partial class CiscoClient : IDisposable
 {
 	private readonly ILogger _logger;
 	private readonly HttpClient _restHttpClient;
+	private readonly HttpClient _restUmbrellaClient;
 	private readonly HttpClient _soapHttpClient;
 	private bool disposedValue;
 
@@ -47,6 +48,18 @@ public partial class CiscoClient : IDisposable
 		)
 		{
 			BaseAddress = new("https://apix.cisco.com/"),
+			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
+		};
+
+		// Umbrella uses a different endpoint
+		// https://docs.umbrella.com/umbrella-api/docs/umbrella-api-quick-start
+		_restUmbrellaClient = new HttpClient(
+			new AuthenticatedHttpClientHandler(
+				new("https://api.umbrella.com/auth/v2/token"),
+				options,
+				_logger))
+		{
+			BaseAddress = new("https://api.umbrella.com/"),
 			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
 		};
 
@@ -88,6 +101,7 @@ public partial class CiscoClient : IDisposable
 		Pss = new PssServices(_soapHttpClient);
 		SerialNumberToInfo = RestService.For<ISerialNumberToInfo>(_restHttpClient, refitSettings);
 		SoftwareSuggestion = RestService.For<ISoftwareSuggestion>(_restHttpClient, refitSettings);
+		Umbrella = RestService.For<IUmbrella>(_restUmbrellaClient, refitSettings);
 	}
 
 	public IEox Eox { get; set; }
@@ -103,6 +117,8 @@ public partial class CiscoClient : IDisposable
 	public ISerialNumberToInfo SerialNumberToInfo { get; set; }
 
 	public ISoftwareSuggestion SoftwareSuggestion { get; set; }
+
+	public IUmbrella Umbrella { get; set; }
 
 	protected virtual void Dispose(bool disposing)
 	{
