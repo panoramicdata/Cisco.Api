@@ -87,6 +87,7 @@ namespace Cisco.Api
 			Psirt = RestService.For<IPsirt>(_restHttpClient, refitSettings);
 			Pss = new PssServices(_soapHttpClient);
 			SerialNumberToInfo = RestService.For<ISerialNumberToInfo>(_restHttpClient, refitSettings);
+			SoftwareSuggestion = RestService.For<ISoftwareSuggestion>(_restHttpClient, refitSettings);
 		}
 
 		public IEox Eox { get; set; }
@@ -100,6 +101,8 @@ namespace Cisco.Api
 		public IPss Pss { get; set; }
 
 		public ISerialNumberToInfo SerialNumberToInfo { get; set; }
+
+		public ISoftwareSuggestion SoftwareSuggestion { get; set; }
 
 		protected virtual void Dispose(bool disposing)
 		{

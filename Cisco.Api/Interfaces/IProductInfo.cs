@@ -1,4 +1,5 @@
 ﻿using Cisco.Api.Data.ProductInfo;
+using Cisco.Api.Data.SoftwareSuggestion;
 using Refit;
 using System.Collections.Generic;
 using System.Threading;
