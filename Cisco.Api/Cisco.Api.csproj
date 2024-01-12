@@ -16,8 +16,8 @@
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<PackageReleaseNotes>
-			Added initial Umbrella support.
-		</PackageReleaseNotes>
+      Add Umbrella Sites. Rename initial methods.
+    </PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
