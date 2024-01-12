@@ -99,6 +99,7 @@ public partial class CiscoClient : IDisposable
 		ProductInfo = RestService.For<IProductInfo>(_restHttpClient, refitSettings);
 		Psirt = RestService.For<IPsirt>(_restHttpClient, refitSettings);
 		Pss = new PssServices(_soapHttpClient);
+		SecurityAdvisory = RestService.For<ISecurityAdvisory>(_restHttpClient, refitSettings);
 		SerialNumberToInfo = RestService.For<ISerialNumberToInfo>(_restHttpClient, refitSettings);
 		SoftwareSuggestion = RestService.For<ISoftwareSuggestion>(_restHttpClient, refitSettings);
 		Umbrella = RestService.For<IUmbrella>(_restUmbrellaClient, refitSettings);
@@ -114,6 +115,7 @@ public partial class CiscoClient : IDisposable
 
 	public IPss Pss { get; set; }
 
+	public ISecurityAdvisory SecurityAdvisory { get; set; }
 	public ISerialNumberToInfo SerialNumberToInfo { get; set; }
 
 	public ISoftwareSuggestion SoftwareSuggestion { get; set; }

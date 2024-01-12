@@ -16,7 +16,7 @@
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<PackageReleaseNotes>
-			Added initial Umbrella support.
+			Added Security Advisory interface and various client methods.
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
