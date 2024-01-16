@@ -13,7 +13,7 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 	{
 		var response = await CiscoClient
 			.Umbrella
-			.ListInternalNetworksAsync(default)
+			.ListInternalNetworksAsync()
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<List<InternalNetwork>>();
@@ -26,7 +26,7 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 	{
 		var response = await CiscoClient
 			.Umbrella
-			.ListPoliciesAsync("web")
+			.ListPoliciesAsync()
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<List<Policy>>();
