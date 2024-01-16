@@ -29,7 +29,7 @@ public interface IUmbrella
 	/// <param name="cancellationToken"></param>
 	[Get("/deployments/v2/internalnetworks")]
 	Task<List<InternalNetwork>> ListInternalNetworksAsync(
-		string? name,
+		string? name = null,
 		int? page = 1,
 		int? limit = 100,
 		CancellationToken cancellationToken = default);
@@ -69,12 +69,12 @@ public interface IUmbrella
 	/// List Policies for an internal network 
 	/// </summary>
 	/// <param name="internalNetworkId">The origin ID (originId) of the internal network</param>
-	/// <param name="type">Specifies the type of Umbrella policy</param>
+	/// <param name="type">Specifies the type of Umbrella policy (either DNS or Web)</param>
 	/// <param name="cancellationToken"></param>
 	[Get("/deployments/v2/internalnetworks/{internalNetworkId}/policies")]
 	Task<InternalNetworkPolicy> ListPoliciesForInternalNetworkAsync(
 		int internalNetworkId,
-		string? type,
+		string? type = "dns",
 		CancellationToken cancellationToken = default);
 
 
