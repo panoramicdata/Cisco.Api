@@ -16,8 +16,8 @@
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<PackageReleaseNotes>
-      Add remaining endpoints to Umbrella internal networks and policies. Improve models.
-    </PackageReleaseNotes>
+			Added the FirstFixed property to SecurityAdvisory.cs
+		</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -33,6 +33,12 @@ public class SecurityAdvisory
 	[DataMember(Name = "cwe")]
 	public List<string> Cwes { get; set; } = [];
 
+	[DataMember(Name = "firstFixed")]
+	public List<string> FirstFixed { get; set; } = [];
+
+	[DataMember(Name = "ipsSignatures")]
+	public List<string> IpsSignatures { get; set; } = [];
+
 	[DataMember(Name = "iosRelease")]
 	public List<string> IosReleases { get; set; } = [];
 
