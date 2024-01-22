@@ -16,8 +16,8 @@
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<PackageReleaseNotes>
-			Added the FirstFixed property to SecurityAdvisory.cs
-		</PackageReleaseNotes>
+      Attempts to handle the 429 status by reattempting the query, after setting MaxAttemptCount >1 in CiscoClientOptions.
+    </PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>

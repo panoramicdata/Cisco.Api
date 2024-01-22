@@ -34,7 +34,7 @@ internal sealed class TestPortalConfig
 		{
 			ClientId = credentials[++credentialIndex],
 			ClientSecret = credentials[++credentialIndex],
-			MaxAttemptCount = 2
+			MaxAttemptCount = 100
 		}, logger);
 
 		TestCustomerId = GetProperty(configuration, "TestCustomerId");

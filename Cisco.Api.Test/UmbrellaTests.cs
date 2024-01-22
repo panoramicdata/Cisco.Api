@@ -76,39 +76,58 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 
 	/*
 	// This test shows how the Add/Delete's don't return an int as the docs say.
+	// Also, that API limiter is dealt with where MaxAttemptCount is set to 10.
 	[Fact]
 	public async void AddIdentityToPolicy_Succeeds()
 	{
-		try
+		for (int i = 0; i < 200; i++)
 		{
-			await CiscoClient
+
+			try
+			{
+				await CiscoClient
+					.Umbrella
+					.DeleteIdentityFromPolicyAsync(
+						620254827,
+						14395110
+					)
+					.ConfigureAwait(true);
+			}
+			catch (CiscoApiException ex)
+			{
+				if (ex.Message.ToLower().Contains("limit"))
+				{
+					throw;
+				}
+			}
+
+			try
+			{
+				await CiscoClient
 				.Umbrella
-				.DeleteIdentityFromPolicyAsync(
+				.AddIdentityToPolicyAsync(
 					620254827,
 					14395110
 				)
 				.ConfigureAwait(true);
-		}
-		catch (CiscoApiException)
-		{
 
-		}
+				await CiscoClient
+					.Umbrella
+					.DeleteIdentityFromPolicyAsync(
+						620254827,
+						14395110
+					)
+					.ConfigureAwait(true);
+			}
+			catch (CiscoApiException ex)
+			{
+				if (ex.Message.ToLower().Contains("limit"))
+				{
+					throw;
+				}
+			}
 
-		await CiscoClient
-			.Umbrella
-			.AddIdentityToPolicyAsync(
-				620254827,
-				14395110
-			)
-			.ConfigureAwait(true);
-
-		await CiscoClient
-			.Umbrella
-			.DeleteIdentityFromPolicyAsync(
-				620254827,
-				14395110
-			)
-			.ConfigureAwait(true);
+		};
 	}
 	*/
 
