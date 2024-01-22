@@ -1,4 +1,5 @@
 ﻿using Cisco.Api.Data.Umbrella;
+using Cisco.Api.Exceptions;
 using FluentAssertions;
 using System.Collections.Generic;
 using Xunit;
@@ -8,6 +9,28 @@ namespace Cisco.Api.Test;
 
 public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
+
+	[Fact]
+	public async void CreateInternalNetwork_BadRequestFailed()
+	{
+		await CiscoClient.Awaiting(ciscoClient =>
+			ciscoClient
+			.Umbrella
+			.CreateInternalNetworkAsync(
+				new InternalNetworksCreateUpdateRequest
+				{
+					Name = "Retail Android Range 5184-S - Corby - Priors Hall ParkRetail Android Range 5184-S - Corby - Priors Hall Park",
+					IpAddress = "10.15.153.64",
+					PrefixLength = 26,
+					TunnelId = 0
+				})
+		)
+			.Should()
+			.ThrowAsync<CiscoApiException>()
+			.WithMessage("{\"statusCode\":400,\"error\":\"Bad Request\",\"message\":\"child \\\"name\\\" fails because [\\\"name\\\" length must be less than or equal to 50 characters long]\",\"validation\":{\"source\":\"payload\",\"keys\":[\"name\"]}}")
+			.ConfigureAwait(true);
+	}
+
 	/*
 	[Fact]
 	public async void CreateInternalNetwork_Succeeds()
@@ -19,8 +42,6 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 			.CreateInternalNetworkAsync(
 			new InternalNetworksCreateUpdateRequest
 			{
-				//Name = "Retail Android Range 5184-S - Corby - Priors Hall Park",
-				//Name = "Retail Android Range 5184-S - Corby - Priors Hall…",
 				Name = "Retail Android Range 5184-S - Corby - Priors Hall_",
 				IpAddress = "10.15.153.64",
 				PrefixLength = 26,
@@ -32,7 +53,9 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 		//response.Should().NotBeEmpty();
 		//response.Should().HaveCountGreaterThan(0);
 	}
+	*/
 
+	/*
 	[Fact]
 	public async void AddIdentityToPolicy_Succeeds()
 	{
@@ -63,7 +86,32 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 		response.Should().NotBeEmpty();
 		response.Should().HaveCountGreaterThan(0);
 	}
+	/*
+	[Fact]
+	public async void ListInternalNetworks_FailsWith429()
+	{
+		// TODO Need to await each call in the loop
+		// Loop query a 1000 times to eventually trigger a 429. Catch the exception and assert the message.
 
+		await CiscoClient.Awaiting(async ciscoClient =>
+		{
+			for (int i = 0; i < 1000; i++)
+			{
+				await ciscoClient
+					.Umbrella
+					.ListInternalNetworksAsync()
+					.ConfigureAwait(true);
+			};
+
+			return ValueTask.CompletedTask;
+		}
+		)
+		.Should()
+		.ThrowAsync<CiscoApiException>()
+		.WithMessage("429")
+		.ConfigureAwait(true);
+	}
+	*/
 
 	[Fact]
 	public async void ListPolicies_Succeeds()

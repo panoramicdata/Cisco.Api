@@ -33,6 +33,16 @@ public class CiscoApiException : Exception
 	/// Constructor
 	/// </summary>
 	/// <param name="response"></param>
+	public CiscoApiException(HttpResponseMessage response, string message)
+		: base(message)
+	{
+		Response = response;
+	}
+
+	/// <summary>
+	/// Constructor
+	/// </summary>
+	/// <param name="response"></param>
 	public CiscoApiException(HttpResponseMessage response, Exception innerException)
 		: base((response.IsSuccessStatusCode ? "An API issue occurred." : "API returned a non successful status code.") + " See \"Response\" property for more details.", innerException)
 	{

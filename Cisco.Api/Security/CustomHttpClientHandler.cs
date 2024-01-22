@@ -213,6 +213,23 @@ internal abstract class CustomHttpClientHandler(
 				switch (httpResponseMessage.StatusCode)
 				{
 					case HttpStatusCode.TooManyRequests:
+						if (++attemptCount < Options.MaxAttemptCount)
+						{
+							// TODO Add retry-after header support
+
+							_logger.LogWarning(
+								"Attempt {AttemptCount}/{MaxAttemptCount} failed due to a 429, retrying in {x} seconds...",
+								attemptCount,
+								Options.MaxAttemptCount,
+								Options.RetryDelay);
+
+							await Task.Delay(Options.RetryDelay, cancellationToken)
+								.ConfigureAwait(false);
+
+							continue;
+						}
+
+						break;
 					case HttpStatusCode.BadGateway:
 					case HttpStatusCode.GatewayTimeout:
 					case HttpStatusCode.InternalServerError:
@@ -262,8 +279,11 @@ internal abstract class CustomHttpClientHandler(
 					message,
 					Options.MaxAttemptCount
 				);
-
-				throw new CiscoApiException(httpResponseMessage);
+				var errorContent = await httpResponseMessage
+					.Content
+					.ReadAsStringAsync(cancellationToken)
+					.ConfigureAwait(false);
+				throw new CiscoApiException(httpResponseMessage, errorContent);
 			}
 
 			return httpResponseMessage;
