@@ -212,6 +212,7 @@ internal abstract class CustomHttpClientHandler(
 
 				switch (httpResponseMessage.StatusCode)
 				{
+					case HttpStatusCode.TooManyRequests:
 					case HttpStatusCode.BadGateway:
 					case HttpStatusCode.GatewayTimeout:
 					case HttpStatusCode.InternalServerError:
