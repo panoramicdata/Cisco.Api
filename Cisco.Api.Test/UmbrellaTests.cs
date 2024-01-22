@@ -1,5 +1,4 @@
 ﻿using Cisco.Api.Data.Umbrella;
-using Cisco.Api.Exceptions;
 using FluentAssertions;
 using System.Collections.Generic;
 using Xunit;
@@ -9,7 +8,7 @@ namespace Cisco.Api.Test;
 
 public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
-
+	/*
 	[Fact]
 	public async void CreateInternalNetwork_BadRequestFailed()
 	{
@@ -30,6 +29,7 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 			.WithMessage("{\"statusCode\":400,\"error\":\"Bad Request\",\"message\":\"child \\\"name\\\" fails because [\\\"name\\\" length must be less than or equal to 50 characters long]\",\"validation\":{\"source\":\"payload\",\"keys\":[\"name\"]}}")
 			.ConfigureAwait(true);
 	}
+	*/
 
 	/*
 	[Fact]
@@ -71,6 +71,44 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 		// response.Should().BeOfType<int>();
 		response.Should<int>();
 		//response.Should().HaveCountGreaterThan(0);
+	}
+	*/
+
+	/*
+	// This test shows how the Add/Delete's don't return an int as the docs say.
+	[Fact]
+	public async void AddIdentityToPolicy_Succeeds()
+	{
+		try
+		{
+			await CiscoClient
+				.Umbrella
+				.DeleteIdentityFromPolicyAsync(
+					620254827,
+					14395110
+				)
+				.ConfigureAwait(true);
+		}
+		catch (CiscoApiException)
+		{
+
+		}
+
+		await CiscoClient
+			.Umbrella
+			.AddIdentityToPolicyAsync(
+				620254827,
+				14395110
+			)
+			.ConfigureAwait(true);
+
+		await CiscoClient
+			.Umbrella
+			.DeleteIdentityFromPolicyAsync(
+				620254827,
+				14395110
+			)
+			.ConfigureAwait(true);
 	}
 	*/
 

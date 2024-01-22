@@ -102,7 +102,7 @@ public interface IUmbrella
 	/// <param name="policyId">Specifies the Umbrella Policy (DNS or Web) ID</param>
 	/// <param name="cancellationToken"></param>
 	[Put("/deployments/v2/policies/{policyId}/identities/{originId}")]
-	Task<int> AddIdentityToPolicyAsync(
+	Task AddIdentityToPolicyAsync(
 		int originId,
 		int policyId,
 		CancellationToken cancellationToken = default);
@@ -114,7 +114,7 @@ public interface IUmbrella
 	/// <param name="policyId">Specifies the Umbrella Policy (DNS or Web) ID</param>
 	/// <param name="cancellationToken"></param>
 	[Delete("/deployments/v2/policies/{policyId}/identities/{originId}")]
-	Task<int> DeleteIdentityFromPolicyAsync(
+	Task DeleteIdentityFromPolicyAsync(
 		int originId,
 		int policyId,
 		CancellationToken cancellationToken = default);
