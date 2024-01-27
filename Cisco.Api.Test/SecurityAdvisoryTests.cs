@@ -38,6 +38,20 @@ namespace Cisco.Api.Test
 		}
 
 		[Fact]
+		public async Task GetByProductCisco_Succeeds()
+		{
+			var securityAdvisories =
+				await CiscoClient
+					.SecurityAdvisory
+					.GetAdvisoriesByProduct("Cisco")
+				.ConfigureAwait(true);
+
+			securityAdvisories.Should().NotBeNull();
+			securityAdvisories.Advisories[0].AdvisoryId.Should().Be("cisco-sa-cucm-rce-bWNzQcUm");
+		}
+
+
+		[Fact]
 		public async Task GetByCveNameAsync_Succeeds()
 		{
 			var securityAdvisories =

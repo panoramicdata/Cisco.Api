@@ -15,9 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>
-      Attempts to handle the 429 status by reattempting the query, after setting MaxAttemptCount >1 in CiscoClientOptions.
-    </PackageReleaseNotes>
+		<PackageReleaseNotes>Added 'CiscoClient.SecurityAdvisory.GetAdvisoriesByProduct' method.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>

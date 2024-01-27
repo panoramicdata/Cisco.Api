@@ -101,5 +101,16 @@ namespace Cisco.Api.Interfaces
 		Task<SecurityAdvisories> GetAdvisoriesByCustomRequest(
 			string customRequest,
 			CancellationToken cancellationToken = default);
+
+		/// <summary>
+		/// Get security advisories by type and version
+		/// </summary>
+		/// <param name="product">The product (such as Cisco)</param>
+		/// <param name="cancellationToken">An optional CancellationToken</param>
+		/// <returns>The security advisories</returns>
+		[Get("/security/advisories/v2/product/?product={product}")]
+		Task<SecurityAdvisories> GetAdvisoriesByProduct(
+			string product,
+			CancellationToken cancellationToken = default);
 	}
 }
