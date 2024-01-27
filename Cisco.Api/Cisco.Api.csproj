@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>Added 'CiscoClient.SecurityAdvisory.GetAdvisoriesByProduct' method.</PackageReleaseNotes>
+		<PackageReleaseNotes>Added the 'ErrorDetailsResponse' model to the Security Advisories (when a product is invalid).</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>

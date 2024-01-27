@@ -1,4 +1,7 @@
-﻿using FluentAssertions;
+﻿using Cisco.Api.Data.SecurityAdvisories;
+using Cisco.Api.Exceptions;
+using FluentAssertions;
+using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -48,6 +51,27 @@ namespace Cisco.Api.Test
 
 			securityAdvisories.Should().NotBeNull();
 			securityAdvisories.Advisories[0].AdvisoryId.Should().Be("cisco-sa-cucm-rce-bWNzQcUm");
+		}
+
+		[Fact]
+		public async Task GetByProductCisco_Fails()
+		{
+			try
+			{
+				await CiscoClient
+					.SecurityAdvisory
+					.GetAdvisoriesByProduct("xyz")
+				.ConfigureAwait(true);
+			}
+			catch (CiscoApiException ex)
+			{
+				if (JsonConvert.DeserializeObject<ErrorDetailsResponse>(ex.Message)
+					is ErrorDetailsResponse response)
+				{
+					response.ErrorCode.Should().Be("PRODUCT_NOT_FOUND");
+					response.ErrorMessage.Should().Be("Product not found");
+				}
+			}
 		}
 
 
