@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>Added the 'ErrorDetailsResponse' model to the Security Advisories (when a product is invalid).</PackageReleaseNotes>
+		<PackageReleaseNotes>SecurityAdvisory.IpsSignatures is now a object to handle 2 different possible object return types.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
