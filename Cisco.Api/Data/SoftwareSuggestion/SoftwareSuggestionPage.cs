@@ -3,23 +3,23 @@ using System.Runtime.Serialization;
 
 namespace Cisco.Api.Data.SoftwareSuggestion;
 
+/// <summary>
+/// A Software information page
+/// </summary>
+[DataContract]
+public class SoftwareSuggestionPage
+{
     /// <summary>
-    /// A Software information page
+    /// Pagination response record
     /// </summary>
-    [DataContract]
-    public class SoftwareSuggestionPage
-    {
-        /// <summary>
-        /// Pagination response record
-        /// </summary>
-        [DataMember(Name = "paginationResponseRecord")]
-        public PaginationResponseRecord? PaginationResponseRecord { get; set; }
+    [DataMember(Name = "paginationResponseRecord")]
+    public PaginationResponseRecord? PaginationResponseRecord { get; set; }
 
-        /// <summary>
-        /// The product list
-        /// </summary>
-        [DataMember(Name = "productList")]
-        public List<SoftwareSuggestionProductList> Products { get; set; } = [];
+    /// <summary>
+    /// The product list
+    /// </summary>
+    [DataMember(Name = "productList")]
+    public List<SoftwareSuggestionProductList> Products { get; set; } = [];
 
 	/// <summary>
 	/// The error details response

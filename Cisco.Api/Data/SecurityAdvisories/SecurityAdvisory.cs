@@ -37,7 +37,7 @@ public class SecurityAdvisory
 	public List<string> FirstFixed { get; set; } = [];
 
 	[DataMember(Name = "ipsSignatures")]
-	public List<string> IpsSignatures { get; set; } = [];
+	public object? IpsSignatures { get; set; }
 
 	[DataMember(Name = "iosRelease")]
 	public List<string> IosReleases { get; set; } = [];

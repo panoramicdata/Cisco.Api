@@ -54,6 +54,18 @@ namespace Cisco.Api.Test
 		}
 
 		[Fact]
+		public async Task GetByProductCiscoFirePower_Succeeds()
+		{
+			var securityAdvisories =
+				await CiscoClient
+					.SecurityAdvisory
+					.GetAdvisoriesByProduct("Cisco FirePOWER Services Software for ASA")
+				.ConfigureAwait(true);
+
+			securityAdvisories.Should().NotBeNull();
+		}
+
+		[Fact]
 		public async Task GetByProductCisco_Fails()
 		{
 			try
