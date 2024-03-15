@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>SecurityAdvisory.IpsSignatures is now a object to handle 2 different possible object return types.</PackageReleaseNotes>
+		<PackageReleaseNotes>When storing the AuthToken expiry, reduce the window to take into account any delay during the return of the token response.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>

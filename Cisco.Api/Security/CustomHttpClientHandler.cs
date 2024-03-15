@@ -90,24 +90,19 @@ internal abstract class CustomHttpClientHandler(
 
 			var expireInSeconds = accessTokenResponse.ExpiresInSeconds;
 
-			/*
-				_logger.LogDebug($"Access token will expire in {expireInSeconds} seconds.");
-				// If there is an expiry, try to take 1 minute off it unless it is already less than a minute
-				if (accessTokenResponse.ExpiresInSeconds is not null && accessTokenResponse.ExpiresInSeconds - 60 > 0)
-				{
-					expireInSeconds -= 60;
-					//_logger.LogDebug("Since expiry > 60 seconds, it has been reduced further by 1 minute to give time to trigger refresh of token.");
-				}
-				// If not yet set, set expiry to default timeout of the 1 hour max limit, minus a minute.
-				if (expireInSeconds is null)
-				{
-					//_logger.LogDebug("The access token 'ExpiresInSeconds' was null, setting to 3540 seconds.");
-					expireInSeconds = 3540;
-				}
-				*/
+			_logger.LogDebug($"Access token should expire in {expireInSeconds} seconds.");
+			// If there is an expiry, try to take 1 minute off it unless it is already less than a minute
+			// This is to resolve corner cases where the expiry took a few seconds to be returned, and so the calculated expiry time
+			// leaves a small window for the token to have expired before the next request, allowing a query to fail.
+			if (accessTokenResponse.ExpiresInSeconds is not null && accessTokenResponse.ExpiresInSeconds - 60 > 0)
+			{
+				expireInSeconds -= 60;
+				_logger.LogDebug("The expiry has been reduced further by a safety margin of 1 minute, to deal with any delay in the token response being returned.");
+			}
 
-			// Set expiry, defaulting to 1 hour if not set
-			_accessTokenExpiryDateTimeOffset = DateTimeOffset.UtcNow.AddSeconds(expireInSeconds ?? 3600);
+			// Store the expiry timestamp, defaulting to just under 1 hour if not available in response
+			_accessTokenExpiryDateTimeOffset = DateTimeOffset.UtcNow.AddSeconds(expireInSeconds ?? 3540);
+
 			_logger.LogDebug(
 				"The access token '{AccessToken}' expiry date time is '{ExpiryDateTimeUtc}'",
 				accessTokenResponse.AccessToken!,
@@ -207,7 +202,7 @@ internal abstract class CustomHttpClientHandler(
 			if (!httpResponseMessage.IsSuccessStatusCode)
 			{
 #if !DEBUG
-                    var message = await GetResponseContent(statusCode, content).ConfigureAwait(false);
+				var message = await GetResponseContent(statusCode, content).ConfigureAwait(false);
 #endif
 
 				switch (httpResponseMessage.StatusCode)
