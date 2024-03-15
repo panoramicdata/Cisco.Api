@@ -88,20 +88,21 @@ internal abstract class CustomHttpClientHandler(
 
 			_logger.LogDebug("Authentication succeeded.");
 
-			var expireInSeconds = accessTokenResponse.ExpiresInSeconds;
+			// Defaulting to just under 1 hour if not available in response
+			var expireInSeconds = accessTokenResponse.ExpiresInSeconds ?? 3540;
 
-			_logger.LogDebug($"Access token should expire in {expireInSeconds} seconds.");
 			// If there is an expiry, try to take 1 minute off it unless it is already less than a minute
 			// This is to resolve corner cases where the expiry took a few seconds to be returned, and so the calculated expiry time
 			// leaves a small window for the token to have expired before the next request, allowing a query to fail.
-			if (accessTokenResponse.ExpiresInSeconds is not null && accessTokenResponse.ExpiresInSeconds - 60 > 0)
+			if (accessTokenResponse.ExpiresInSeconds - 60 > 0)
 			{
 				expireInSeconds -= 60;
-				_logger.LogDebug("The expiry has been reduced further by a safety margin of 1 minute, to deal with any delay in the token response being returned.");
+				//_logger.LogDebug("The expiry has been reduced further by a safety margin of 1 minute, to deal with any delay in the token response being returned.");
 			}
+			_logger.LogDebug($"Access token should expire in {expireInSeconds} seconds.");
 
-			// Store the expiry timestamp, defaulting to just under 1 hour if not available in response
-			_accessTokenExpiryDateTimeOffset = DateTimeOffset.UtcNow.AddSeconds(expireInSeconds ?? 3540);
+			// Store the expiry timestamp
+			_accessTokenExpiryDateTimeOffset = DateTimeOffset.UtcNow.AddSeconds(expireInSeconds);
 
 			_logger.LogDebug(
 				"The access token '{AccessToken}' expiry date time is '{ExpiryDateTimeUtc}'",
