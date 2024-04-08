@@ -66,13 +66,13 @@ public interface IUmbrella
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
-	/// List Policies for an internal network 
+	/// List Policies for an internal network
 	/// </summary>
 	/// <param name="internalNetworkId">The origin ID (originId) of the internal network</param>
 	/// <param name="type">Specifies the type of Umbrella policy (either DNS or Web)</param>
 	/// <param name="cancellationToken"></param>
 	[Get("/deployments/v2/internalnetworks/{internalNetworkId}/policies")]
-	Task<InternalNetworkPolicy> ListPoliciesForInternalNetworkAsync(
+	Task<List<InternalNetworkPolicy>> ListPoliciesForInternalNetworkAsync(
 		int internalNetworkId,
 		string? type = "dns",
 		CancellationToken cancellationToken = default);
@@ -84,7 +84,7 @@ public interface IUmbrella
 	/// <summary>
 	/// List the Umbrella policies. You can filter by policy type. If you do not specify a policy type, Umbrella returns the DNS policies.
 	/// </summary>
-	/// <param name="type">Specifies the type of Umbrella policy (either DNS or Web)</param>	
+	/// <param name="type">Specifies the type of Umbrella policy (either DNS or Web)</param>
 	/// <param name="page">Specifies a page number in the collection.</param>
 	/// <param name="limit">Specifies the number of records to return per page.</param>
 	/// <param name="cancellationToken"></param>

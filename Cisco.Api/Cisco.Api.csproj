@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>When storing the AuthToken expiry, reduce the window to take into account any delay during the return of the token response.</PackageReleaseNotes>
+		<PackageReleaseNotes>Umbrella method ListPoliciesForInternalNetworkAsync() corrected to return a list of policies.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
