@@ -23,19 +23,50 @@ internal sealed class TestPortalConfig
 		var credentialsAppSetting = configuration[$"Credentials:{credentialsName}"]
 			?? throw new InvalidOperationException($"No credentials found in appsettings.json file for {credentialsName}.");
 
+		// If credentialsAppSetting is a list of credentials, then stop
+		// and throw an exception.
+
 		var credentials = credentialsAppSetting.Split(';');
-		if (credentials.Length != 2)
+		if (credentials.Length != 2 && credentials.Length != 4) // The 4 is for Umbrella tests
 		{
 			throw new InvalidOperationException($"Expected to find credentials in the form ClientId;ClientSecret.  Found '{credentialsAppSetting}'");
 		}
 
 		var credentialIndex = -1;
-		CiscoClient = new CiscoClient(new CiscoClientOptions
+
+		// Normally, takes just a single client id and secret
+		// but if there are four, then it's to support the Umbrella API key pool to circumvent rate limiting
+		if (credentials.Length == 2)
 		{
-			ClientId = credentials[++credentialIndex],
-			ClientSecret = credentials[++credentialIndex],
-			MaxAttemptCount = 100
-		}, logger);
+			CiscoClient = new CiscoClient(new CiscoClientOptions
+			{
+				ClientId = credentials[++credentialIndex],
+				ClientSecret = credentials[++credentialIndex],
+				MaxAttemptCount = 100
+			}, logger);
+		}
+		else
+		{
+			// Must be the Umbrella 'fast' client
+			// You can use X number of client id and secret pairs to circumvent the heavy rate limiting
+			CiscoClient = new CiscoClient(new CiscoClientOptions
+			{
+				ClientCredentials = [
+					new CiscoClientCredentials
+					{
+						ClientId = credentials[++credentialIndex],
+						ClientSecret = credentials[++credentialIndex]
+					},
+					new CiscoClientCredentials
+					{
+						ClientId = credentials[++credentialIndex],
+						ClientSecret = credentials[++credentialIndex]
+					},
+				],
+				MaxAttemptCount = 100
+			}, logger);
+		}
+
 
 		TestCustomerId = GetProperty(configuration, "TestCustomerId");
 		TestInventoryId = GetProperty(configuration, "TestInventoryId");

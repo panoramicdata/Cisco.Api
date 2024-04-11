@@ -7,6 +7,7 @@ using Newtonsoft.Json.Converters;
 using Refit;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 
 namespace Cisco.Api;
@@ -30,14 +31,28 @@ public partial class CiscoClient : IDisposable
 			throw new ArgumentNullException(nameof(options));
 		}
 
-		if (options.ClientId is null)
+		if (options.ClientCredentials is not null && options.ClientCredentials.Any())
 		{
-			throw new ArgumentException("Options ClientId must be set", nameof(options));
-		}
+			// Multi-instance credentials for Umbrella to improve performance
 
-		if (options.ClientSecret is null)
+			if (!options.ClientCredentials.Any())
+			{
+				throw new ArgumentException("There must be at least one set of credentials.", nameof(options));
+			}
+		}
+		else
 		{
-			throw new ArgumentException("Options ClientSecret must be set", nameof(options));
+			// Standard - single instance credentials
+
+			if (options.ClientId is null)
+			{
+				throw new ArgumentException("Options ClientId must be set", nameof(options));
+			}
+
+			if (options.ClientSecret is null)
+			{
+				throw new ArgumentException("Options ClientSecret must be set", nameof(options));
+			}
 		}
 
 		_restHttpClient = new HttpClient(
@@ -53,15 +68,33 @@ public partial class CiscoClient : IDisposable
 
 		// Umbrella uses a different endpoint
 		// https://docs.umbrella.com/umbrella-api/docs/umbrella-api-quick-start
-		_restUmbrellaClient = new HttpClient(
-			new UmbrellaHttpClientHandler(
-				new("https://api.umbrella.com/auth/v2/token"),
-				options,
-				_logger))
+
+		if (options.ClientCredentials is not null)
 		{
-			BaseAddress = new("https://api.umbrella.com/"),
-			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
-		};
+			// Supports multiple credentials to circumvent rate limiting
+			_restUmbrellaClient = new HttpClient(
+				new AuthenticatedFastUmbrellaHttpClientHandler(
+					new("https://api.umbrella.com/auth/v2/token"),
+					options,
+					_logger))
+			{
+				BaseAddress = new("https://api.umbrella.com/"),
+				Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
+			};
+		}
+		else
+		{
+			_restUmbrellaClient = new HttpClient(
+				new AuthenticatedUmbrellaHttpClientHandler(
+					new("https://api.umbrella.com/auth/v2/token"),
+					options,
+					_logger))
+			{
+				BaseAddress = new("https://api.umbrella.com/"),
+				Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
+			};
+		}
+
 
 
 		_soapHttpClient = new HttpClient(

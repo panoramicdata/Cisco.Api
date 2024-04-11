@@ -143,6 +143,41 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 		response.Should().NotBeEmpty();
 		response.Should().HaveCountGreaterThan(0);
 	}
+
+	[Fact]
+	public async void MultiQueryCredentialCycling_Succeeds()
+	{
+		// Check that token was first
+		var response = await CiscoClient
+			.Umbrella
+			.ListInternalNetworksAsync()
+			.ConfigureAwait(true);
+
+		response.Should().BeOfType<List<InternalNetwork>>();
+		response.Should().NotBeEmpty();
+		response.Should().HaveCountGreaterThan(0);
+
+		// Check that token was second
+		response = await CiscoClient
+			.Umbrella
+			.ListInternalNetworksAsync()
+			.ConfigureAwait(true);
+
+		response.Should().BeOfType<List<InternalNetwork>>();
+		response.Should().NotBeEmpty();
+		response.Should().HaveCountGreaterThan(0);
+
+		// Check that token was first again
+		response = await CiscoClient
+			.Umbrella
+			.ListInternalNetworksAsync()
+			.ConfigureAwait(true);
+
+		response.Should().BeOfType<List<InternalNetwork>>();
+		response.Should().NotBeEmpty();
+		response.Should().HaveCountGreaterThan(0);
+	}
+
 	/*
 	[Fact]
 	public async void ListInternalNetworks_FailsWith429()

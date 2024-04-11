@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Cisco.Api;
 
@@ -21,6 +22,11 @@ public class CiscoClientOptions
 	/// The Client Secret.  Must be provided when no HttpClient is provided.
 	/// </summary>
 	public string? ClientSecret { get; set; }
+
+	/// <summary>
+	/// Not in use.
+	/// </summary>
+	public List<CiscoClientCredentials>? ClientCredentials { get; set; }
 
 	/// <summary>
 	/// The maximum number of query attempts

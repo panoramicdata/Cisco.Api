@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Cisco.Api.Security;
 
-internal class UmbrellaHttpClientHandler(
+internal class AuthenticatedUmbrellaHttpClientHandler(
 	Uri authenticationUri,
 	CiscoClientOptions options,
 	ILogger logger) : CustomHttpClientHandler(authenticationUri, options, logger)
