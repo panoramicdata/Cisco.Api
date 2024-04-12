@@ -11,14 +11,14 @@ internal class AuthenticatedFastUmbrellaHttpClientHandler(
 	CiscoClientOptions options,
 	ILogger logger) : CustomFastUmbrellaHttpClientHandler(authenticationUri, options, logger)
 {
-	public override HttpClient GetHttpClient()
+	public override HttpClient GetHttpClient(int currentCredentialCurrentIndex)
 	{
 		var httpClient = new HttpClient
 		{
 			BaseAddress = AuthUri,
 			Timeout = TimeSpan.FromSeconds(15)
 		};
-		var base64EncodedClientIdAndSecret = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{CiscoUmbrellaCredentials.ElementAt(CurrentCredentialCurrentIndex).Key}:{CiscoUmbrellaCredentials.ElementAt(CurrentCredentialCurrentIndex).Value.ClientSecret}"));
+		var base64EncodedClientIdAndSecret = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{CiscoUmbrellaCredentials.ElementAt(currentCredentialCurrentIndex).Key}:{CiscoUmbrellaCredentials.ElementAt(currentCredentialCurrentIndex).Value.ClientSecret}"));
 		httpClient.DefaultRequestHeaders.Add("Authorization", $"Basic {base64EncodedClientIdAndSecret}");
 		return httpClient;
 	}

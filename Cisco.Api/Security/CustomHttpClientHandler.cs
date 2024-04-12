@@ -27,6 +27,17 @@ internal abstract class CustomHttpClientHandler(
 
 	private async Task<string> GetAccessTokenAsync(CancellationToken cancellationToken)
 	{
+		// If the user mistakenly sets Options.ClientCredentials, but isn't querying the Umbrella fast client, they'll have been able
+		// to reach here, so double check that the appropriate ClientId and ClientSecret are set.
+		if (Options.ClientId is null)
+		{
+			throw new ArgumentException("Options ClientId must be set", nameof(Options));
+		}
+		if (Options.ClientSecret is null)
+		{
+			throw new ArgumentException("Options ClientSecret must be set", nameof(Options));
+		}
+
 		_logger.LogDebug("Authenticating...");
 
 		var attemptCount = 0;

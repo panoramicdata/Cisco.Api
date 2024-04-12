@@ -40,19 +40,19 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 	// Assign the credentials to a ConcurrentDictionary to allow for thread-safe access
 	protected ConcurrentDictionary<string, CiscoUmbrellaCredentialsTokenTracking> CiscoUmbrellaCredentials { get; set; }
 	  = new ConcurrentDictionary<string, CiscoUmbrellaCredentialsTokenTracking>(
-			 options.ClientCredentials!.ToDictionary(x => x.ClientId, x => new CiscoUmbrellaCredentialsTokenTracking(x.ClientSecret)));
+			 options.ClientCredentialsNotSupported!.ToDictionary(x => x.ClientId, x => new CiscoUmbrellaCredentialsTokenTracking(x.ClientSecret)));
 
 	protected int CurrentCredentialCurrentIndex { get; set; } = 0;
 	public bool IsFirstQuery { get; private set; } = true;
 
-	private async Task<string> GetAccessTokenAsync(CancellationToken cancellationToken)
+	private async Task<string> GetAccessTokenAsync(int currentCredentialCurrentIndex, CancellationToken cancellationToken)
 	{
 		_logger.LogDebug("Authenticating...");
 
 		var attemptCount = 0;
 		while (true)
 		{
-			using var httpClient = GetHttpClient();
+			using var httpClient = GetHttpClient(currentCredentialCurrentIndex);
 
 			HttpResponseMessage httpResponseMessage;
 			try
@@ -100,7 +100,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 				// If response not yet logged and OnErrorEnsureRequestResponseHeadersLogged is set, then log as error
 				if (!_logger.IsEnabled(LevelToLogAt) && Options.OnErrorEnsureRequestResponseHeadersLogged)
 				{
-					await LogResponseHeaders(httpResponseMessage, true).ConfigureAwait(false);
+					await LogResponseHeaders(currentCredentialCurrentIndex, httpResponseMessage, true).ConfigureAwait(false);
 				}
 
 				throw new SecurityException($"{accessTokenResponse.Error}: {accessTokenResponse.ErrorDescription}");
@@ -122,12 +122,12 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 			_logger.LogDebug($"Access token should expire in {expireInSeconds} seconds.");
 
 			// Store the expiry timestamp
-			CiscoUmbrellaCredentials.ElementAt(CurrentCredentialCurrentIndex).Value.AccessTokenExpiryDateTimeOffset = DateTimeOffset.UtcNow.AddSeconds(expireInSeconds);
+			CiscoUmbrellaCredentials.ElementAt(currentCredentialCurrentIndex).Value.AccessTokenExpiryDateTimeOffset = DateTimeOffset.UtcNow.AddSeconds(expireInSeconds);
 
 			_logger.LogDebug(
 				"The access token '{AccessToken}' expiry date time is '{ExpiryDateTimeUtc}'",
 				accessTokenResponse.AccessToken!,
-				CiscoUmbrellaCredentials.ElementAt(CurrentCredentialCurrentIndex).Value.AccessTokenExpiryDateTimeOffset
+				CiscoUmbrellaCredentials.ElementAt(currentCredentialCurrentIndex).Value.AccessTokenExpiryDateTimeOffset
 			);
 
 			return accessTokenResponse.AccessToken!;
@@ -138,6 +138,11 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 		HttpRequestMessage request,
 		CancellationToken cancellationToken)
 	{
+		// Once CurrentCredentialCurrentIndex is set, it is copied to a local variable so that all refs
+		// to it stay the same for the duration of the method, in case another query does a SendAsync() at the same time and changed it, which
+		// probably write new values to the wrong token if I use CurrentCredentialCurrentIndex everywhere, (although it might not be a problem if the token is still valid).
+		// So far I'm not using this in parallel in Nucleus.
+
 		// Use the next credential in the list
 		if (IsFirstQuery)
 		{
@@ -148,21 +153,21 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 		{
 			CurrentCredentialCurrentIndex = (CurrentCredentialCurrentIndex + 1) % CiscoUmbrellaCredentials.Count;
 		}
-
-		var currentCredentialsInstance = CiscoUmbrellaCredentials.ElementAt(CurrentCredentialCurrentIndex).Value;
+		var currentCredentialCurrentIndex = CurrentCredentialCurrentIndex;
+		var currentCredentialsInstance = CiscoUmbrellaCredentials.ElementAt(currentCredentialCurrentIndex).Value;
 		// There might be an authentication token already that is about to expire so check first.
 		if (currentCredentialsInstance.AccessTokenExpiryDateTimeOffset is not null
 			&& currentCredentialsInstance.AccessTokenExpiryDateTimeOffset <= DateTimeOffset.UtcNow)
 		{
 			_logger.LogDebug("SendAsync(): The access token expiry date time ('{AccessTokenExpiryDateTimeOffset}') has expired - getting a new token...", currentCredentialsInstance.AccessTokenExpiryDateTimeOffset);
-			currentCredentialsInstance.AccessToken = await GetAccessTokenAsync(cancellationToken)
+			currentCredentialsInstance.AccessToken = await GetAccessTokenAsync(currentCredentialCurrentIndex, cancellationToken)
 				.ConfigureAwait(false);
 			currentCredentialsInstance.AuthenticationHeaderValue = new AuthenticationHeaderValue("Bearer", currentCredentialsInstance.AccessToken);
 		}
 
 		if (currentCredentialsInstance.AuthenticationHeaderValue is null)
 		{
-			currentCredentialsInstance.AccessToken = await GetAccessTokenAsync(cancellationToken)
+			currentCredentialsInstance.AccessToken = await GetAccessTokenAsync(currentCredentialCurrentIndex, cancellationToken)
 				.ConfigureAwait(false);
 			currentCredentialsInstance.AuthenticationHeaderValue = new AuthenticationHeaderValue("Bearer", currentCredentialsInstance.AccessToken);
 		}
@@ -175,7 +180,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 		// Only do diagnostic logging if we're at the level we want to enable for as this is more efficient
 		if (_logger.IsEnabled(LevelToLogAt))
 		{
-			await LogRequestHeaders(request).ConfigureAwait(false);
+			await LogRequestHeaders(currentCredentialCurrentIndex, request).ConfigureAwait(false);
 		}
 
 		var attemptCount = 0;
@@ -209,7 +214,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 				// then log them. Avoids need for verbose logging of all queries.
 				if (!_logger.IsEnabled(LevelToLogAt) && Options.OnErrorEnsureRequestResponseHeadersLogged)
 				{
-					await LogRequestHeaders(request, true).ConfigureAwait(false);
+					await LogRequestHeaders(currentCredentialCurrentIndex, request, true).ConfigureAwait(false);
 				}
 
 				_logger.LogError(
@@ -223,7 +228,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 			// Only do diagnostic logging if we're at the level we want to enable for as this is more efficient
 			if (_logger.IsEnabled(LevelToLogAt))
 			{
-				await LogResponseHeaders(httpResponseMessage).ConfigureAwait(false);
+				await LogResponseHeaders(currentCredentialCurrentIndex, httpResponseMessage).ConfigureAwait(false);
 			}
 
 			// Make response stream content accessible in debug
@@ -273,7 +278,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 								// Cisco API can return an incorrect 403 if their load balancer hasn't got access to
 								// the latest state of a token. Request a new token so that follow-up retry probably works.
 								_logger.LogDebug($"SendAsync(): Response content was Developer Inactive - could be a bad API response, requesting a new token.");
-								currentCredentialsInstance.AccessToken = await GetAccessTokenAsync(cancellationToken)
+								currentCredentialsInstance.AccessToken = await GetAccessTokenAsync(currentCredentialCurrentIndex, cancellationToken)
 									.ConfigureAwait(false);
 								currentCredentialsInstance.AuthenticationHeaderValue = new AuthenticationHeaderValue("Bearer", currentCredentialsInstance.AccessToken);
 								request.Headers.Authorization = currentCredentialsInstance.AuthenticationHeaderValue;
@@ -299,8 +304,8 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 				// then log them both. Avoids need for verbose logging of all queries.
 				if (!_logger.IsEnabled(LevelToLogAt) && Options.OnErrorEnsureRequestResponseHeadersLogged)
 				{
-					await LogRequestHeaders(request, true).ConfigureAwait(false);
-					await LogResponseHeaders(httpResponseMessage, true).ConfigureAwait(false);
+					await LogRequestHeaders(currentCredentialCurrentIndex, request, true).ConfigureAwait(false);
+					await LogResponseHeaders(currentCredentialCurrentIndex, httpResponseMessage, true).ConfigureAwait(false);
 				}
 
 				_logger.LogError(
@@ -319,7 +324,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 		}
 	}
 
-	private async Task LogRequestHeaders(HttpRequestMessage request, bool logAsError = false)
+	private async Task LogRequestHeaders(int currentCredentialCurrentIndex, HttpRequestMessage request, bool logAsError = false)
 	{
 		// Use logging override if set
 		_logger.Log(
@@ -336,14 +341,14 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 
 			_logger.Log(
 				logAsError ? LogLevel.Error : LevelToLogAt,
-				"Token {TokenIndex}: RequestContent\r\n{RequestContext}",
-				CurrentCredentialCurrentIndex,
+				"** Token Index {TokenIndex}: RequestContent\r\n{RequestContext}",
+				currentCredentialCurrentIndex,
 				content
 			);
 		}
 	}
 
-	private async Task LogResponseHeaders(HttpResponseMessage httpResponseMessage, bool logAsError = false)
+	private async Task LogResponseHeaders(int currentCredentialCurrentIndex, HttpResponseMessage httpResponseMessage, bool logAsError = false)
 	{
 		// Use logging override if set
 		_logger.Log(
@@ -361,8 +366,8 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 
 			_logger.Log(
 				logAsError ? LogLevel.Error : LevelToLogAt,
-				"Token {TokenIndex}: ResponseContent\r\n{ResponseContent}",
-				CurrentCredentialCurrentIndex,
+				"** Token Index {TokenIndex}: ResponseContent\r\n{ResponseContent}",
+				currentCredentialCurrentIndex,
 				content);
 		}
 	}
@@ -383,7 +388,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 	}
 
 
-	public abstract HttpClient GetHttpClient();
+	public abstract HttpClient GetHttpClient(int currentCredentialCurrentIndex);
 
 	public abstract StringContent GetAuthBody();
 }

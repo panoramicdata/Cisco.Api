@@ -51,7 +51,7 @@ internal sealed class TestPortalConfig
 			// You can use X number of client id and secret pairs to circumvent the heavy rate limiting
 			CiscoClient = new CiscoClient(new CiscoClientOptions
 			{
-				ClientCredentials = [
+				ClientCredentialsNotSupported = [
 					new CiscoClientCredentials
 					{
 						ClientId = credentials[++credentialIndex],

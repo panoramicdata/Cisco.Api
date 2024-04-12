@@ -24,11 +24,6 @@ public class CiscoClientOptions
 	public string? ClientSecret { get; set; }
 
 	/// <summary>
-	/// Not in use.
-	/// </summary>
-	public List<CiscoClientCredentials>? ClientCredentials { get; set; }
-
-	/// <summary>
 	/// The maximum number of query attempts
 	/// </summary>
 	public int MaxAttemptCount { get; set; } = 1;
@@ -47,4 +42,9 @@ public class CiscoClientOptions
 	/// The HttpClientTimeoutSeconds - defaults to 100
 	/// </summary>
 	public int HttpClientTimeoutSeconds { get; set; } = 100;
+
+	/// <summary>
+	/// This property is only for un-official use with Umbrella client to improve performance.
+	/// </summary>
+	public List<CiscoClientCredentials>? ClientCredentialsNotSupported { get; set; }
 }

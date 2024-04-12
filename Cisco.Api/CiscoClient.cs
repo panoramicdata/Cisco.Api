@@ -31,18 +31,17 @@ public partial class CiscoClient : IDisposable
 			throw new ArgumentNullException(nameof(options));
 		}
 
-		if (options.ClientCredentials is not null && options.ClientCredentials.Any())
+		if (options.ClientCredentialsNotSupported is not null)
 		{
-			// Multi-instance credentials for Umbrella to improve performance
-
-			if (!options.ClientCredentials.Any())
+			// This property is only for un-official use with Umbrella to improve performance by avoiding the rate limiter.
+			if (!options.ClientCredentialsNotSupported.Any())
 			{
 				throw new ArgumentException("There must be at least one set of credentials.", nameof(options));
 			}
 		}
 		else
 		{
-			// Standard - single instance credentials
+			// Standard - single instance credentials for all other clients
 
 			if (options.ClientId is null)
 			{
@@ -69,7 +68,7 @@ public partial class CiscoClient : IDisposable
 		// Umbrella uses a different endpoint
 		// https://docs.umbrella.com/umbrella-api/docs/umbrella-api-quick-start
 
-		if (options.ClientCredentials is not null)
+		if (options.ClientCredentialsNotSupported is not null)
 		{
 			// Supports multiple credentials to circumvent rate limiting
 			_restUmbrellaClient = new HttpClient(

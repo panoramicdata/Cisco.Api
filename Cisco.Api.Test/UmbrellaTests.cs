@@ -147,6 +147,8 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 	[Fact]
 	public async void MultiQueryCredentialCycling_Succeeds()
 	{
+		// Remember to set "DefaultCredentials": "Cae_Umbrella_Fast", which contains 2 client id and secret pairs.
+
 		// Check that token was first
 		var response = await CiscoClient
 			.Umbrella
