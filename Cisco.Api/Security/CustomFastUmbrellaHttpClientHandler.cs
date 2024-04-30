@@ -249,7 +249,12 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 					case HttpStatusCode.TooManyRequests:
 						if (++attemptCount < Options.MaxAttemptCount)
 						{
-							// TODO Add retry-after header support
+							// Set the retry based on 'retry-after' header, or use Options.RetryDelay
+							var headers = httpResponseMessage.Headers;
+							var retryAfter = headers.RetryAfter?.Delta;
+							var retryDelay = retryAfter is not null
+								? retryAfter.Value
+								: Options.RetryDelay;
 
 							_logger.LogWarning(
 								"Attempt {AttemptCount}/{MaxAttemptCount} failed due to a 429, retrying in {x} seconds...",
@@ -257,7 +262,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 								Options.MaxAttemptCount,
 								Options.RetryDelay);
 
-							await Task.Delay(Options.RetryDelay, cancellationToken)
+							await Task.Delay(retryDelay, cancellationToken)
 								.ConfigureAwait(false);
 
 							continue;
