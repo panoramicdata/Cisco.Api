@@ -260,7 +260,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 								"Attempt {AttemptCount}/{MaxAttemptCount} failed due to a 429, retrying in {x} seconds...",
 								attemptCount,
 								Options.MaxAttemptCount,
-								Options.RetryDelay);
+								retryDelay);
 
 							await Task.Delay(retryDelay, cancellationToken)
 								.ConfigureAwait(false);

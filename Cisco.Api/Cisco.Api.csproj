@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>Umbrella method ListPoliciesForInternalNetworkAsync() corrected to return a list of policies.</PackageReleaseNotes>
+		<PackageReleaseNotes>Umbrella 429 retries now set the delay based on the Retry-After header, if set.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
