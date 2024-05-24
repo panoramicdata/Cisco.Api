@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace Cisco.Api.Data.PxCloud;
@@ -11,19 +10,19 @@ public class ContractWithCustomers
 	/// Contract ID of the service contract.
 	/// </summary>
 	[DataMember(Name = "contractNumber")]
-	public required string ContractNumber { get; set; }
+	public string ContractNumber { get; set; } = null!;
 
 	/// <summary>
 	/// Current contract status.
 	/// </summary>
 	[DataMember(Name = "contractStatus")]
-	public required string ContractStatus { get; set; }
+	public string ContractStatus { get; set; } = null!;
 
 	/// <summary>
 	/// Total monetary value of the contract.
 	/// </summary>
 	[DataMember(Name = "contractValue")]
-	public int ContractValue { get; set; }
+	public decimal ContractValue { get; set; }
 
 	/// <summary>
 	/// List of Customer Details.
@@ -41,19 +40,19 @@ public class ContractWithCustomers
 	/// Comma separated list of service levels of the contract.
 	/// </summary>
 	[DataMember(Name = "serviceLevel")]
-	public required string ServiceLevel { get; set; }
+	public string ServiceLevel { get; set; } = null!;
 
 	/// <summary>
 	/// Start date of the contract, specified using the UTC date format YYYY-MM-DD.
 	/// </summary>
 	[DataMember(Name = "coverageStartDate")]
-	public required String CoverageStartDate { get; set; }
+	public string CoverageStartDate { get; set; } = null!;
 
 	/// <summary>
 	/// End date of the contract, specified using the UTC date format YYYY-MM-DD.
 	/// </summary>
 	[DataMember(Name = "coverageEndDate")]
-	public required String CoverageEndDate { get; set; }
+	public string CoverageEndDate { get; set; } = null!;
 
 	/// <summary>
 	/// Onboarding status of a customer in CX Cloud.

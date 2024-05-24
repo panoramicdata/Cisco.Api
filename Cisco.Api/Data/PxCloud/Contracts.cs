@@ -4,11 +4,11 @@ using System.Runtime.Serialization;
 namespace Cisco.Api.Data.PxCloud;
 
 [DataContract]
-public class ContractDetails
+public class Contracts : BaseResponse
 {
 	/// <summary>
-	/// The list of contract details.
+	/// The list of contracts.
 	/// </summary>
 	[DataMember(Name = "items")]
-	public List<ContractDetails> Items { get; set; } = null!;
+	public List<Contract> Items { get; set; } = null!;
 }

@@ -184,6 +184,8 @@ public partial class CiscoClient : IDisposable
 			{
 				_restHttpClient?.Dispose();
 				_soapHttpClient?.Dispose();
+				_restUmbrellaClient?.Dispose();
+				_restPXCloudClient?.Dispose();
 			}
 
 			disposedValue = true;

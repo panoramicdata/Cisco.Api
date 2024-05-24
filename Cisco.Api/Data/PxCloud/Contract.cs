@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Cisco.Api.Data.PxCloud;
 
@@ -10,7 +9,7 @@ public class Contract
 	/// Contract ID of the service contract.
 	/// </summary>
 	[DataMember(Name = "contractNumber")]
-	public required string ContractNumber { get; set; }
+	public string ContractNumber { get; set; } = null!;
 
 	/// <summary>
 	/// Internal identifier for a customer cuid will be null if onboardedstatus is 0.
@@ -28,13 +27,13 @@ public class Contract
 	/// Current contract status.
 	/// </summary>
 	[DataMember(Name = "contractStatus")]
-	public required string ContractStatus { get; set; }
+	public string ContractStatus { get; set; } = null!;
 
 	/// <summary>
 	/// Total monetary value of the contract.
 	/// </summary>
 	[DataMember(Name = "contractValue")]
-	public int ContractValue { get; set; }
+	public decimal ContractValue { get; set; }
 
 	/// <summary>
 	/// Name of the end customer. customerName will be null if onboardedstatus is 0.
@@ -46,43 +45,43 @@ public class Contract
 	/// Customer global ultimate name. The customer identity name at the Enterprise level.
 	/// </summary>
 	[DataMember(Name = "customerGUName")]
-	public required string CustomerGUName { get; set; }
+	public string CustomerGUName { get; set; } = null!;
 
 	/// <summary>
 	/// Currency code for the country specified on the contract.
 	/// </summary>
 	[DataMember(Name = "currency")]
-	public required string Currency { get; set; }
+	public string Currency { get; set; } = null!;
 
 	/// <summary>
 	/// Comma separated list of service levels of the contract.
 	/// </summary>
 	[DataMember(Name = "serviceLevel")]
-	public required string ServiceLevel { get; set; }
+	public string ServiceLevel { get; set; } = null!;
 
 	/// <summary>
 	/// Comma separated list of allocated service group code of the contract.
 	/// </summary>
 	[DataMember(Name = "serviceProgram")]
-	public required string ServiceProgram { get; set; }
+	public string ServiceProgram { get; set; } = null!;
 
 	/// <summary>
 	/// Start date of the contract, specified using the UTC date format YYYY-MM-DD.
 	/// </summary>
 	[DataMember(Name = "startDate")]
-	public required String StartDate { get; set; }
+	public string StartDate { get; set; } = null!;
 
 	/// <summary>
 	/// End date of the contract, specified using the UTC date format YYYY-MM-DD.
 	/// </summary>
 	[DataMember(Name = "endDate")]
-	public required String EndDate { get; set; }
+	public string EndDate { get; set; } = null!;
 
 	/// <summary>
 	/// Currency symbol.
 	/// </summary>
 	[DataMember(Name = "currencySymbol")]
-	public required string CurrencySymbol { get; set; }
+	public string CurrencySymbol { get; set; } = null!;
 
 	/// <summary>
 	/// Onboarding status of a customer in CX Cloud.

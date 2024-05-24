@@ -1,6 +1,5 @@
 ﻿using Cisco.Api.Data.PxCloud;
 using Refit;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,7 +17,7 @@ public interface IPxCloud
 	/// <param name="max">The maximum number of items to return. Default value is 10, max 50.</param>
 	/// <param name="cancellationToken"></param>
 	[Get("/px/v1/customers")]
-	Task<List<Customer>> GetCustomersAsync(
+	Task<Customers> GetCustomersAsync(
 		int? offset = 0,
 		int? max = 10,
 		CancellationToken cancellationToken = default);
@@ -30,7 +29,7 @@ public interface IPxCloud
 	/// <param name="max">The maximum number of items to return. Default value is 10, max 50.</param>
 	/// <param name="cancellationToken"></param>
 	[Get("/px/v1/contracts")]
-	Task<List<Data.PxCloud.Contract>> GetContractsAsync(
+	Task<Contracts> GetContractsAsync(
 		int? offset = 0,
 		int? max = 10,
 		CancellationToken cancellationToken = default);
@@ -45,7 +44,7 @@ public interface IPxCloud
 	/// <param name="successTrackId">Unique identifier of the Success Track.</param>
 	/// <param name="cancellationToken"></param>
 	[Get("/px/v1/contractsWithCustomers")]
-	Task<List<ContractWithCustomers>> GetContractsWithCustomersAsync(
+	Task<ContractsWithCustomers> GetContractsWithCustomersAsync(
 		int? offset = 0,
 		int? max = 10,
 		string? customerId = null,
@@ -64,7 +63,7 @@ public interface IPxCloud
 	/// <param name="successTrackId">Unique identifier of the Success Track.</param>
 	/// <param name="cancellationToken"></param>
 	[Get("/px/v1/contract/details")]
-	Task<List<ContractDetails>> GetContractDetailsAsync(
+	Task<ContractDetails> GetContractDetailsAsync(
 		string contractNumber,
 		int? offset = 0,
 		int? max = 10,
