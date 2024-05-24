@@ -17,6 +17,7 @@ public partial class CiscoClient : IDisposable
 	private readonly ILogger _logger;
 	private readonly HttpClient _restHttpClient;
 	private readonly HttpClient _restUmbrellaClient;
+	private readonly HttpClient _restPXCloudClient;
 	private readonly HttpClient _soapHttpClient;
 	private bool disposedValue;
 
@@ -65,7 +66,8 @@ public partial class CiscoClient : IDisposable
 			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
 		};
 
-		// Umbrella uses a different endpoint
+		///////////////
+		// Umbrella uses a different client handler to support API keys
 		// https://docs.umbrella.com/umbrella-api/docs/umbrella-api-quick-start
 
 		if (options.ClientCredentialsNotSupported is not null)
@@ -94,7 +96,21 @@ public partial class CiscoClient : IDisposable
 			};
 		}
 
+		///////////////
+		/// PX Cloud
 
+		var scope = "api.authz.iam.manage";
+		_restPXCloudClient = new HttpClient(
+			new AuthenticatedHttpClientHandler(
+				new("https://id.cisco.com/oauth2/aus1o4emxorc3wkEe5d7/v1/token"),
+				options,
+				_logger,
+				scope)
+		)
+		{
+			BaseAddress = new("https://api-cx.cisco.com/"),
+			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
+		};
 
 		_soapHttpClient = new HttpClient(
 			new AuthenticatedHttpClientHandler(
@@ -131,6 +147,8 @@ public partial class CiscoClient : IDisposable
 		ProductInfo = RestService.For<IProductInfo>(_restHttpClient, refitSettings);
 		Psirt = RestService.For<IPsirt>(_restHttpClient, refitSettings);
 		Pss = new PssServices(_soapHttpClient);
+		PxCloudReports = new PxCloudReports(_restPXCloudClient);
+		PxCloud = RestService.For<IPxCloud>(_restPXCloudClient, refitSettings);
 		SecurityAdvisory = RestService.For<ISecurityAdvisory>(_restHttpClient, refitSettings);
 		SerialNumberToInfo = RestService.For<ISerialNumberToInfo>(_restHttpClient, refitSettings);
 		SoftwareSuggestion = RestService.For<ISoftwareSuggestion>(_restHttpClient, refitSettings);
@@ -146,6 +164,10 @@ public partial class CiscoClient : IDisposable
 	public IProductInfo ProductInfo { get; set; }
 
 	public IPss Pss { get; set; }
+
+	public IPxCloud PxCloud { get; set; }
+
+	public IPxCloudReports PxCloudReports { get; set; }
 
 	public ISecurityAdvisory SecurityAdvisory { get; set; }
 	public ISerialNumberToInfo SerialNumberToInfo { get; set; }
