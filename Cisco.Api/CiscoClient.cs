@@ -1,4 +1,5 @@
-﻿using Cisco.Api.Interfaces;
+﻿using Cisco.Api.Implementations;
+using Cisco.Api.Interfaces;
 using Cisco.Api.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -20,6 +21,28 @@ public partial class CiscoClient : IDisposable
 	private readonly HttpClient _restPXCloudClient;
 	private readonly HttpClient _soapHttpClient;
 	private bool disposedValue;
+
+	public IEox Eox { get; set; }
+
+	public IHello Hello { get; set; }
+
+	public IPsirt Psirt { get; set; }
+
+	public IProductInfo ProductInfo { get; set; }
+
+	public IPss Pss { get; set; }
+
+	public IPxCloud PxCloud { get; set; }
+
+	public IPxCloudReports PxCloudReports { get; set; }
+
+	public ISecurityAdvisory SecurityAdvisory { get; set; }
+
+	public ISerialNumberToInfo SerialNumberToInfo { get; set; }
+
+	public ISoftwareSuggestion SoftwareSuggestion { get; set; }
+
+	public IUmbrella Umbrella { get; set; }
 
 	public CiscoClient(
 		CiscoClientOptions options,
@@ -154,27 +177,6 @@ public partial class CiscoClient : IDisposable
 		SoftwareSuggestion = RestService.For<ISoftwareSuggestion>(_restHttpClient, refitSettings);
 		Umbrella = RestService.For<IUmbrella>(_restUmbrellaClient, refitSettings);
 	}
-
-	public IEox Eox { get; set; }
-
-	public IHello Hello { get; set; }
-
-	public IPsirt Psirt { get; set; }
-
-	public IProductInfo ProductInfo { get; set; }
-
-	public IPss Pss { get; set; }
-
-	public IPxCloud PxCloud { get; set; }
-
-	public IPxCloudReports PxCloudReports { get; set; }
-
-	public ISecurityAdvisory SecurityAdvisory { get; set; }
-	public ISerialNumberToInfo SerialNumberToInfo { get; set; }
-
-	public ISoftwareSuggestion SoftwareSuggestion { get; set; }
-
-	public IUmbrella Umbrella { get; set; }
 
 	protected virtual void Dispose(bool disposing)
 	{

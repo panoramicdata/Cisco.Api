@@ -131,4 +131,20 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 
 		contractDetails.Should().NotBeEmpty();
 	}
+
+	[Fact]
+	public async void RequestAssetsReport_Succeeds()
+	{
+		// Get the report ID
+		var response = await CiscoClient
+			.PxCloudReports
+			.RequestCustomerDataReportAsync("ojD5nF68Lrip1oE", ReportName.Assets, "50320048")
+			.ConfigureAwait(true);
+
+		response.Should().BeOfType<RequestCustomerDataReportsAsBulkFilesResponse>();
+
+		//response.Should().BeOfType<ContractDetails>();
+		//response.Should().NotBeEmpty();
+		//response.Should().HaveCountGreaterThan(0);
+	}
 }

@@ -9,7 +9,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Cisco.Api;
+namespace Cisco.Api.Implementations;
 internal class PxCloudReports : IPxCloudReports
 {
 	private HttpClient restHttpClient;
@@ -19,14 +19,20 @@ internal class PxCloudReports : IPxCloudReports
 	public PxCloudReports(HttpClient restHttpClient)
 	{
 		this.restHttpClient = restHttpClient;
-		this._refitClient = RestService.For<IPxCloudReportsInternal>(restHttpClient);
+		_refitClient = RestService.For<IPxCloudReportsInternal>(restHttpClient);
 	}
 
 	/// <inheritdoc/>
-	public async Task<RequestCustomerDataReportsAsBulkFilesResponse> RequestCustomerDataReportsAsBulkFilesAsync(string customerId, ReportName reportName, string successTrackId, CancellationToken cancellationToken = default)
+	public async Task<RequestCustomerDataReportsAsBulkFilesResponse> RequestCustomerDataReportAsync(string customerId, ReportName reportName, string successTrackId, CancellationToken cancellationToken = default)
 	{
 		// Normally, the required property is found within the 'location' header of the response, so extract the report ID from the end of the location
-		var x = await _refitClient.RequestCustomerDataReportsAsBulkFilesAsync(customerId, reportName, successTrackId, cancellationToken).ConfigureAwait(false);
+		var x = await _refitClient.RequestCustomerDataReportsAsBulkFilesAsync(
+			customerId,
+			new RequestCustomerDataReportsAsBulkFilesRequest
+			{
+				ReportName = reportName,
+				SuccessTrackId = successTrackId
+			}, cancellationToken).ConfigureAwait(false);
 
 		if (x.Headers.TryGetValues("location", out var location))
 		{

@@ -10,7 +10,7 @@ internal interface IPxCloudReportsInternal
 	/// Customer Insights and Analytics
 
 	/// <summary>
-	/// This API creates request for customer data sets.
+	/// This API creates a request for customer data sets *and returns the response as ApiResponse<EmptyResponse>, just to get the Location header.*
 	/// You can generate six kinds of reports: 'Assets', 'Software', 'Hardware', 'FieldNotices', 'ProrityBugs', 'SecurityAdvisories', 'PurchasedLicenses', and 'Licenses'.
 	/// The response contains the reportID on the end of the Location header.
 	/// </summary>
@@ -22,9 +22,8 @@ internal interface IPxCloudReportsInternal
 	[Post("/px/v1/customers/{customerId}/reports")]
 	Task<ApiResponse<EmptyResponse>> RequestCustomerDataReportsAsBulkFilesAsync(
 		string customerId,
-		ReportName reportName,
-		string successTrackId,
+		[Body] RequestCustomerDataReportsAsBulkFilesRequest requestCustomerDataReportsAsBulkFilesRequest,
 		CancellationToken cancellationToken = default);
 
-	// GetReportAsync() is too messy for Refit to deal with (the response can either be JSON or a Zip), so handled in PxCloudReports.cs
+	// GetReportAsync() is too messy for Refit to deal with (the response can either be JSON or a Zip), so handled in PxCloudNonRefit.cs
 }

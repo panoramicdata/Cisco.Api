@@ -12,7 +12,7 @@ public interface IPxCloudReports
 	/// <summary>
 	/// This API creates request for customer data sets.
 	/// You can generate six kinds of reports: 'Assets', 'Software', 'Hardware', 'FieldNotices', 'ProrityBugs', 'SecurityAdvisories', 'PurchasedLicenses', and 'Licenses'.
-	/// The response contains the reportID on the end of the Location header.
+	/// The response contains the scheduled reportID.
 	/// </summary>
 	/// <param name="customerId">Unique Identifier of the customer.</param>
 	/// <param name="reportName">Name of the report that customer is looking for. It can be Assets, Software, Hardware, Field Notices, Priority bugs, and Security Advisories.</param>
@@ -20,7 +20,7 @@ public interface IPxCloudReports
 	/// <param name="cancellationToken"></param>
 	// TODO https://medium.com/net-core/using-refit-in-net-0843bb199987 Use this to get the response and return the reportId as json instead.
 	[Post("/px/v1/customers/{customerId}/reports")]
-	Task<RequestCustomerDataReportsAsBulkFilesResponse> RequestCustomerDataReportsAsBulkFilesAsync(
+	Task<RequestCustomerDataReportsAsBulkFilesResponse> RequestCustomerDataReportAsync(
 		string customerId,
 		ReportName reportName,
 		string successTrackId,
