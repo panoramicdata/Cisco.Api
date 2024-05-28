@@ -1,5 +1,7 @@
 ﻿using Cisco.Api.Data.PxCloud;
 using FluentAssertions;
+using System;
+using System.Collections.Generic;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -18,6 +20,42 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 		response.Should().BeOfType<Customers>();
 		//response.Should().NotBeEmpty();
 		//response.Should().HaveCountGreaterThan(0);
+	}
+
+	[Fact]
+	public async void GetAllCustomers_Succeeds()
+	{
+		// Offset will store the number of customers retrieved so far. Call GetCustomersAsync with 'max' set to 50, to get the first 50 items, and the total count
+		// Keep calling GetCustomersAsync with 'offset' set to the current count, until the total count is reached
+		var offset = 0;
+		var max = 50;
+		var customers = new List<Customer>();
+		var totalCount = -1;
+		Customers response;
+
+		while (totalCount == -1 || offset < totalCount)
+		{
+			response = await CiscoClient
+				.PxCloud
+				.GetCustomersAsync(offset, max)
+				.ConfigureAwait(true);
+
+			if (totalCount == -1)
+			{
+				totalCount = response.TotalCount;
+			}
+
+			if (response.Items.Count == 0)
+			{
+				// 2024-05 Currently, the total does not relate to the number of items returned. This is a bug in the API.
+				throw new Exception("Expected there to be some items.");
+			}
+
+			customers.AddRange(response.Items);
+			offset += response.Items.Count;
+		}
+
+		customers.Should().NotBeEmpty();
 	}
 
 	[Fact]
@@ -57,5 +95,40 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 		response.Should().BeOfType<ContractDetails>();
 		//response.Should().NotBeEmpty();
 		//response.Should().HaveCountGreaterThan(0);
+	}
+
+	[Fact]
+	public async void GetAllContractDetails_Succeeds()
+	{
+		// Offset will store the number of customers retrieved so far. Call GetCustomersAsync with 'max' set to 50, to get the first 50 items, and the total count
+		// Keep calling GetCustomersAsync with 'offset' set to the current count, until the total count is reached
+		var offset = 0;
+		var max = 50;
+		var contractDetails = new List<ContractDetail>();
+		var totalCount = -1;
+		ContractDetails response;
+
+		while (totalCount == -1 || offset < totalCount)
+		{
+			response = await CiscoClient
+				.PxCloud
+				.GetContractDetailsAsync("205241272", offset, max)
+				.ConfigureAwait(true);
+
+			if (totalCount == -1)
+			{
+				totalCount = response.TotalCount;
+			}
+
+			if (response.Items.Count == 0)
+			{
+				throw new Exception("Expected there to be some items.");
+			}
+
+			contractDetails.AddRange(response.Items);
+			offset += response.Items.Count;
+		}
+
+		contractDetails.Should().NotBeEmpty();
 	}
 }

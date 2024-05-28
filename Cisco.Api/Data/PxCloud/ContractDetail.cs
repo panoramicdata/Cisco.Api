@@ -89,5 +89,5 @@ public class ContractDetail
 	/// The Primary Key of Installed Product, provides a unique record per device installation.
 	/// </summary>
 	[DataMember(Name = "instanceNumber")]
-	public int InstanceNumber { get; set; }
+	public string InstanceNumber { get; set; } = null!;
 }
