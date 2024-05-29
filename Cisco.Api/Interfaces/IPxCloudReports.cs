@@ -11,8 +11,8 @@ public interface IPxCloudReports
 
 	/// <summary>
 	/// This API creates request for customer data sets.
-	/// You can request the following reports: 'Assets', 'Software', 'Hardware', 'FieldNotices', and 'SecurityAdvisories'.
-	/// The following will be implemented soon: 'PriorityBugs', 'PurchasedLicenses', and 'Licenses'.
+	/// You can request the following reports: 'Assets', 'Software', 'Hardware', 'FieldNotices', 'SecurityAdvisories', 'PurchasedLicenses', and 'Licenses'.
+	/// The following will be implemented soon: 'PriorityBugs'.
 	/// The response contains the scheduled reportID.
 	/// </summary>
 	/// <param name="customerId">Unique Identifier of the customer.</param>

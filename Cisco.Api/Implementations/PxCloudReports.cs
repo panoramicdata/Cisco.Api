@@ -158,12 +158,12 @@ internal class PxCloudReports : IPxCloudReports
 								"Software" => JsonConvert.DeserializeObject<ReportPayloadParentSoftware>(content) ?? throwError(reportName),
 								"Hardware" => JsonConvert.DeserializeObject<ReportPayloadParentHardware>(content) ?? throwError(reportName),
 								"FieldNotices" => JsonConvert.DeserializeObject<ReportPayloadParentFieldNotices>(content) ?? throwError(reportName),
+								"Licenses" => JsonConvert.DeserializeObject<ReportPayloadParentLicensesWithAssets>(content) ?? throwError(reportName),
+								"PurchasedLicenses" => JsonConvert.DeserializeObject<ReportPayloadParentPurchasedLicenses>(content) ?? throwError(reportName),
 								"SecurityAdvisories" => JsonConvert.DeserializeObject<ReportPayloadParentSecurityAdvisories>(content) ?? throwError(reportName),
 
 								// Not seen/implemented yet as there's no API documentation
-								"PriorityBugs" => JsonConvert.DeserializeObject<ReportPayloadParentPriorityBugs>(content) ?? throwError(reportName),
-								"PurchasedLicenses" => JsonConvert.DeserializeObject<ReportPayloadParentPurchasedLicenses>(content) ?? throwError(reportName),
-								"Licenses" => JsonConvert.DeserializeObject<ReportPayloadParentLicensesWithAssets>(content) ?? throwError(reportName),
+								//"PriorityBugs" => JsonConvert.DeserializeObject<ReportPayloadParentPriorityBugs>(content) ?? throwError(reportName),
 
 								_ => throw new NotSupportedException($"Unsupported report type: '{reportName}'."),
 							};
