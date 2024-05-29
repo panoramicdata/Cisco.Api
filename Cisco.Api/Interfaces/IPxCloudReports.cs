@@ -26,7 +26,7 @@ public interface IPxCloudReports
 		string successTrackId,
 		CancellationToken cancellationToken = default);
 
-	/// Waits until the scheduled report is available, then returns the content.
+	/// Returns the scheduled report content; this may take a few minutes to generate.
 	/// <param name="customerId">Unique Identifier of the customer.</param>
 	/// <param name="reportId">Report ID.</param>
 	/// <param name="cancellationToken"></param>
