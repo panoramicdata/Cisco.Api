@@ -4,7 +4,6 @@ using ICSharpCode.SharpZipLib.Zip;
 using Newtonsoft.Json;
 using Refit;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -53,7 +52,7 @@ internal class PxCloudReports : IPxCloudReports
 	}
 
 	/// <inheritdoc/>
-	public async Task<ReportPayloadParentWithoutItems> GetReportAsync(string customerId, string reportId, CancellationToken cancellationToken = default)
+	public async Task<ReportPayloadParent> GetReportAsync(string customerId, string reportId, CancellationToken cancellationToken = default)
 	{
 		var url = $"{restHttpClient.BaseAddress}/px/v1/customers/{customerId}/reports/{reportId}";
 
@@ -138,7 +137,7 @@ internal class PxCloudReports : IPxCloudReports
 					{
 						// Now that we have the contents, try to deserialize it into ReportPayload so we can check the report name
 
-						var reportPayload = JsonConvert.DeserializeObject<ReportPayloadParentWithoutItems>(content);
+						var reportPayload = JsonConvert.DeserializeObject<ReportPayloadParent>(content);
 						if (reportPayload is null)
 						{
 							throw new Exception("Unable to deserialise the metadata for the requested report.");
@@ -149,32 +148,26 @@ internal class PxCloudReports : IPxCloudReports
 						{
 							dynamic? populatedItems = null!;
 
-							// If there's some items, we need to deserialise the items into the correct type
-							if (!content.Contains("\"items\" : [ ]"))
+							populatedItems = reportName switch
 							{
-								populatedItems = reportName switch
-								{
-									// TODO 2024-05-29 Not yet seen a valid report. Need to check the actual content and deserialise accordingly
+								// Note: This works, but I think this could be more generic and not need each of the ReportPayloadParent classes.
 
-									"Assets" => JsonConvert.DeserializeObject<ReportPayloadParentAssets>(content) ?? throwError(reportName),
-									"Software" => JsonConvert.DeserializeObject<ReportPayloadParentSoftware>(content) ?? throwError(reportName),
-									"Hardware" => JsonConvert.DeserializeObject<ReportPayloadParentHardware>(content) ?? throwError(reportName),
-									"FieldNotices" => JsonConvert.DeserializeObject<ReportPayloadParentFieldNotices>(content) ?? throwError(reportName),
-									"ProrityBugs" => JsonConvert.DeserializeObject<ReportPayloadParentPriorityBugs>(content) ?? throwError(reportName),
-									"SecurityAdvisories" => JsonConvert.DeserializeObject<ReportPayloadParentSecurityAdvisories>(content) ?? throwError(reportName),
-									"PurchasedLicenses" => JsonConvert.DeserializeObject<ReportPayloadParentPurchasedLicenses>(content) ?? throwError(reportName),
-									"Licenses" => JsonConvert.DeserializeObject<ReportPayloadParentLicensesWithAssets>(content) ?? throwError(reportName),
-									_ => throw new NotSupportedException($"Unsupported report type: '{reportName}'."),
-								};
-							}
+								"Assets" => JsonConvert.DeserializeObject<ReportPayloadParentAssets>(content) ?? throwError(reportName),
+								"Software" => JsonConvert.DeserializeObject<ReportPayloadParentSoftware>(content) ?? throwError(reportName),
+								"Hardware" => JsonConvert.DeserializeObject<ReportPayloadParentHardware>(content) ?? throwError(reportName),
+								"FieldNotices" => JsonConvert.DeserializeObject<ReportPayloadParentFieldNotices>(content) ?? throwError(reportName),
+								"SecurityAdvisories" => JsonConvert.DeserializeObject<ReportPayloadParentSecurityAdvisories>(content) ?? throwError(reportName),
 
-							var finalReport = new ReportPayloadParentWithoutItems()
-							{
-								Metadata = reportPayload.Metadata,
-								Items = populatedItems ?? new List<ReportPayloadItem> { }
+								// Not seen/implemented yet as there's no API documentation
+								"PriorityBugs" => JsonConvert.DeserializeObject<ReportPayloadParentPriorityBugs>(content) ?? throwError(reportName),
+								"PurchasedLicenses" => JsonConvert.DeserializeObject<ReportPayloadParentPurchasedLicenses>(content) ?? throwError(reportName),
+								"Licenses" => JsonConvert.DeserializeObject<ReportPayloadParentLicensesWithAssets>(content) ?? throwError(reportName),
+
+								_ => throw new NotSupportedException($"Unsupported report type: '{reportName}'."),
 							};
 
-							return finalReport;
+							return populatedItems;
+
 						}
 						catch (Exception ex)
 						{

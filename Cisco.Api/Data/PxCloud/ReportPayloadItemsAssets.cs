@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Cisco.Api.Data.PxCloud;
 
 [DataContract]
-public class ReportPayloadItemsAssets // : ReportPayloadItem
+public class ReportPayloadItemsAssets : ReportPayloadItem
 {
 	/// https://developer.cisco.com/docs/px-cloud/asset-and-license-view/#assets
 	/// Parameters role, lastScan, managedBy, criticalSecurityAdvisories, nodeld are not applicable for Data Center Compute(DCC).

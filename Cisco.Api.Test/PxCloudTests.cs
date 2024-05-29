@@ -138,7 +138,7 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 		// Get the report ID
 		var response = await CiscoClient
 			.PxCloudReports
-			.RequestCustomerDataReportAsync("ojD5nF68Lrip1oE", ReportName.Software, "38396885")
+			.RequestCustomerDataReportAsync("ojD5nF68Lrip1oE", ReportName.Licenses, "38396885")
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<RequestCustomerDataReportsAsBulkFilesResponse>();
@@ -151,10 +151,8 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 			.GetReportAsync("ojD5nF68Lrip1oE", reportId)
 			.ConfigureAwait(true);
 
-		report.Should().BeOfType<ReportPayloadParentWithoutItems>();
-
 		//response.Should().BeOfType<ContractDetails>();
-		//response.Should().NotBeEmpty();
+		response.Should().NotBeNull();
 		//response.Should().HaveCountGreaterThan(0);
 	}
 }
