@@ -12,31 +12,31 @@ public class ReportPayloadItemsPurchasedLicenses // : ReportPayloadItem
 	///	Cisco product number of the license or license pool.
 	/// </summary>
 	[DataMember(Name = "license")]
-	public string License { get; set; } = null!;
+	public string? License { get; set; }
 
 	/// <summary>
 	/// Level of the license, for example DNA Advantage, ISE Plus and DCN Premier.
 	/// </summary>
 	[DataMember(Name = "licenseLevel")]
-	public string LicenseLevel { get; set; } = null!;
+	public string? LicenseLevel { get; set; }
 
 	/// <summary>
 	/// Number of licenses purchased on the contract for the license product number.
 	/// </summary>
 	[DataMember(Name = "purchasedQuantity")]
-	public string PurchasedQuantity { get; set; } = null!;
+	public string? PurchasedQuantity { get; set; }
 
 	/// <summary>
 	/// Product family of the license.
 	/// </summary>
 	[DataMember(Name = "productFamily")]
-	public string ProductFamily { get; set; } = null!;
+	public string? ProductFamily { get; set; }
 
 	/// <summary>
 	/// Success tracks associated with the asset.
 	/// </summary>
 	[DataMember(Name = "successTrack")]
-	public List<ReportPayloadItemsSuccessTrack> SuccessTracks { get; set; } = null!;
+	public List<ReportPayloadItemsSuccessTrack> SuccessTracks { get; set; } = [];
 
 	/// <summary>
 	/// Start date of the license.

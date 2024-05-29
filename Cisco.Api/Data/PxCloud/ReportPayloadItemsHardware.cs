@@ -8,56 +8,53 @@ public class ReportPayloadItemsHardware // : ReportPayloadItem
 {
 	/// https://developer.cisco.com/docs/px-cloud/asset-and-license-view/#hardware
 
-
-
-
 	/// <summary>
 	///	Unique identifier used in CX Cloud and PX Cloud to identify the asset.
 	/// </summary>
 	[DataMember(Name = "assetId")]
-	public string AssetId { get; set; } = null!;
+	public string? AssetId { get; set; }
 
 	/// <summary>
 	///	Unique identifier used in CX Cloud and PX Cloud to identify the hardware.
 	/// </summary>
 	[DataMember(Name = "hwInstanceId")]
-	public string HwInstanceId { get; set; } = null!;
+	public string? HwInstanceId { get; set; }
 
 	/// <summary>
 	/// Unique asset name.
 	/// </summary>
 	[DataMember(Name = "assetName")]
-	public string AssetName { get; set; } = null!;
+	public string? AssetName { get; set; }
 
 	/// <summary>
 	/// Cisco product family of the asset for example: Cisco Catalyst 9300 Series Switches.
 	/// </summary>
 	[DataMember(Name = "productFamily")]
-	public string ProductFamily { get; set; } = null!;
+	public string? ProductFamily { get; set; }
 
 	/// <summary>
 	/// Cisco product line classifier of the asset, for example Routers, Switches, and Wireless.
 	/// </summary>
 	[DataMember(Name = "productType")]
-	public string ProductType { get; set; } = null!;
+	public string? ProductType { get; set; }
 
 	/// <summary>
 	/// Cisco product number of the asset, for example, C9800-CL-K9 and WS-C4500X-16.
 	/// </summary>
 	[DataMember(Name = "productId")]
-	public string ProductId { get; set; } = null!;
+	public string? ProductId { get; set; }
 
 	/// <summary>
 	/// Unique Cisco serial number of the asset used for product identification.
 	/// </summary>
 	[DataMember(Name = "serialNumber")]
-	public string SerialNumber { get; set; } = null!;
+	public string? SerialNumber { get; set; }
 
 	/// <summary>
 	/// Success tracks associated with the asset.
 	/// </summary>
 	[DataMember(Name = "successTrack")]
-	public List<ReportPayloadItemsSuccessTrack> SuccessTracks { get; set; } = null!;
+	public List<ReportPayloadItemsSuccessTrack> SuccessTracks { get; set; } = [];
 
 	/// <summary>
 	/// The date when the document announces the end of sale and the end of life milestones for a product, service or subscription is communicated to the general public. UTC date format YYYY-MM-DD.
@@ -126,5 +123,5 @@ public class ReportPayloadItemsHardware // : ReportPayloadItem
 	/// partner organization is not associated with the support contract that covers the asset.
 	/// </summary>
 	[DataMember(Name = "coverageStatus")]
-	public string CoverageStatus { get; set; } = null!;
+	public string? CoverageStatus { get; set; }
 }

@@ -13,10 +13,6 @@ public class ReportPayloadItemsAssets // : ReportPayloadItem
 	/// The values for contractNumber, coverageStartDate and coverageEndDate are masked for unauthorised user, and set as null.
 	/// Parameters deviceSoftwareUpgradeChannel, orgId, orgName, belongsTo, devicePlatform, deviceDisplayStatus, webexDeviceId are exclusive to Collaboration Success Track.
 
-
-
-
-
 	/// <summary>
 	///	Unique identifier used in CX Cloud and PX Cloud to identify the asset.
 	/// </summary>
