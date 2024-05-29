@@ -1,11 +1,15 @@
 ﻿using Cisco.Api.Data.PxCloud;
 using Cisco.Api.Interfaces;
+using ICSharpCode.SharpZipLib.Zip;
 using Newtonsoft.Json;
 using Refit;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -54,85 +58,141 @@ internal class PxCloudReports : IPxCloudReports
 		var url = $"{restHttpClient.BaseAddress}/px/v1/customers/{customerId}/reports/{reportId}";
 
 		// Perform a Get("/px/v1/customers/{customerId}/reports/{reportId}") request to the REST API and store the response.
-		// The response will normally be of type PxCloud.ReportResponse when deserialised. If this is the case, the property 'SuggestedNextPollTime' will tell us
-		// when to poll the report again. If the response is instead a zipped file, then extract the file into a variable. Otherwise, throw an exception.
+		// The response will normally be of type PxCloud.ReportResponse when deserialised. If this is the case, the property 'SuggestedNextPollTime' will
+		// tell us when to poll the report again. If the response is instead a zipped file, then extract the file into a variable.
+		// Otherwise, throw an exception.
 
 		while (true)
 		{
 			var response = restHttpClient.GetAsync(url, cancellationToken);
 			if (response.Result.IsSuccessStatusCode)
 			{
-				// try to deserialize the response into reportresponse
-				var reportResponse = JsonConvert.DeserializeObject<ReportResponse>(response.Result.Content.ToString() ?? "");
-				if (reportResponse != null)
+				var isJson = response.Result.Content.Headers.ContentType?.MediaType == "application/json";
+				var isZipped = response.Result.Content.Headers.ContentType?.MediaType == "application/zip";
+
+				if (isJson)
 				{
+					ReportResponse? reportResponse;
+					try
+					{
+						// Extract the content from the response
+						var contentStream = response.Result.Content.ReadAsStreamAsync().Result;
+						var content = new StreamReader(contentStream).ReadToEnd();
+						// Examples:
+						// {"status":"Accepted"}
+						// {"status":"In Progress","suggestedNextPollTimeInMins":2,"suggestedNextPollInterval":2}
+
+						// try to deserialize the response into reportResponse
+						reportResponse = JsonConvert.DeserializeObject<ReportResponse>(content ?? "");
+					}
+					catch (Exception ex)
+					{
+						throw new Exception("Unable to deserialise JSON response for the requested report.");
+					}
+					if (reportResponse is null)
+					{
+						throw new Exception("Unable to deserialise JSON response for the requested report.");
+					}
+
 					// wait for the suggested next poll time
-					await Task.Delay(new TimeSpan(0, reportResponse.SuggestedNextPollTime, 0));
+					// await Task.Delay(new TimeSpan(0, reportResponse.SuggestedNextPollTimeInMins, 0));
+
+					// Ignore the interval, repoll in X seconds (above might return 2 mins, but data was ready in under 30 seconds)
+					await Task.Delay(new TimeSpan(0, 0, 15));
+
 					// Resume loop;
 					continue;
 				}
-				else
+
+				if (isZipped)
 				{
-					// Is the response a zipped file?
-					var file = response.Result.Content.ReadAsStream();
-					if (file != null)
+					string content = "";
+
+					try
 					{
-						// If so, extract the file into a variable
-						var extractedZip = new System.IO.Compression.GZipStream(file, System.IO.Compression.CompressionMode.Decompress);
-						if (extractedZip != null)
+						// Unzip response content using SharpZipLib
+						using (var zipInputStream = new ZipInputStream(response.Result.Content.ReadAsStreamAsync().Result))
 						{
-							// Now that we have the contents, try to deserialize it into ReportPayload so we can check the report name
-							var content = extractedZip.ToString() ?? "";
-							var reportPayload = JsonConvert.DeserializeObject<ReportPayload>(content);
-							if (reportPayload is null)
+							ZipEntry entry;
+							while ((entry = zipInputStream.GetNextEntry()) != null)
 							{
-								throw new Exception("Unable to deserialise the metadata for the requested report.");
+								using (var ms = new MemoryStream())
+								{
+									zipInputStream.CopyTo(ms);
+									ms.Position = 0;
+									using (var sr = new StreamReader(ms))
+									{
+										content = sr.ReadToEnd();
+									}
+								}
 							}
+						}
 
-							var reportName = reportPayload.Metadata.ReportName;
-							// (ReportName)Enum.Parse(typeof(ReportName), reportName);
+					}
+					catch (Exception ex)
+					{
+						throw new Exception("Unable to decompress the zipped response for the requested report.");
+					}
 
-							dynamic? b = reportName switch
+					if (content.Length > 0)
+					{
+						// Now that we have the contents, try to deserialize it into ReportPayload so we can check the report name
+
+						var reportPayload = JsonConvert.DeserializeObject<ReportPayload>(content);
+						if (reportPayload is null)
+						{
+							throw new Exception("Unable to deserialise the metadata for the requested report.");
+						}
+
+						var reportName = reportPayload.Metadata.ReportName;
+						try
+						{
+							dynamic? populatedItems = null!;
+
+							// If there's some items, we need to deserialise the items into the correct type
+							if (!content.Contains("\"items\" : [ ]"))
 							{
-								"Assets" => JsonConvert.DeserializeObject<List<ReportPayloadItemsAssets>>(content) ?? throwError(reportName),
-								"Software" => JsonConvert.DeserializeObject<List<ReportPayloadItemsSoftware>>(content) ?? throwError(reportName),
-								"Hardware" => JsonConvert.DeserializeObject<List<ReportPayloadItemsHardware>>(content) ?? throwError(reportName),
-								"FieldNotices" => JsonConvert.DeserializeObject<List<ReportPayloadItemsFieldNotices>>(content) ?? throwError(reportName),
-								"ProrityBugs" => JsonConvert.DeserializeObject<List<ReportPayloadItemsPriorityBugs>>(content) ?? throwError(reportName),
-								"SecurityAdvisories" => JsonConvert.DeserializeObject<List<ReportPayloadItemsSecurityAdvisories>>(content) ?? throwError(reportName),
-								"PurchasedLicenses" => JsonConvert.DeserializeObject<List<ReportPayloadItemsPurchasedLicenses>>(content) ?? throwError(reportName),
-								"Licenses" => JsonConvert.DeserializeObject<List<ReportPayloadItemsLicensesWithAssets>>(content) ?? throwError(reportName),
-								_ => throw new NotSupportedException($"Unsupported report type: '{reportName}'."),
-							};
+								populatedItems = reportName switch
+								{
+									// TODO 2024-05-29 Not yet seen a valid report. Need to check the actual content and deserialise accordingly
+
+									"Assets" => JsonConvert.DeserializeObject<List<ReportPayloadItemsAssets>>(content) ?? throwError(reportName),
+									"Software" => JsonConvert.DeserializeObject<List<ReportPayloadItemsSoftware>>(content) ?? throwError(reportName),
+									"Hardware" => JsonConvert.DeserializeObject<List<ReportPayloadItemsHardware>>(content) ?? throwError(reportName),
+									"FieldNotices" => JsonConvert.DeserializeObject<List<ReportPayloadItemsFieldNotices>>(content) ?? throwError(reportName),
+									"ProrityBugs" => JsonConvert.DeserializeObject<List<ReportPayloadItemsPriorityBugs>>(content) ?? throwError(reportName),
+									"SecurityAdvisories" => JsonConvert.DeserializeObject<List<ReportPayloadItemsSecurityAdvisories>>(content) ?? throwError(reportName),
+									"PurchasedLicenses" => JsonConvert.DeserializeObject<List<ReportPayloadItemsPurchasedLicenses>>(content) ?? throwError(reportName),
+									"Licenses" => JsonConvert.DeserializeObject<List<ReportPayloadItemsLicensesWithAssets>>(content) ?? throwError(reportName),
+									_ => throw new NotSupportedException($"Unsupported report type: '{reportName}'."),
+								};
+							}
 
 							var finalReport = new ReportPayload()
 							{
 								Metadata = reportPayload.Metadata,
-								Items = b
+								Items = populatedItems ?? new List<ReportPayloadItem> { }
 							};
 
 							return finalReport;
 						}
-						else
+						catch (Exception ex)
 						{
-							throw new Exception("Response did not contain valid zipped file content.");
+							throw new Exception($"An error occurred whilst preparing the '{reportName}' report.");
 						}
 					}
 					else
 					{
-						throw new Exception("Response was neither a ReportResponse or zipped file content.");
+						throw new Exception("Response did not contain valid content.");
 					}
-					// If so, extract the file into a variable
-					// Otherwise, throw an exception
-
-
-					throw new Exception("Error");
 				}
-				//return Task.FromResult(new ReportResponse());
+
+				// Wasn't JSON or zipped report content
+				throw new Exception("Response did not contain a report status or final report content.");
 			}
 			else
 			{
-				throw new Exception("Error");
+				throw new Exception("An error occurred whilst requesting the report.");
 			}
 		}
 	}
@@ -143,7 +203,26 @@ internal class PxCloudReports : IPxCloudReports
 		throw new Exception($"An error occurred whilst deserialising the '{reportName}' report.");
 	}
 
+	public async static Task<string> DecompressAsync(string value)
+	{
+		//byte[] buffer = Encoding.UTF8.GetBytes(value);
+		byte[] buffer = Convert.FromBase64String(value);
+		byte[] decompressed;
 
+		using (var inputStream = new MemoryStream(buffer))
+		{
+			using var outputStream = new MemoryStream();
+
+			using (var brotliStream = new GZipStream(inputStream, CompressionMode.Decompress, leaveOpen: true))
+			{
+				await brotliStream.CopyToAsync(outputStream);
+			}
+
+			decompressed = outputStream.ToArray();
+		}
+
+		return Encoding.UTF8.GetString(decompressed);
+	}
 
 	//[Get("/px/v1/customers/{customerId}/reports/{reportId}")]
 	//Task<ReportResponse> GetReportAsync(

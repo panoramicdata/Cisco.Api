@@ -12,14 +12,14 @@ public class ReportResponse
 	public string Status { get; set; } = null!;
 
 	/// <summary>
-	/// The suggested next poll time.
+	/// The suggested next poll time, in minutes.
 	/// </summary>
-	[DataMember(Name = "suggestedNextPollTime")]
-	public int SuggestedNextPollTime { get; set; }
+	[DataMember(Name = "suggestedNextPollTimeInMins")]
+	public int SuggestedNextPollTimeInMins { get; set; }
 
 	/// <summary>
-	/// The estimated completion time.
+	/// The suggested next poll interval.
 	/// </summary>
-	[DataMember(Name = "estimatedCompletionTime")]
-	public string EstimatedCompletionTime { get; set; } = null!;
+	[DataMember(Name = "suggestedNextPollInterval")]
+	public int SuggestedNextPollInterval { get; set; }
 }
