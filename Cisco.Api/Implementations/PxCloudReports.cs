@@ -56,10 +56,12 @@ internal class PxCloudReports : IPxCloudReports
 	{
 		var url = $"{restHttpClient.BaseAddress}/px/v1/customers/{customerId}/reports/{reportId}";
 
-		// Perform a Get("/px/v1/customers/{customerId}/reports/{reportId}") request to the REST API and store the response.
-		// The response will normally be of type PxCloud.ReportResponse when deserialised. If this is the case, the property 'SuggestedNextPollTime' will
-		// tell us when to poll the report again. If the response is instead a zipped file, then extract the file into a variable.
-		// Otherwise, throw an exception.
+		// Perform a Get("/px/v1/customers/{customerId}/reports/{reportId}") request to the REST API.
+		// The response will typically be JSON of type PxCloud.ReportResponse. If this is the case, the property 'suggestedNextPollTimeInMins' will
+		// tell us when to poll the report again but it is way off, so just try again after X seconds. If the response is instead a zipped file,
+		// then extract the file just to get the Metadata - that report name will tell us what type of report it is, and then we can deserialise the
+		// extracted zip content from scratch so that Items can have the correct type.
+		// If the response is neither JSON nor a zipped file, then throw an exception.
 
 		while (true)
 		{

@@ -138,7 +138,7 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 		// Get the report ID
 		var response = await CiscoClient
 			.PxCloudReports
-			.RequestCustomerDataReportAsync("ojD5nF68Lrip1oE", ReportName.Licenses, "38396885")
+			.RequestCustomerDataReportAsync("ojD5nF68Lrip1oE", ReportName.Assets, "40485321")
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<RequestCustomerDataReportsAsBulkFilesResponse>();
