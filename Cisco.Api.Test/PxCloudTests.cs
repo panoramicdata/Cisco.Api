@@ -135,6 +135,8 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 	[Fact]
 	public async void RequestAssetsReport_Succeeds()
 	{
+		// KCL has all reports except for PriorityBugs
+
 		// Get the report ID
 		var response = await CiscoClient
 			.PxCloudReports
@@ -151,32 +153,6 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 			.GetReportAsync("ojD5nF68Lrip1oE", reportId)
 			.ConfigureAwait(true);
 
-		//response.Should().BeOfType<ContractDetails>();
 		response.Should().NotBeNull();
-		//response.Should().HaveCountGreaterThan(0);
-	}
-
-	[Fact]
-	public async void RequestAssetsReport2_Succeeds()
-	{
-		// Get the report ID
-		var response = await CiscoClient
-			.PxCloudReports
-			.RequestCustomerDataReportAsync("rRnyKS7AlWTg7N3", ReportName.PriorityBugs, "40485321")
-			.ConfigureAwait(true);
-
-		response.Should().BeOfType<RequestCustomerDataReportsAsBulkFilesResponse>();
-
-		var reportId = response.ReportId;
-
-		// Get the report
-		var report = await CiscoClient
-			.PxCloudReports
-			.GetReportAsync("rRnyKS7AlWTg7N3", reportId)
-			.ConfigureAwait(true);
-
-		//response.Should().BeOfType<ContractDetails>();
-		response.Should().NotBeNull();
-		//response.Should().HaveCountGreaterThan(0);
 	}
 }
