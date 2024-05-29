@@ -35,7 +35,7 @@ public interface IPxCloudReports
 	/// <param name="reportId">Report ID.</param>
 	/// <param name="cancellationToken"></param>
 	[Get("/px/v1/customers/{customerId}/reports/{reportId}")]
-	Task<ReportPayload> GetReportAsync(
+	Task<ReportPayloadParentWithoutItems> GetReportAsync(
 		string customerId,
 		string reportId,
 		CancellationToken cancellationToken = default);

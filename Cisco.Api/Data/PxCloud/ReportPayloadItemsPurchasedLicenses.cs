@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Cisco.Api.Data.PxCloud;
 
 [DataContract]
-public class ReportPayloadItemsPurchasedLicenses : ReportPayloadItem
+public class ReportPayloadItemsPurchasedLicenses // : ReportPayloadItem
 {
 	/// https://developer.cisco.com/docs/px-cloud/asset-and-license-view/#purchased-licenses
 

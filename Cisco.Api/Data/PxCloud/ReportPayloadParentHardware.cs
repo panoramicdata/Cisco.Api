@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Cisco.Api.Data.PxCloud;
 
 [DataContract]
-public class ReportPayload
+public class ReportPayloadParentHardware
 {
 	/// <summary>
 	/// The status.
@@ -16,5 +16,5 @@ public class ReportPayload
 	/// The report items.
 	/// </summary>
 	[DataMember(Name = "items")]
-	public List<ReportPayloadItem> Items { get; set; } = null!;
+	public List<ReportPayloadItemsHardware> Items { get; set; } = null!;
 }

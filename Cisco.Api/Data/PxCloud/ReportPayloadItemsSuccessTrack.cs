@@ -10,11 +10,11 @@ public class ReportPayloadItemsSuccessTrack
 	/// Unique identifier of a Success Track associated with the asset.
 	/// </summary>
 	[DataMember(Name = "id")]
-	public string? Id { get; set; } = null;
+	public string? Id { get; set; }
 
 	/// <summary>
 	/// Unique identifier of the use cases associated with the asset.
 	/// </summary>
 	[DataMember(Name = "useCases")]
-	public List<int> UseCases { get; set; }
+	public List<int> UseCases { get; set; } = [];
 }

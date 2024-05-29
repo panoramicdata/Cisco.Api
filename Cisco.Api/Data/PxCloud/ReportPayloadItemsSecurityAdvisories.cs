@@ -3,7 +3,7 @@
 namespace Cisco.Api.Data.PxCloud;
 
 [DataContract]
-public class ReportPayloadItemsSecurityAdvisories : ReportPayloadItem
+public class ReportPayloadItemsSecurityAdvisories // : ReportPayloadItem
 {
 	/// Not documented
 }
