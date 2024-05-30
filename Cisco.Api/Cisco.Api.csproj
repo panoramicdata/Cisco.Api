@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>Umbrella 429 retries now set the delay based on the Retry-After header, if set.</PackageReleaseNotes>
+		<PackageReleaseNotes>Added PX Cloud API endpoints.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
