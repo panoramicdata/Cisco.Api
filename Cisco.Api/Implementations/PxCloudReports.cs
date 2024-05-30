@@ -5,10 +5,8 @@ using Newtonsoft.Json;
 using Refit;
 using System;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -196,27 +194,6 @@ internal class PxCloudReports : IPxCloudReports
 	private dynamic throwError(string reportName)
 	{
 		throw new Exception($"An error occurred whilst deserialising the '{reportName}' report.");
-	}
-
-	public async static Task<string> DecompressAsync(string value)
-	{
-		//byte[] buffer = Encoding.UTF8.GetBytes(value);
-		byte[] buffer = Convert.FromBase64String(value);
-		byte[] decompressed;
-
-		using (var inputStream = new MemoryStream(buffer))
-		{
-			using var outputStream = new MemoryStream();
-
-			using (var brotliStream = new GZipStream(inputStream, CompressionMode.Decompress, leaveOpen: true))
-			{
-				await brotliStream.CopyToAsync(outputStream);
-			}
-
-			decompressed = outputStream.ToArray();
-		}
-
-		return Encoding.UTF8.GetString(decompressed);
 	}
 
 	//[Get("/px/v1/customers/{customerId}/reports/{reportId}")]
