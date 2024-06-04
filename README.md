@@ -29,7 +29,11 @@ namespace My.Project
 	{
 		public static async Task Main()
 		{
-			var dnaCenterClient = new CiscoClient("<ID>", "<SECRET>");
+			var dnaCenterClient = new CiscoClient(
+				new CiscoClientOptions {
+					ClientId = "<ID>",
+					ClientSecret = "<SECRET>"
+				});
 
 			var productInformation = await CiscoClient
 				.GetProductInformationBySerialNumber("<SERIAL NUMBER>")
