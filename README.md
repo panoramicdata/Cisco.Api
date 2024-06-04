@@ -29,17 +29,20 @@ namespace My.Project
 	{
 		public static async Task Main()
 		{
-			var dnaCenterClient = new CiscoClient(
+			var ciscoClient = new CiscoClient(
 				new CiscoClientOptions {
 					ClientId = "<ID>",
 					ClientSecret = "<SECRET>"
 				});
 
 			var productInformation = await CiscoClient
-				.GetProductInformationBySerialNumber("<SERIAL NUMBER>")
+				.ProductInfo
+				.GetBySerialNumbersAsync(new [] { "<SERIAL NUMBER>" } )
 				.ConfigureAwait(false);
 
-			Console.WriteLine($"Product Name: {productInformation.ProductName}");
+			var productDetails = productInformation.Products.First();
+
+			Console.WriteLine($"Product Name: {productDetails.ProductName}");
 		}
 	}
 }
