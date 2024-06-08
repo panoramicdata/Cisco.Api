@@ -26,6 +26,6 @@ public enum ReportName
 	[EnumMember(Value = "Software")]
 	Software,
 
-	//[EnumMember(Value = "PriorityBugs")]
-	//PriorityBugs
+	[EnumMember(Value = "PriorityBugs")]
+	PriorityBugs
 };

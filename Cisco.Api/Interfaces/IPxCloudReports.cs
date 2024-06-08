@@ -11,7 +11,6 @@ public interface IPxCloudReports
 
 	/// <summary>
 	/// You can request the following customer reports: 'Assets', 'Software', 'Hardware', 'FieldNotices', 'SecurityAdvisories', 'PurchasedLicenses', and 'Licenses'.
-	/// The following will be implemented soon: 'PriorityBugs'.
 	/// The response contains the scheduled reportID.
 	/// </summary>
 	/// <param name="customerId">Unique Identifier of the customer.</param>

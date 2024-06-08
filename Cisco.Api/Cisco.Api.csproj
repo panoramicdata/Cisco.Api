@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>Added PX Cloud API endpoints.</PackageReleaseNotes>
+		<PackageReleaseNotes>Added PriorityBugs report type to PX Cloud supported reports.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
