@@ -1,6 +1,7 @@
 using Cisco.Api.Data.Psirt;
 using FluentAssertions;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -9,7 +10,7 @@ namespace Cisco.Api.Test;
 public class PsirtTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
 	[Fact]
-	public async void GetPsirtByCveId()
+	public async Task GetPsirtByCveId()
 	{
 		var advisoryResponse = await CiscoClient
 			.Psirt
@@ -23,7 +24,7 @@ public class PsirtTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputH
 	}
 
 	[Fact]
-	public async void GetAllPsirts()
+	public async Task GetAllPsirts()
 	{
 		var advisoryResponse = await CiscoClient
 			.Psirt

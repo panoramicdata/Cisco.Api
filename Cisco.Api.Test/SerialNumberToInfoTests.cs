@@ -1,5 +1,6 @@
 using FluentAssertions;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -8,7 +9,7 @@ namespace Cisco.Api.Test;
 public class SerialNumberToInfoTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
 	[Fact]
-	public async void GetCoverageStatusBySerialNumber()
+	public async Task GetCoverageStatusBySerialNumber()
 	{
 		var coverageStatusCollection = await CiscoClient
 			.SerialNumberToInfo
@@ -22,7 +23,7 @@ public class SerialNumberToInfoTests(ITestOutputHelper iTestOutputHelper) : Test
 	}
 
 	[Fact]
-	public async void GetCoverageSummaryBySerialNumber()
+	public async Task GetCoverageSummaryBySerialNumber()
 	{
 		var coverageSummaryCollection = await CiscoClient
 			.SerialNumberToInfo
@@ -48,7 +49,7 @@ public class SerialNumberToInfoTests(ITestOutputHelper iTestOutputHelper) : Test
 	}
 
 	[Fact]
-	public async void GetOrderableProductIdentifierBySerialNumber()
+	public async Task GetOrderableProductIdentifierBySerialNumber()
 	{
 		var serialNumberOrderablePids = await CiscoClient
 			.SerialNumberToInfo

@@ -3,6 +3,7 @@ using FluentAssertions;
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,7 +12,7 @@ namespace Cisco.Api.Test;
 public class EoxTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
 	[Fact]
-	public async void GetByDatesAsync_Succeeds()
+	public async Task GetByDatesAsync_Succeeds()
 	{
 		var eoxInfoPage = await CiscoClient
 			.Eox
@@ -23,7 +24,7 @@ public class EoxTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void GetByProductIdAsync_Succeeds()
+	public async Task GetByProductIdAsync_Succeeds()
 	{
 		var eoxInfoPage = await CiscoClient
 			.Eox
@@ -33,7 +34,7 @@ public class EoxTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void GetBySerialNumberAsync_Succeeds()
+	public async Task GetBySerialNumberAsync_Succeeds()
 	{
 		var eoxInfoPage = await CiscoClient
 			.Eox
@@ -43,7 +44,7 @@ public class EoxTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void GetBySoftwareReleaseStringAsync_Succeeds()
+	public async Task GetBySoftwareReleaseStringAsync_Succeeds()
 	{
 		var eoxInfoPage = await CiscoClient
 			.Eox

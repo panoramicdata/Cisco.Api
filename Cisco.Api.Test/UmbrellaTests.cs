@@ -18,8 +18,8 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 			.CreateInternalNetworkAsync(
 				new InternalNetworksCreateUpdateRequest
 				{
-					Name = "Retail Android Range 5184-S - Corby - Priors Hall ParkRetail Android Range 5184-S - Corby - Priors Hall Park",
-					IpAddress = "10.15.153.64",
+					Name = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+					IpAddress = "10.11.12.13",
 					PrefixLength = 26,
 					TunnelId = 0
 				})
@@ -42,8 +42,8 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 			.CreateInternalNetworkAsync(
 			new InternalNetworksCreateUpdateRequest
 			{
-				Name = "Retail Android Range 5184-S - Corby - Priors Hall_",
-				IpAddress = "10.15.153.64",
+				Name = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+				IpAddress = "10.12.13.14",
 				PrefixLength = 26,
 				TunnelId = 0
 			})

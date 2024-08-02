@@ -39,15 +39,14 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	public async void GetCustomerInventoryAsync_OneCustomer_Succeeds()
 	{
 		var response = await CiscoClient
-			  .Pss
-			  .GetCustomersInventoryIdsAsync(new CustomersInventoryRequest
-			  {
-				  CustomerIds = new List<string>
-					 {
-										  Config.TestCustomerId
-					 }
-			  }, CancellationToken.None)
-			  .ConfigureAwait(true);
+			.Pss
+			.GetCustomersInventoryIdsAsync(
+				new CustomersInventoryRequest
+				{
+					CustomerIds = new List<string> { Config.TestCustomerId }
+				},
+				CancellationToken.None)
+			.ConfigureAwait(true);
 
 		response.CustomerInventories.Should().HaveCount(1);
 	}
@@ -56,15 +55,15 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	public async void GetCustomerInventoryDetails_Succeeds()
 	{
 		var response = await CiscoClient
-			  .Pss
-			  .GetCustomerInventoryDetailsAsync(
-					new CustomerInventoryDetailsRequest
-					{
-						CustomerId = Config.TestCustomerId,
-						InventoryId = Config.TestInventoryId
-					},
-					CancellationToken.None)
-			  .ConfigureAwait(true);
+			.Pss
+			.GetCustomerInventoryDetailsAsync(
+				new CustomerInventoryDetailsRequest
+				{
+					CustomerId = Config.TestCustomerId,
+					InventoryId = Config.TestInventoryId
+				},
+				CancellationToken.None)
+			.ConfigureAwait(true);
 
 		response.Should().BeOfType<CustomerInventoryDetailsResponse>();
 		response.Should().NotBeNull();
@@ -96,12 +95,13 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	[Fact]
 	public async void GetAllExtendedDeviceDetail_Succeeds()
 	{
-		var deviceDetails = await GetAllExtendedDeviceDetail(
-			CiscoClient,
-			Config.TestCustomerId,
-			Config.TestInventoryId,
-			CancellationToken.None)
-			  .ConfigureAwait(true);
+		var deviceDetails = await
+			GetAllExtendedDeviceDetail(
+				CiscoClient,
+				Config.TestCustomerId,
+				Config.TestInventoryId,
+				CancellationToken.None)
+			.ConfigureAwait(true);
 
 		deviceDetails.Should().NotBeNullOrEmpty();
 	}
@@ -120,16 +120,16 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		{
 			page++;
 			var response = await client
-				  .Pss
-				  .GetCustomerExtendedInventoryDetailsAsync(
-						new CustomerExtendedInventoryDetailsRequest
-						{
-							CustomerId = CustomerId,
-							InventoryId = InventoryId,
-							PageStart = page
-						},
-						cancellationToken)
-				  .ConfigureAwait(true);
+				.Pss
+				.GetCustomerExtendedInventoryDetailsAsync(
+					new CustomerExtendedInventoryDetailsRequest
+					{
+						CustomerId = CustomerId,
+						InventoryId = InventoryId,
+						PageStart = page
+					},
+					cancellationToken)
+				.ConfigureAwait(true);
 			deviceDetails.AddRange(response.DeviceDetails);
 			pageTotal = response.Pages.PageTotal;
 		} while (page < pageTotal);
@@ -141,11 +141,13 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	{
 		var response = await CiscoClient
 			.Pss
-			.GetCustomerInventoryPaginatedDetailsAsync(new CustomerInventoryDetailPaginatedRequest
-			{
-				CustomerId = Config.TestCustomerId,
-				InventoryId = Config.TestInventoryId
-			}, CancellationToken.None)
+			.GetCustomerInventoryPaginatedDetailsAsync(
+				new CustomerInventoryDetailPaginatedRequest
+				{
+					CustomerId = Config.TestCustomerId,
+					InventoryId = Config.TestInventoryId
+				},
+				CancellationToken.None)
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<CustomerInventoryDetailPaginatedResponse>();
@@ -165,8 +167,9 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 					CustomerId = Config.TestCustomerId,
 					DeviceIds = [Config.TestDeviceId],
 					ConfigType = DeviceConfigsConfigType.Both
-				}, CancellationToken.None)
-				.ConfigureAwait(true);
+				},
+				CancellationToken.None)
+			.ConfigureAwait(true);
 
 		response.Should().BeOfType<DeviceConfigResponse>();
 		response.Should().NotBeNull();
@@ -176,13 +179,15 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	public async void GetContractCoverageDetailsAsync_Succeeds()
 	{
 		var response = await CiscoClient
-			  .Pss
-			  .GetContractCoverageAsync(new ContractCoverageRequest
-			  {
-				  CustomerId = Config.TestCustomerId,
-				  InventoryId = Config.TestInventoryId
-			  }, CancellationToken.None)
-			  .ConfigureAwait(true);
+			.Pss
+			.GetContractCoverageAsync(
+				new ContractCoverageRequest
+				{
+					CustomerId = Config.TestCustomerId,
+					InventoryId = Config.TestInventoryId
+				},
+				CancellationToken.None)
+			.ConfigureAwait(true);
 
 		response.Should().BeOfType<ContractCoverageResponse>();
 		response.Should().NotBeNull();
@@ -194,14 +199,16 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	public async void GetContractCoverageDetailsOneCardIdAsync_Succeeds()
 	{
 		var response = await CiscoClient
-			  .Pss
-			  .GetContractCoverageAsync(new ContractCoverageRequest
-			  {
-				  CustomerId = Config.TestCustomerId,
-				  InventoryId = Config.TestInventoryId,
-				  DeviceIds = new List<string> { Config.TestDeviceId }
-			  }, CancellationToken.None)
-			  .ConfigureAwait(true);
+			.Pss
+			.GetContractCoverageAsync(
+				new ContractCoverageRequest
+				{
+					CustomerId = Config.TestCustomerId,
+					InventoryId = Config.TestInventoryId,
+					DeviceIds = new List<string> { Config.TestDeviceId }
+				},
+				CancellationToken.None)
+			.ConfigureAwait(true);
 
 		response.Should().BeOfType<ContractCoverageResponse>();
 		response.Should().NotBeNull();
@@ -209,40 +216,43 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		// TODO - property tests
 	}
 
-	// Test disabled as TestDeviceId not always set, so enable if needed
-	//[Fact]
-	//public async void GetContractCoverageDetailsForDeviceIdsAsync_Succeeds()
-	//{
-	//    // Query upto 100 devices at a time
-	//    var deviceIds = new List<string> { Config.TestDeviceId };
+	[Fact]
+	public async void GetContractCoverageDetailsForDeviceIdsAsync_Succeeds()
+	{
+		// Query upto 100 devices at a time
+		var deviceIds = new List<string> { Config.TestDeviceId };
 
-	//    var response = await CiscoClient
-	//          .Pss
-	//          .GetContractCoverageAsync(new ContractCoverageRequest
-	//          {
-	//              CustomerId = Config.TestCustomerId,
-	//              InventoryId = Config.TestInventoryId,
-	//              DeviceIds = deviceIds
-	//          }, CancellationToken.None)
-	//          .ConfigureAwait(true);
+		var response = await CiscoClient
+			.Pss
+			.GetContractCoverageAsync(
+				new ContractCoverageRequest
+				{
+					CustomerId = Config.TestCustomerId,
+					InventoryId = Config.TestInventoryId,
+					DeviceIds = deviceIds
+				},
+				CancellationToken.None)
+			.ConfigureAwait(true);
 
-	//    response.Should().BeOfType<ContractCoverageResponse>();
-	//    response.Should().NotBeNull();
+		response.Should().BeOfType<ContractCoverageResponse>();
+		response.Should().NotBeNull();
 
-	//    // TODO - property tests
-	//}
+		// TODO - property tests
+	}
 
 	[Fact]
 	public async void GetSoftwareEoxAsync_Succeeds()
 	{
 		var response = await CiscoClient
-			  .Pss
-			  .GetSoftwareEoxAsync(new SoftwareEoxRequest
-			  {
-				  CustomerId = Config.TestCustomerId,
-				  InventoryId = Config.TestInventoryId
-			  }, CancellationToken.None)
-			  .ConfigureAwait(true);
+			.Pss
+			.GetSoftwareEoxAsync(
+				new SoftwareEoxRequest
+				{
+					CustomerId = Config.TestCustomerId,
+					InventoryId = Config.TestInventoryId
+				},
+				CancellationToken.None)
+			.ConfigureAwait(true);
 
 		response.Should().BeOfType<SoftwareEoxResponse>();
 		response.Should().NotBeNull();
@@ -254,18 +264,17 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	public async void GetSoftwareEoxBulletinAsync_Succeeds()
 	{
 		var response = await CiscoClient
-			  .Pss
-			  .GetSoftwareEoxBulletinAsync(new SoftwareEoxBulletinRequest
-			  {
-				  SoftwareEoxIds = new SoftwareEoxIds
-				  {
-					  Ids = new List<string>
-								  {
-												 Config.TestSoftwareEoxId
-								  }
-				  }
-			  }, CancellationToken.None)
-			  .ConfigureAwait(true);
+			.Pss
+			.GetSoftwareEoxBulletinAsync(
+				new SoftwareEoxBulletinRequest
+				{
+					SoftwareEoxIds = new SoftwareEoxIds
+					{
+						Ids = new List<string> { Config.TestSoftwareEoxId }
+					}
+				},
+				CancellationToken.None)
+			.ConfigureAwait(true);
 
 		response.Should().BeOfType<SoftwareEoxBulletinResponse>();
 		response.Should().NotBeNull();
@@ -277,13 +286,15 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	public async void GetHwEoxAsync_Succeeds()
 	{
 		var response = await CiscoClient
-			  .Pss
-			  .GetHardwareEoxAsync(new HardwareEoxRequest
-			  {
-				  CustomerId = Config.TestCustomerId,
-				  InventoryId = Config.TestInventoryId
-			  }, CancellationToken.None)
-			  .ConfigureAwait(true);
+			.Pss
+			.GetHardwareEoxAsync(
+				new HardwareEoxRequest
+				{
+					CustomerId = Config.TestCustomerId,
+					InventoryId = Config.TestInventoryId
+				},
+				CancellationToken.None)
+			.ConfigureAwait(true);
 
 		response.Should().BeOfType<HardwareEoxResponse>();
 		response.Should().NotBeNull();
@@ -295,19 +306,18 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	public async void GetHwEoxBulletinAsync_Succeeds()
 	{
 		var response = await CiscoClient
-			  .Pss
-			  // Responses seem to be duplicated per HardwareEoxId
-			  .GetHardwareEoxBulletinAsync(new HardwareEoxBulletinRequest
-			  {
-				  HardwareEoxIds = new HardwareEoxIds
-				  {
-					  Ids = new List<string>
-							 {
-												 Config.TestHardwareEoxId
-							 }
-				  }
-			  }, CancellationToken.None)
-			  .ConfigureAwait(true);
+			.Pss
+			// Responses seem to be duplicated per HardwareEoxId
+			.GetHardwareEoxBulletinAsync(
+				new HardwareEoxBulletinRequest
+				{
+					HardwareEoxIds = new HardwareEoxIds
+					{
+						Ids = new List<string> { Config.TestHardwareEoxId }
+					}
+				},
+				CancellationToken.None)
+			.ConfigureAwait(true);
 
 		response.Should().BeOfType<HardwareEoxBulletinResponse>();
 		response.Should().NotBeNull();
@@ -319,13 +329,15 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	public async void GetPsirtAsync_Succeeds()
 	{
 		var response = await CiscoClient
-			  .Pss
-			  .GetPsirtAsync(new PsirtRequest
-			  {
-				  CustomerId = "PSS_3151974", // Config.TestCustomerId,
-				  InventoryId = "3232417", // Config.TestInventoryId
-			  }, CancellationToken.None)
-			  .ConfigureAwait(true);
+			.Pss
+			.GetPsirtAsync(
+				new PsirtRequest
+				{
+					CustomerId = Config.TestCustomerId,
+					InventoryId = Config.TestInventoryId
+				},
+				CancellationToken.None)
+			.ConfigureAwait(true);
 
 		response.Should().BeOfType<PsirtResponse>();
 		response.Should().NotBeNull();
@@ -336,19 +348,17 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	[Fact]
 	public async void GetPsirtDetailsAsync_Succeeds()
 	{
-		var ids = new List<string>
-				{
-							Config.TestPsirtId1,
-							Config.TestPsirtId2
-				};
+		var ids = new List<string> { Config.TestPsirtId1, Config.TestPsirtId2 };
 
 		var response = await CiscoClient
-			  .Pss
-			  .GetPsirtDetailsAsync(new PsirtDetailsRequest
-			  {
-				  Ids = ids
-			  }, CancellationToken.None)
-			  .ConfigureAwait(true);
+			.Pss
+			.GetPsirtDetailsAsync(
+				new PsirtDetailsRequest
+				{
+					Ids = ids
+				},
+				CancellationToken.None)
+			.ConfigureAwait(true);
 
 		response.Should().BeOfType<PsirtDetailsResponse>();
 		response.Should().NotBeNull();
@@ -360,13 +370,15 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	public async void GetFieldNoticesAsync_Succeeds()
 	{
 		var response = await CiscoClient
-			  .Pss
-			  .GetFieldNoticesAsync(new FieldNoticesRequest
-			  {
-				  CustomerId = Config.TestCustomerId,
-				  InventoryId = Config.TestInventoryId
-			  }, CancellationToken.None)
-			  .ConfigureAwait(true);
+			.Pss
+			.GetFieldNoticesAsync(
+				new FieldNoticesRequest
+				{
+					CustomerId = Config.TestCustomerId,
+					InventoryId = Config.TestInventoryId
+				},
+				CancellationToken.None)
+			.ConfigureAwait(true);
 
 		response.Should().BeOfType<FieldNoticesResponse>();
 		response.Should().NotBeNull();
@@ -378,16 +390,18 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	public async void GetFieldNoticesDetailsAsync_Succeeds()
 	{
 		var response = await CiscoClient
-			  .Pss
-			  .GetFieldNoticesDetailsAsync(new FieldNoticesDetailsRequest
-			  {
-				  Ids = new List<string>
+			.Pss
+			.GetFieldNoticesDetailsAsync(
+				new FieldNoticesDetailsRequest
+				{
+					Ids = new List<string>
 						{
-									 Config.TestFieldNoticesId1,
-									 Config.TestFieldNoticesId2
+							Config.TestFieldNoticesId1,
+							Config.TestFieldNoticesId2
 						}
-			  }, CancellationToken.None)
-			  .ConfigureAwait(true);
+				},
+				CancellationToken.None)
+			.ConfigureAwait(true);
 
 		response.Should().BeOfType<FieldNoticesDetailsResponse>();
 		response.Should().NotBeNull();
