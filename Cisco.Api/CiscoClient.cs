@@ -18,6 +18,7 @@ public partial class CiscoClient : IDisposable
 	private readonly ILogger _logger;
 	private readonly HttpClient _restHttpClient;
 	private readonly HttpClient _restUmbrellaClient;
+	private readonly HttpClient _restPssClient;
 	private readonly HttpClient _restPXCloudClient;
 	private readonly HttpClient _soapHttpClient;
 	private bool disposedValue;
@@ -31,6 +32,8 @@ public partial class CiscoClient : IDisposable
 	public IProductInfo ProductInfo { get; set; }
 
 	public IPss Pss { get; set; }
+
+	public IPssConfigs PssConfigs { get; set; }
 
 	public IPxCloud PxCloud { get; set; }
 
@@ -120,6 +123,21 @@ public partial class CiscoClient : IDisposable
 		}
 
 		///////////////
+		/// PSS Configs
+
+		// Needs the old Cisco token format
+		_restPssClient = new HttpClient(
+			new AuthenticatedHttpClientHandler(
+				new("https://api.cisco.com/pss/token"),
+				options,
+				_logger)
+)
+		{
+			BaseAddress = new("https://api.cisco.com/"),
+			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
+		};
+
+		///////////////
 		/// PX Cloud
 
 		var scope = "api.authz.iam.manage";
@@ -170,6 +188,7 @@ public partial class CiscoClient : IDisposable
 		ProductInfo = RestService.For<IProductInfo>(_restHttpClient, refitSettings);
 		Psirt = RestService.For<IPsirt>(_restHttpClient, refitSettings);
 		Pss = new PssServices(_soapHttpClient);
+		PssConfigs = new PssConfigs(_restPssClient);
 		PxCloudReports = new PxCloudReports(_restPXCloudClient);
 		PxCloud = RestService.For<IPxCloud>(_restPXCloudClient, refitSettings);
 		SecurityAdvisory = RestService.For<ISecurityAdvisory>(_restHttpClient, refitSettings);

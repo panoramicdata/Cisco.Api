@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>Added PriorityBugs report type to PX Cloud supported reports.</PackageReleaseNotes>
+		<PackageReleaseNotes>Added PssConfigs.GetDeviceConfigAsync() - can return startup, running or both configs.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
