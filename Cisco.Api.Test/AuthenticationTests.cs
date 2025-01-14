@@ -28,6 +28,7 @@ public class AuthenticationTests(ITestOutputHelper iTestOutputHelper) : Test(iTe
 			.ThrowAsync<ArgumentException>()
 			.WithMessage("Options ClientId must be set (Parameter 'options')");
 	}
+
 	[Fact]
 	public void NoClientSecret_ThrowsException()
 	{
@@ -47,5 +48,14 @@ public class AuthenticationTests(ITestOutputHelper iTestOutputHelper) : Test(iTe
 			.Should()
 			.ThrowAsync<ArgumentException>()
 			.WithMessage("Options ClientSecret must be set (Parameter 'options')");
+	}
+
+	[Fact]
+	public async Task GetApiAccessAsync_Succeeds()
+	{
+		var apiAccess = await CiscoClient
+			.GetApiAccessAsync(default);
+
+		apiAccess.Should().NotBeNull();
 	}
 }
