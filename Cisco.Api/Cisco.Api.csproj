@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>Updated nuget packages.</PackageReleaseNotes>
+		<PackageReleaseNotes>Fixed broken GetApiAccessAsync method.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>

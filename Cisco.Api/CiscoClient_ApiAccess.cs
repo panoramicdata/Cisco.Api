@@ -22,9 +22,11 @@ public partial class CiscoClient
 		var eoxTask = Eox.GetByDatesAsync(yesterdayMidnight, todayMidnight, 1, cancellationToken);
 		var helloTask = Hello.HelloAsync(cancellationToken);
 		var psirtTask = Psirt.GetLatestAsync(1, cancellationToken);
-		var productInfoTask = ProductInfo.GetBySerialNumbersAsync([], cancellationToken);
+		// MS-19906 You cannot use an empty list - you get an API error, but you CAN make one up and if this is supported we get a response
+		var productInfoTask = ProductInfo.GetBySerialNumbersAsync(["123"], cancellationToken);
 		var pssTask = Pss.GetFieldNoticesAsync(new FieldNoticesRequest(), cancellationToken);
-		var serialNumberToInfoTask = SerialNumberToInfo.GetCoverageStatusBySerialNumbersAsync([], cancellationToken);
+		// MS-19906 You cannot use an empty list - you get an API error, but you CAN make one up and if this is supported we get a response
+		var serialNumberToInfoTask = SerialNumberToInfo.GetCoverageStatusBySerialNumbersAsync(["123"], cancellationToken);
 		var softwareSuggestionTask = SoftwareSuggestion.GetByProductIdsAsync(["C9200"], 1, cancellationToken);
 		var umbrellaTask = Umbrella.ListSitesAsync(cancellationToken: cancellationToken);
 
