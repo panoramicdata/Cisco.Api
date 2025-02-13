@@ -21,6 +21,12 @@ internal class PssConfigs : IPssConfigs
 	/// <inheritdoc/>
 	public async Task<DeviceConfigResponse> GetDeviceConfigAsync(DeviceConfigsRequest deviceConfigsRequest, CancellationToken cancellationToken = default)
 	{
+		// This is a fairly new REST endpoint, unlike all the other PSS SOAP endpoints.
+		// You can retrieve the running and startup configs for up to 5 devices at a time, in the form of a ZIP file.
+		// Docs: https://docs.cloudapps.cisco.com/pss/APIDevGuide/service_inventory.html#getDeviceConfig
+
+		// This method retrieves the zipped config file, extracts the contents, and returns them in a DeviceConfigResponse object.
+
 		var customerId = deviceConfigsRequest.CustomerId;
 		var deviceIds = string.Join(",", deviceConfigsRequest.DeviceIds);
 		var configType = deviceConfigsRequest.ConfigType;
