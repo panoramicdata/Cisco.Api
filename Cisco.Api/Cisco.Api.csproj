@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>Fixed broken GetApiAccessAsync method.</PackageReleaseNotes>
+		<PackageReleaseNotes>Improvements to PssConfigs.GetDeviceConfigsAsync().</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>

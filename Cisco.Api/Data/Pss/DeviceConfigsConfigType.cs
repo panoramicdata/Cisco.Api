@@ -2,7 +2,7 @@
 
 public enum DeviceConfigsConfigType
 {
-	StartupConfig,
-	RunningConfig,
+	Startup,
+	Running,
 	Both
 }

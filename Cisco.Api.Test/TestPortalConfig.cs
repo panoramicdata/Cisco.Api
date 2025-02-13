@@ -71,6 +71,10 @@ internal sealed class TestPortalConfig
 		TestCustomerId = GetProperty(configuration, "TestCustomerId");
 		TestInventoryId = GetProperty(configuration, "TestInventoryId");
 		TestDeviceId = GetProperty(configuration, "TestDeviceId");
+		TestDeviceId2 = GetProperty(configuration, "TestDeviceId2");
+		TestDeviceId3 = GetProperty(configuration, "TestDeviceId3");
+		TestDeviceId4 = GetProperty(configuration, "TestDeviceId4");
+		TestDeviceId5 = GetProperty(configuration, "TestDeviceId5");
 		TestSoftwareEoxId = GetProperty(configuration, "TestSoftwareEoxId");
 		TestHardwareEoxId = GetProperty(configuration, "TestHardwareEoxId");
 		TestFieldNoticesId1 = GetProperty(configuration, "TestFieldNoticesId1");
@@ -91,6 +95,14 @@ internal sealed class TestPortalConfig
 	public string TestInventoryId { get; }
 
 	public string TestDeviceId { get; }
+
+	public string TestDeviceId2 { get; }
+
+	public string TestDeviceId3 { get; }
+
+	public string TestDeviceId4 { get; }
+
+	public string TestDeviceId5 { get; }
 
 	public string TestSoftwareEoxId { get; }
 

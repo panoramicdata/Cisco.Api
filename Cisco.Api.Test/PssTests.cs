@@ -165,13 +165,14 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 				new DeviceConfigsRequest
 				{
 					CustomerId = Config.TestCustomerId,
+					//DeviceIds = [Config.TestDeviceId, Config.TestDeviceId2, Config.TestDeviceId3, Config.TestDeviceId4, Config.TestDeviceId5],
 					DeviceIds = [Config.TestDeviceId],
-					ConfigType = DeviceConfigsConfigType.Both
+					ConfigType = DeviceConfigsConfigType.Running
 				},
 				CancellationToken.None)
 			.ConfigureAwait(true);
 
-		response.Should().BeOfType<DeviceConfigResponse>();
+		response.Should().BeOfType<Dictionary<string, DeviceConfigResponse>?>();
 		response.Should().NotBeNull();
 	}
 
