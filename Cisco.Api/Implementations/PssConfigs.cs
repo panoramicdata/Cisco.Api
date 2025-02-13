@@ -130,13 +130,13 @@ internal class PssConfigs : IPssConfigs
 			}
 
 			// Wasn't zipped content
-			throw new Exception("Response did not contain any configs.");
+			throw new Exception("Response did not contain a zip file of configs.");
 		}
 		else
 		{
 			if (response.Result.StatusCode == System.Net.HttpStatusCode.NoContent)
 			{
-				throw new Exception($"The response did not return any configs - there may be a fault in the Cisco PSS API.");
+				throw new Exception($"SSH is disabled on this customer ID - configs cannot be retrieved.");
 			}
 
 			throw new Exception($"An error occurred whilst requesting the config(s): {response.Result.ReasonPhrase}");
