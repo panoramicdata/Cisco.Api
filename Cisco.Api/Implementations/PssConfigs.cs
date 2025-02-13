@@ -44,13 +44,6 @@ internal class PssConfigs : IPssConfigs
 
 		var url = $"{restHttpClient.BaseAddress}pss/v1.0/inventory/customers/{customerId}/devices/{deviceIds}?configType={configType}";
 
-		// Perform a Get("/px/v1/customers/{customerId}/reports/{reportId}") request to the REST API.
-		// The response is hopefully a zipped file, which should contain one or both of the following: 'startup' and 'running' configurations.
-		// An example if "126965383_2921733_PSS_240936/636053762_show startup-config_2024_07_31.txt"
-		// An example if "126965383_2921733_PSS_240936/636053762_show running-config_2024_07_31.txt"
-		// Extract the files based on whether the word 'startup' or 'running' into properties. Also set the related date property.
-		// If the response is not a zipped file, then throw an exception.
-
 		var response = restHttpClient.GetAsync(url, cancellationToken);
 		if (response.Result.IsSuccessStatusCode)
 		{
