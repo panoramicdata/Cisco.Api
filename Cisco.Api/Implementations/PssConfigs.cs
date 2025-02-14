@@ -84,7 +84,7 @@ internal class PssConfigs : IPssConfigs
 
 
 	/// <inheritdoc/>
-	public async Task<Dictionary<string, DeviceConfigResponse>> ExtractDeviceConfigsZipToObjectAsync(MemoryStream memoryStream)
+	public async Task<Dictionary<string, DeviceConfigResponse>> ExtractDeviceConfigsZipToDictionaryAsync(MemoryStream memoryStream)
 	{
 		// This method takes a MemoryStream and returns a Dictionary of DeviceConfigResponse objects.
 		// If storing the result, consider compressing the properties first.

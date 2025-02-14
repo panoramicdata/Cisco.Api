@@ -221,7 +221,7 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 			// Convert the MemoryStream to the final object
 			var deviceConfigResponses = await CiscoClient
 				.PssConfigs
-				.ExtractDeviceConfigsZipToObjectAsync(memoryStream)
+				.ExtractDeviceConfigsZipToDictionaryAsync(memoryStream)
 				.ConfigureAwait(true);
 
 			deviceConfigResponses.Should().BeOfType<Dictionary<string, DeviceConfigResponse>>();
