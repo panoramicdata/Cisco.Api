@@ -158,26 +158,6 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		// TODO - property tests
 	}
 
-	//[Fact]
-	//public async void GetDeviceConfigs_Succeeds()
-	//{
-	//	var response = await CiscoClient
-	//		.PssConfigs
-	//		.GetDeviceConfigAsync(
-	//			new DeviceConfigsRequest
-	//			{
-	//				CustomerId = Config.TestCustomerId,
-	//				//DeviceIds = [Config.TestDeviceId, Config.TestDeviceId2, Config.TestDeviceId3, Config.TestDeviceId4, Config.TestDeviceId5],
-	//				DeviceIds = [Config.TestDeviceId],
-	//				ConfigType = DeviceConfigsConfigType.Running
-	//			},
-	//			CancellationToken.None)
-	//		.ConfigureAwait(true);
-
-	//	response.Should().BeOfType<Dictionary<string, DeviceConfigResponse>?>();
-	//	response.Should().NotBeNull();
-	//}
-
 	[Fact]
 	public async void RetrieveAndConvertDeviceConfigs_Succeeds()
 	{
