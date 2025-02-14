@@ -4,8 +4,6 @@ namespace Cisco.Api.Data.Pss;
 
 public class DeviceConfigResponse
 {
-	public string DeviceId { get; set; } = string.Empty;
-
 	public string? StartupConfig { get; set; }
 
 	public DateTime? StartupConfigDate { get; set; }

@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>Improvements to PssConfigs.GetDeviceConfigsAsync().</PackageReleaseNotes>
+		<PackageReleaseNotes>Split GetDeviceConfigAsync() into RetrieveDeviceConfigZipAsync() and ExtractDeviceConfigsZipToObjectAsync().</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>

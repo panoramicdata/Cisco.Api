@@ -1,5 +1,7 @@
 ﻿using Cisco.Api.Data.Pss;
+using ICSharpCode.SharpZipLib.Zip;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,18 +9,22 @@ namespace Cisco.Api.Interfaces;
 public interface IPssConfigs
 {
 	/// <summary>
-	/// This API returns the device configuration for the selected devices if collected by the collector.
-	/// This API returns Startup configs and/or Running configs, for upto 5 deviceIds at a time.
-	/// The input data parameters(customerId and deviceIds) are obtained from the data returned in the first two Inventory API service calls.
-	/// You must provide the configType you want to retrieve, either RUNNING, STARTUP, or BOTH.
-	/// Only output files of up to 100 MB size of the configurations are supported.
+	/// You can retrieve the running and startup configs for up to 5 devices at a time, in the form of a ZIP file - this is returned as
+	/// a MemoryStream so that you can save it to disk or process it further, by passing into ExtractDeviceConfigsZipToObjectAsync().
+	/// Note that SSH must be enabled for the customer.
 	/// </summary>
-	/// <param name="customerId">Unique Identifier of the customer.</param>
-	/// <param name="deviceIds">Unique Identifier of the customer.</param>
-	/// <param name="configType">Unique Identifier of the customer.</param>
+	/// <param name="deviceConfigsRequest">The request containing customer ID, device IDs, and config type.</param>
 	/// <param name="cancellationToken"></param>
-	/// <returns></returns>
-	Task<Dictionary<string, DeviceConfigResponse>> GetDeviceConfigAsync(
+	/// <returns>A MemoryStream containing the zipped device configurations.</returns>
+	Task<MemoryStream> RetrieveDeviceConfigZipAsync(
 		DeviceConfigsRequest deviceConfigsRequest,
 		CancellationToken cancellationToken);
+
+	/// <summary>
+	/// Extracts a MemoryStream containing device configurations into a dictionary of device configurations.
+	/// </summary>
+	/// <param name="memoryStream">The MemoryStream containing the zipped device configurations.</param>
+	/// <returns>A dictionary with device IDs as keys and DeviceConfigResponse as values.</returns>
+	Task<Dictionary<string, DeviceConfigResponse>> ExtractDeviceConfigsZipToObjectAsync(
+		MemoryStream memoryStream);
 }

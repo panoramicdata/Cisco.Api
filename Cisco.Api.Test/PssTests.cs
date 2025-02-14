@@ -1,7 +1,9 @@
 ﻿using Cisco.Api.Data.Pss;
 using FluentAssertions;
+using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -156,24 +158,93 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		// TODO - property tests
 	}
 
-	[Fact]
-	public async void GetDeviceConfigs_Succeeds()
-	{
-		var response = await CiscoClient
-			.PssConfigs
-			.GetDeviceConfigAsync(
-				new DeviceConfigsRequest
-				{
-					CustomerId = Config.TestCustomerId,
-					//DeviceIds = [Config.TestDeviceId, Config.TestDeviceId2, Config.TestDeviceId3, Config.TestDeviceId4, Config.TestDeviceId5],
-					DeviceIds = [Config.TestDeviceId],
-					ConfigType = DeviceConfigsConfigType.Running
-				},
-				CancellationToken.None)
-			.ConfigureAwait(true);
+	//[Fact]
+	//public async void GetDeviceConfigs_Succeeds()
+	//{
+	//	var response = await CiscoClient
+	//		.PssConfigs
+	//		.GetDeviceConfigAsync(
+	//			new DeviceConfigsRequest
+	//			{
+	//				CustomerId = Config.TestCustomerId,
+	//				//DeviceIds = [Config.TestDeviceId, Config.TestDeviceId2, Config.TestDeviceId3, Config.TestDeviceId4, Config.TestDeviceId5],
+	//				DeviceIds = [Config.TestDeviceId],
+	//				ConfigType = DeviceConfigsConfigType.Running
+	//			},
+	//			CancellationToken.None)
+	//		.ConfigureAwait(true);
 
-		response.Should().BeOfType<Dictionary<string, DeviceConfigResponse>?>();
-		response.Should().NotBeNull();
+	//	response.Should().BeOfType<Dictionary<string, DeviceConfigResponse>?>();
+	//	response.Should().NotBeNull();
+	//}
+
+	[Fact]
+	public async void RetrieveAndConvertDeviceConfigs_Succeeds()
+	{
+		string tempPath = Path.GetTempPath();
+		string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+		string outputFilePath = Path.Combine(tempPath, $"device_configs_{timestamp}.zip");
+
+		try
+		{
+			// Retrieve the zip file
+			var memoryStream = await CiscoClient
+				.PssConfigs
+				.RetrieveDeviceConfigZipAsync(
+					new DeviceConfigsRequest
+					{
+						CustomerId = Config.TestCustomerId,
+						DeviceIds = new List<string> { Config.TestDeviceId },
+						ConfigType = DeviceConfigsConfigType.Running
+					},
+					CancellationToken.None)
+				.ConfigureAwait(true);
+
+			memoryStream.Should().NotBeNull();
+
+			// Check if memoryStream contains data
+			if (memoryStream.Length == 0)
+			{
+				throw new InvalidOperationException("The memory stream is empty.");
+			}
+
+			// Save the zip file to a local path
+			using (var fileStream = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write))
+			{
+				memoryStream.Position = 0;
+				await memoryStream.CopyToAsync(fileStream);
+			}
+
+			// Verify the file was saved
+			File.Exists(outputFilePath).Should().BeTrue();
+
+			// Convert the MemoryStream to the final object
+			var deviceConfigResponses = await CiscoClient
+				.PssConfigs
+				.ExtractDeviceConfigsZipToObjectAsync(memoryStream)
+				.ConfigureAwait(true);
+
+			deviceConfigResponses.Should().BeOfType<Dictionary<string, DeviceConfigResponse>>();
+			deviceConfigResponses.Should().NotBeNull();
+			deviceConfigResponses.Should().ContainKey(Config.TestDeviceId);
+		}
+		catch (Exception ex)
+		{
+			// Ensure the file is deleted if an exception occurs
+			if (File.Exists(outputFilePath))
+			{
+				File.Delete(outputFilePath);
+			}
+			throw new Exception("Test failed and the file was deleted.", ex);
+		}
+		finally
+		{
+			// Ensure the file is deleted after the test completes
+			if (File.Exists(outputFilePath))
+			{
+				File.Delete(outputFilePath);
+			}
+		}
 	}
 
 	[Fact]

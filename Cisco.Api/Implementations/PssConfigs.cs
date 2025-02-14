@@ -19,14 +19,14 @@ internal class PssConfigs : IPssConfigs
 		this.restHttpClient = restHttpClient;
 	}
 
-	/// <inheritdoc/>
-	public async Task<Dictionary<string, DeviceConfigResponse>> GetDeviceConfigAsync(DeviceConfigsRequest deviceConfigsRequest, CancellationToken cancellationToken = default)
+	public async Task<MemoryStream> RetrieveDeviceConfigZipAsync(DeviceConfigsRequest deviceConfigsRequest, CancellationToken cancellationToken = default)
 	{
-		// This is a fairly new REST endpoint, unlike all the other PSS SOAP endpoints.
 		// You can retrieve the running and startup configs for up to 5 devices at a time, in the form of a ZIP file.
 		// Docs: https://docs.cloudapps.cisco.com/pss/APIDevGuide/service_inventory.html#getDeviceConfig
 
-		// This method retrieves the zipped config file, extracts the contents, and returns them in a DeviceConfigResponse object.
+		// This method retrieves the zipped config file, and returns it as as a MemoryStream so that user can opt to dump the zip
+		// or pass it to ConvertDeviceConfigsZipToObjectAsync() the contents immediately.
+
 
 		var customerId = deviceConfigsRequest.CustomerId;
 		var deviceIds = string.Join(",", deviceConfigsRequest.DeviceIds);
@@ -47,99 +47,102 @@ internal class PssConfigs : IPssConfigs
 			throw new Exception("The only valid input strings are RUNNING, STARTUP, and BOTH.");
 		}
 
-		// All good
-
 		var url = $"{restHttpClient.BaseAddress}pss/v1.0/inventory/customers/{customerId}/devices/{deviceIds}?configType={configType}";
 
-		var response = restHttpClient.GetAsync(url, cancellationToken);
+		var response = await restHttpClient.GetAsync(url, cancellationToken);
 
-		//if (response.Result.IsSuccessStatusCode)
-		if (response.Result.StatusCode == System.Net.HttpStatusCode.OK)
+		if (response.StatusCode == System.Net.HttpStatusCode.OK)
 		{
-			var isZipped = response.Result.Content.Headers.ContentDisposition?.FileName == "config.zip";
+			var isZipped = response.Content.Headers.ContentDisposition?.FileName == "config.zip";
 
 			if (isZipped)
 			{
-				// Populate the resonse with a record per deviceId
-				Dictionary<string, DeviceConfigResponse> output = new();
+				var memoryStream = new MemoryStream();
+				await response.Content.CopyToAsync(memoryStream);
+				memoryStream.Position = 0;
 
-				foreach(var deviceId in deviceConfigsRequest.DeviceIds) {
-					output.Add(deviceId, new DeviceConfigResponse());
-				}
-
-				// Now process the zipped content
-				try
+				if (memoryStream.Length == 0)
 				{
-					// Expecting a ZIP file with one or two files per device ID - could be zero per deviceId if no config yet uploaded I presume.
-
-					// Unzip response content using SharpZipLib, to get one or two files per device ID
-					using (var zipInputStream = new ZipInputStream(response.Result.Content.ReadAsStreamAsync().Result))
-					{
-						ZipEntry entry;
-
-						while ((entry = zipInputStream.GetNextEntry()) != null)
-						{
-							// 1922013981_2921733_PSS_2713922/1008264179_show running-config_2025_02_10.txt
-
-							// Drop all characters upto and including the first /
-							var split = entry.Name.Split('/');
-							if (split.Length != 2)
-							{
-								throw new Exception("Unable to parse the zipped response.");
-							}
-
-							var deviceId = split[1].Split('_').First();
-
-							using (var ms = new MemoryStream())
-							{
-								zipInputStream.CopyTo(ms);
-								ms.Position = 0;
-								using (var sr = new StreamReader(ms))
-								{
-									var content = sr.ReadToEnd();
-									// Check if the file is a startup or running config
-									if (entry.Name.Contains("startup"))
-									{
-										// Set the startup config
-										output[deviceId].StartupConfig = content;
-
-										// Get the date (e.g. 2024_07_31) from the end of the filename (excluding the extension)
-										var date = entry.Name.Split("config_").Last().Split('.').First();
-										output[deviceId].StartupConfigDate = DateTime.ParseExact(date, "yyyy_MM_dd", null);
-									}
-									else if (entry.Name.Contains("running"))
-									{
-										// Set the running config
-										output[deviceId].RunningConfig = content;
-
-										// Get the date from the filename
-										var date = entry.Name.Split("config_").Last().Split('.').First();
-										output[deviceId].RunningConfigDate = DateTime.ParseExact(date, "yyyy_MM_dd", null);
-									}
-								}
-							}
-						}
-					}
-				}
-				catch (Exception ex)
-				{
-					throw new Exception("Unable to decompress the zipped response.");
+					throw new Exception("The zip input stream is empty.");
 				}
 
-				return output;
+				return memoryStream;
 			}
 
-			// Wasn't zipped content
 			throw new Exception("Response did not contain a zip file of configs.");
 		}
 		else
 		{
-			if (response.Result.StatusCode == System.Net.HttpStatusCode.NoContent)
+			if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
 			{
 				throw new Exception($"SSH is disabled on this customer ID - configs cannot be retrieved.");
 			}
 
-			throw new Exception($"An error occurred whilst requesting the config(s): {response.Result.ReasonPhrase}");
+			throw new Exception($"An error occurred whilst requesting the config(s): {response.ReasonPhrase}");
 		}
 	}
+
+
+	/// <inheritdoc/>
+	public async Task<Dictionary<string, DeviceConfigResponse>> ExtractDeviceConfigsZipToObjectAsync(MemoryStream memoryStream)
+	{
+		// This method takes a MemoryStream and returns a Dictionary of DeviceConfigResponse objects.
+		// If storing the result, consider compressing the properties first.
+
+		Dictionary<string, DeviceConfigResponse> output = new();
+
+		try
+		{
+			memoryStream.Position = 0; // Ensure the stream is at the beginning
+			using (var zipInputStream = new ZipInputStream(memoryStream))
+			{
+				ZipEntry entry;
+
+				while ((entry = zipInputStream.GetNextEntry()) != null)
+				{
+					var split = entry.Name.Split('/');
+					if (split.Length != 2)
+					{
+						throw new Exception("Unable to parse the zipped response.");
+					}
+
+					var deviceId = split[1].Split('_').First();
+
+					if (!output.ContainsKey(deviceId))
+					{
+						output[deviceId] = new DeviceConfigResponse();
+					}
+
+					using (var ms = new MemoryStream())
+					{
+						await zipInputStream.CopyToAsync(ms);
+						ms.Position = 0;
+						using (var sr = new StreamReader(ms))
+						{
+							var content = await sr.ReadToEndAsync();
+							if (entry.Name.Contains("startup"))
+							{
+								output[deviceId].StartupConfig = content;
+								var date = entry.Name.Split("config_").Last().Split('.').First();
+								output[deviceId].StartupConfigDate = DateTime.ParseExact(date, "yyyy_MM_dd", null);
+							}
+							else if (entry.Name.Contains("running"))
+							{
+								output[deviceId].RunningConfig = content;
+								var date = entry.Name.Split("config_").Last().Split('.').First();
+								output[deviceId].RunningConfigDate = DateTime.ParseExact(date, "yyyy_MM_dd", null);
+							}
+						}
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			throw new Exception("Unable to decompress the zipped response.", ex);
+		}
+
+		return output;
+	}
+
 }
