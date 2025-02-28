@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>Split GetDeviceConfigAsync() into RetrieveDeviceConfigZipAsync() and ExtractDeviceConfigsZipToDictionaryAsync().</PackageReleaseNotes>
+		<PackageReleaseNotes>Add Caveats to PSS.GetPsirtDetailsAsync()</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -1,142 +1,212 @@
-<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema"  xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ns1="http://www.cisco.com/PSIRTAlertService" targetNamespace="http://www.cisco.com/PSIRTAlertService">
-<wsdl:types>
-
-
-
-<xs:schema xmlns:tns="http://www.cisco.com/PSIRTAlertService" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.cisco.com/PSIRTAlertService">
-
-            <xs:complexType name="Message">
-                <xs:sequence>
-                    <xs:element name="messageType" nillable="true" type="xs:string"/>
-                    <xs:element name="messageDetail" nillable="true" type="xs:string"/>
-                </xs:sequence>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ns0="http://exception.service.csp.ca.cisco.com/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ns1="http://www.cisco.com/PSIRTAlertService" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://www.cisco.com/PSIRTAlertService">
+  <wsdl:types>
+    <xs:schema xmlns:ax22="http://exception.service.csp.ca.cisco.com/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.service.csp.ca.cisco.com/xsd">
+      <xs:complexType name="PSIRTAlertServiceException">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="messageCause" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="messageCode" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="messageDetail" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="systemTime" nillable="true" type="xs:long"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+    <xs:schema xmlns:tns="http://www.cisco.com/PSIRTAlertService" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.cisco.com/PSIRTAlertService">
+      <xs:complexType name="Message">
+        <xs:sequence>
+          <xs:element name="messageType" nillable="true" type="xs:string"/>
+          <xs:element name="messageDetail" nillable="true" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PSIRTRequest">
+        <xs:sequence>
+          <xs:element name="customerId" type="xs:string"/>
+          <xs:element name="inventoryId" type="xs:string"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="deviceIds" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="PSIRTRequestInput" type="ns1:PSIRTRequest"/>
+      <xs:complexType name="PSIRTResponse">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="DevicePSIRTResponseDTO" type="ns1:DevicePSIRTResponse"/>
+          <xs:element name="responseTimestamp" nillable="true" type="xs:dateTime"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="message" type="ns1:Message"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="PSIRTResponseOutput" type="ns1:PSIRTResponse"/>
+      <xs:complexType name="DevicePSIRTResponse">
+        <xs:sequence>
+          <xs:element name="deviceId" type="xs:string"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="devicePSIRT" type="ns1:DevicePSIRT"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="DevicePSIRT">
+        <xs:all minOccurs="0">
+          <xs:element name="psirtId" type="xs:string"/>
+          <xs:element name="matchConfidence" type="xs:string"/>
+          <xs:element name="matchReason" type="xs:string"/>
+          <xs:element name="softwareType" type="xs:string"/>
+          <xs:element name="softwareVersion" type="xs:string"/>
+        </xs:all>
+      </xs:complexType>
+      <xs:complexType name="PSIRTDetailsRequest">
+        <xs:sequence>
+          <xs:element name="psirtIds">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element maxOccurs="unbounded" name="psirtId" type="xs:string"/>
+              </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="PSIRTRequest">
-                <xs:sequence>
-                    <xs:element name="customerId" type="xs:string"/>
-                    <xs:element name="inventoryId" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="deviceIds" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:element name="PSIRTRequestInput" type="tns:PSIRTRequest"/>
-            <xs:complexType name="PSIRTResponse">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="DevicePSIRTResponseDTO" type="tns:DevicePSIRTResponse"/>
-                    <xs:element name="responseTimestamp" nillable="true" type="xs:dateTime"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="message" type="tns:Message"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:element name="PSIRTResponseOutput" type="tns:PSIRTResponse"/>
-            <xs:complexType name="DevicePSIRTResponse">
-                <xs:sequence>
-                    <xs:element name="deviceId" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="devicePSIRT" type="tns:DevicePSIRT"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="DevicePSIRT">
-                <xs:all minOccurs="0">
-                    <xs:element name="psirtId" type="xs:string"/>
-                    <xs:element name="matchConfidence" type="xs:string"/>
-                    <xs:element name="matchReason" type="xs:string"/>
-                    <xs:element name="softwareType" type="xs:string"/>
-                    <xs:element name="softwareVersion" type="xs:string"/>
-                </xs:all>
-            </xs:complexType>
-            <xs:complexType name="PSIRTDetailsRequest">
-                <xs:sequence>
-                    <xs:element name="psirtIds">
-                        <xs:complexType>
-                            <xs:sequence>
-                                <xs:element maxOccurs="unbounded" name="psirtId" type="xs:string"/>
-                            </xs:sequence>
-                        </xs:complexType>
-                    </xs:element>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:element name="PSIRTDetailsRequestInput" type="tns:PSIRTDetailsRequest"/>
-            <xs:complexType name="PSIRTDetailsResponse">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="PSIRTDetailsList" type="tns:PSIRTDetails"/>
-                    <xs:element name="responseTimestamp" nillable="true" type="xs:dateTime"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="message" type="tns:Message"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:element name="PSIRTDetailsResponseOutput" type="tns:PSIRTDetailsResponse"/>
-            <xs:complexType name="PSIRTDetails">
-                <xs:all minOccurs="0">
-                    <xs:element name="psirtId" type="xs:string"/>
-                    <xs:element name="distributionType" type="xs:string"/>
-                    <xs:element name="documentNumber" type="xs:string"/>
-                    <xs:element name="externalURL" type="xs:string"/>
-                    <xs:element name="firstPublished" type="xs:dateTime"/>
-                    <xs:element name="headline" type="xs:string"/>
-                    <xs:element name="lastUpdated" type="xs:dateTime"/>
-                    <xs:element name="revisionNumber" type="xs:string"/>
-                </xs:all>
-            </xs:complexType>
-
-</xs:schema>
-</wsdl:types>
-
-<wsdl:message name="getPSIRTRequestMessage">
-<wsdl:part name="parameters" element="ns1:PSIRTRequestInput"/>
-</wsdl:message>
-
-<wsdl:message name="getPSIRTResponseMessage">
-<wsdl:part name="parameters" element="ns1:PSIRTResponseOutput"/>
-</wsdl:message>
-
-<wsdl:message name="getPSIRTDetailsRequestMessage">
-<wsdl:part name="parameters" element="ns1:PSIRTDetailsRequestInput"/>
-</wsdl:message>
-<wsdl:message name="getPSIRTDetailsResponseMessage">
-<wsdl:part name="parameters" element="ns1:PSIRTDetailsResponseOutput"/>
-</wsdl:message>
-
-
-
-<wsdl:portType name="PSIRTAlertServicePortType">
-<wsdl:operation name="getPSIRT">
-<wsdl:input message="ns1:getPSIRTRequestMessage" wsaw:Action="getPSIRT"/>
-<wsdl:output message="ns1:getPSIRTResponseMessage" wsaw:Action="urn:getPSIRTResponse"/>
-
-</wsdl:operation>
-<wsdl:operation name="getPSIRTDetails">
-<wsdl:input message="ns1:getPSIRTDetailsRequestMessage" wsaw:Action="getPSIRTDetails"/>
-<wsdl:output message="ns1:getPSIRTDetailsResponseMessage" wsaw:Action="urn:getPSIRTDetailsResponse"/>
-
-</wsdl:operation>
-</wsdl:portType>
-
-<wsdl:binding name="PSIRTAlertServiceSOAP11Binding" type="ns1:PSIRTAlertServicePortType">
-<soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
-<wsdl:operation name="getPSIRT">
-<soap:operation soapAction="getPSIRT" style="document"/>
-<wsdl:input>
-<soap:body use="literal" parts="parameters"/>
-</wsdl:input>
-<wsdl:output>
-<soap:body use="literal"  parts="parameters"/>
-</wsdl:output>
-
-</wsdl:operation>
-<wsdl:operation name="getPSIRTDetails">
-<soap:operation soapAction="getPSIRTDetails" style="document"/>
-<wsdl:input>
-<soap:body use="literal" parts="parameters"/>
-</wsdl:input>
-<wsdl:output>
-<soap:body use="literal" parts="parameters"/>
-</wsdl:output>
-
-</wsdl:operation>
-</wsdl:binding>
-
-<wsdl:service name="PSIRTAlertService">
-<wsdl:port name="PSIRTAlertServiceSOAP11port_http" binding="ns1:PSIRTAlertServiceSOAP11Binding">
-<soap:address location="https://api.cisco.com/pss/v1.0/PSIRTAlertService"/>
-</wsdl:port>
-
-
-</wsdl:service>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="PSIRTDetailsRequestInput" type="ns1:PSIRTDetailsRequest"/>
+      <xs:complexType name="PSIRTDetailsResponse">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="PSIRTDetailsList" type="ns1:PSIRTDetails"/>
+          <xs:element name="responseTimestamp" nillable="true" type="xs:dateTime"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="message" type="ns1:Message"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="PSIRTDetailsResponseOutput" type="ns1:PSIRTDetailsResponse"/>
+      <xs:complexType name="PSIRTDetails">
+        <xs:all minOccurs="0">
+          <xs:element name="psirtId" type="xs:string"/>
+          <xs:element name="distributionType" type="xs:string"/>
+          <xs:element name="documentNumber" type="xs:string"/>
+          <xs:element name="externalURL" type="xs:string"/>
+          <xs:element name="firstPublished" type="xs:dateTime"/>
+          <xs:element name="headline" type="xs:string"/>
+          <xs:element name="lastUpdated" type="xs:dateTime"/>
+          <xs:element name="revisionNumber" type="xs:string"/>
+          <xs:element name="caveats" type="xs:string"/>
+        </xs:all>
+      </xs:complexType>
+      <xs:complexType name="Exception">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Exception" nillable="true" type="xs:anyType"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="PSIRTAlertServiceException">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="PSIRTAlertServiceException" nillable="true" type="ns0:PSIRTAlertServiceException"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="getPSIRTDetailsRequestMessage">
+    <wsdl:part name="parameters" element="ns1:PSIRTDetailsRequestInput"/>
+  </wsdl:message>
+  <wsdl:message name="getPSIRTDetailsResponseMessage">
+    <wsdl:part name="parameters" element="ns1:PSIRTDetailsResponseOutput"/>
+  </wsdl:message>
+  <wsdl:message name="PSIRTAlertServiceException">
+    <wsdl:part name="parameters" element="ns1:PSIRTAlertServiceException"/>
+  </wsdl:message>
+  <wsdl:message name="getPSIRTRequestMessage">
+    <wsdl:part name="parameters" element="ns1:PSIRTRequestInput"/>
+  </wsdl:message>
+  <wsdl:message name="getPSIRTResponseMessage">
+    <wsdl:part name="parameters" element="ns1:PSIRTResponseOutput"/>
+  </wsdl:message>
+  <wsdl:portType name="PSIRTAlertServicePortType">
+    <wsdl:operation name="getPSIRTDetails">
+      <wsdl:input message="ns1:getPSIRTDetailsRequestMessage" wsaw:Action="getPSIRTDetails"/>
+      <wsdl:output message="ns1:getPSIRTDetailsResponseMessage" wsaw:Action="urn:getPSIRTDetailsResponse"/>
+      <wsdl:fault message="ns1:PSIRTAlertServiceException" name="PSIRTAlertServiceException" wsaw:Action="urn:getPSIRTDetailsPSIRTAlertServiceException"/>
+    </wsdl:operation>
+    <wsdl:operation name="getPSIRT">
+      <wsdl:input message="ns1:getPSIRTRequestMessage" wsaw:Action="getPSIRT"/>
+      <wsdl:output message="ns1:getPSIRTResponseMessage" wsaw:Action="urn:getPSIRTResponse"/>
+      <wsdl:fault message="ns1:PSIRTAlertServiceException" name="PSIRTAlertServiceException" wsaw:Action="urn:getPSIRTPSIRTAlertServiceException"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="PSIRTAlertServiceSOAP11Binding" type="ns1:PSIRTAlertServicePortType">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <wsdl:operation name="getPSIRTDetails">
+      <soap:operation soapAction="getPSIRTDetails" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="PSIRTAlertServiceException">
+        <soap:fault use="literal" name="PSIRTAlertServiceException"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getPSIRT">
+      <soap:operation soapAction="getPSIRT" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="PSIRTAlertServiceException">
+        <soap:fault use="literal" name="PSIRTAlertServiceException"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="PSIRTAlertServiceSOAP12Binding" type="ns1:PSIRTAlertServicePortType">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <wsdl:operation name="getPSIRTDetails">
+      <soap12:operation soapAction="getPSIRTDetails" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="PSIRTAlertServiceException">
+        <soap12:fault use="literal" name="PSIRTAlertServiceException"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getPSIRT">
+      <soap12:operation soapAction="getPSIRT" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="PSIRTAlertServiceException">
+        <soap12:fault use="literal" name="PSIRTAlertServiceException"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="PSIRTAlertServiceHttpBinding" type="ns1:PSIRTAlertServicePortType">
+    <http:binding verb="POST"/>
+    <wsdl:operation name="getPSIRTDetails">
+      <http:operation location="PSIRTAlertService/getPSIRTDetails"/>
+      <wsdl:input>
+        <mime:content type="text/xml" part="getPSIRTDetails"/>
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content type="text/xml" part="getPSIRTDetails"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPSIRT">
+      <http:operation location="PSIRTAlertService/getPSIRT"/>
+      <wsdl:input>
+        <mime:content type="text/xml" part="getPSIRT"/>
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content type="text/xml" part="getPSIRT"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="PSIRTAlertService">
+    <wsdl:port name="PSIRTAlertServiceSOAP11port_http" binding="ns1:PSIRTAlertServiceSOAP11Binding">
+      <soap:address location="http://api.cisco.com:80/pssui_beta/services/PSIRTAlertService"/>
+    </wsdl:port>
+    <wsdl:port name="PSIRTAlertServiceSOAP12port_http" binding="ns1:PSIRTAlertServiceSOAP12Binding">
+      <soap12:address location="http://api.cisco.com:80/pssui_beta/services/PSIRTAlertService"/>
+    </wsdl:port>
+    <wsdl:port name="PSIRTAlertServiceHttpport" binding="ns1:PSIRTAlertServiceHttpBinding">
+      <http:address location="http://api.cisco.com:80/pssui_beta/services/PSIRTAlertService"/>
+    </wsdl:port>
+  </wsdl:service>
 </wsdl:definitions>
