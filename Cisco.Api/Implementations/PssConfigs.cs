@@ -114,6 +114,13 @@ internal class PssConfigs : IPssConfigs
 
 				while ((entry = zipInputStream.GetNextEntry()) != null)
 				{
+					/* Examples:
+					 switches seem to be in this format:
+					 499665469_2921733_PSS_2713922/1008264179_show running-config_2025_04_28.txt
+					 whilst APs (and others?) are like this:
+					 179888473_2921733_PSS_2713922/1008264180_show run-config_2025_04_28.txt
+					 */
+
 					var split = entry.Name.Split('/');
 					if (split.Length != 2)
 					{
@@ -140,7 +147,7 @@ internal class PssConfigs : IPssConfigs
 								var date = entry.Name.Split("config_").Last().Split('.').First();
 								output[deviceId].StartupConfigDate = DateTime.ParseExact(date, "yyyy_MM_dd", null);
 							}
-							else if (entry.Name.Contains("running"))
+							else if (entry.Name.Contains("running-config") || entry.Name.Contains("run-config"))
 							{
 								output[deviceId].RunningConfig = content;
 								var date = entry.Name.Split("config_").Last().Split('.').First();
