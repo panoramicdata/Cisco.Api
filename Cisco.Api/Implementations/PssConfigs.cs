@@ -53,7 +53,9 @@ internal class PssConfigs : IPssConfigs
 
 		if (response.StatusCode == System.Net.HttpStatusCode.OK)
 		{
-			var isZipped = response.Content.Headers.ContentDisposition?.FileName == "config.zip";
+			// Filename is meant to be in the Content-Disposition header, but not always present.
+			// Structure is like deviceconfig_100856745_996296262.zip
+			var isZipped = response.Content.Headers.ContentDisposition?.FileName?.EndsWith("zip") == true;
 
 			if (isZipped)
 			{
