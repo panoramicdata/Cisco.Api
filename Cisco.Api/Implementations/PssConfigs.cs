@@ -75,7 +75,7 @@ internal class PssConfigs : IPssConfigs
 		{
 			if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
 			{
-				throw new Exception($"SSH is disabled on this customer ID - configs cannot be retrieved.");
+				throw new Exception($"None of the supplied device IDs have a config to return.");
 			}
 
 			throw new Exception($"An error occurred whilst requesting the config(s): {response.ReasonPhrase}");
