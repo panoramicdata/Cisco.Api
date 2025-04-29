@@ -53,11 +53,17 @@ internal class PssConfigs : IPssConfigs
 
 		if (response.StatusCode == System.Net.HttpStatusCode.OK)
 		{
+			// Turns out the 
+
+			/*
 			// Filename is meant to be in the Content-Disposition header, but not always present.
 			// Structure is like deviceconfig_100856745_996296262.zip
 			var isZipped = response.Content.Headers.ContentDisposition?.FileName?.EndsWith("zip") == true;
 
 			if (isZipped)
+			{
+			*/
+			try
 			{
 				var memoryStream = new MemoryStream();
 				await response.Content.CopyToAsync(memoryStream);
@@ -70,8 +76,14 @@ internal class PssConfigs : IPssConfigs
 
 				return memoryStream;
 			}
+			catch (Exception ex)
+			{
+				throw new Exception("Unable to decompress the zipped response.", ex);
+			}
+			/*}
 
 			throw new Exception("Response did not contain a zip file of configs.");
+			*/
 		}
 		else
 		{
