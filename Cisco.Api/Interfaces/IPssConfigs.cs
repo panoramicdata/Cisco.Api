@@ -1,5 +1,4 @@
 ﻿using Cisco.Api.Data.Pss;
-using ICSharpCode.SharpZipLib.Zip;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -10,8 +9,8 @@ public interface IPssConfigs
 {
 	/// <summary>
 	/// You can retrieve the running and startup configs for up to 5 devices at a time, in the form of a ZIP file - this is returned as
-	/// a MemoryStream so that you can save it to disk or process it further, by passing into ExtractDeviceConfigsZipToDictionaryAsync().
-	/// Note that SSH must be enabled for the customer.
+	/// a MemoryStream so that you can potentially save it to disk, or process it further by passing into ExtractDeviceConfigsZipToDictionaryAsync().
+	/// Note that SSH must be enabled for the customer, otherwise a 204 No Content response is returned.
 	/// </summary>
 	/// <param name="deviceConfigsRequest">The request containing customer ID, device IDs, and config type.</param>
 	/// <param name="cancellationToken"></param>

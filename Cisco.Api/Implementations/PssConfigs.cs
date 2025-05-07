@@ -32,12 +32,12 @@ internal class PssConfigs : IPssConfigs
 		var deviceIds = string.Join(",", deviceConfigsRequest.DeviceIds);
 		var configType = deviceConfigsRequest.ConfigType;
 
-		if (deviceIds.Length == 0)
+		if (deviceConfigsRequest.DeviceIds.Count == 0)
 		{
 			throw new Exception("No device IDs provided.");
 		}
 
-		if (deviceIds.Split(',').Length > 5)
+		if (deviceConfigsRequest.DeviceIds.Count > 5)
 		{
 			throw new Exception("The deviceIds input is limited to a maximum of 5 devices per call.");
 		}
