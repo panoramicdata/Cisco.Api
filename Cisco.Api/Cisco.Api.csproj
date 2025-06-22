@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>Fixes to PssConfigs.RetrieveDeviceConfigZipAsync() and ExtractDeviceConfigsZipToDictionaryAsync()</PackageReleaseNotes>
+		<PackageReleaseNotes>PSS HW and SW Bulletin dates are now nullable.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>

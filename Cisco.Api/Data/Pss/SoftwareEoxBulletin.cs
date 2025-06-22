@@ -24,7 +24,7 @@ public class SoftwareEoxBulletin
 	/// Indicates the End-of-Engineering (EOE) Date, if reached, otherwise the date is blank.
 	/// </summary>
 	[XmlElement("endOfEngineeringDate")]
-	public DateTime EndOfEngineeringDate { get; set; }
+	public DateTime? EndOfEngineeringDate { get; set; }
 
 	/// <summary>
 	/// Indicates the End-of-Life (EOL) Date, if reached,
@@ -33,7 +33,7 @@ public class SoftwareEoxBulletin
 	/// and the end of life of a product is distributed to the general public.
 	/// </summary>
 	[XmlElement("endOfLifeDate")]
-	public DateTime EndOfLifeDate { get; set; }
+	public DateTime? EndOfLifeDate { get; set; }
 
 	/// <summary>
 	/// Indicates the End-of-Sale (EOS) Date, if reached,
@@ -41,7 +41,7 @@ public class SoftwareEoxBulletin
 	/// The product is no longer for sale after this date.
 	/// </summary>
 	[XmlElement("endOfSaleDate")]
-	public DateTime EndOfSaleDate { get; set; }
+	public DateTime? EndOfSaleDate { get; set; }
 
 	/// <summary>
 	/// Id of the software slated for end of life.

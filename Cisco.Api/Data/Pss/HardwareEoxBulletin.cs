@@ -38,7 +38,7 @@ public class HardwareEoxBulletin
 	/// may be performed to determine the cause of product failure or defect.
 	/// </summary>
 	[XmlElement("endOfHardwareRoutineFailureAnalysisDate")]
-	public DateTime EndOfHardwareRoutineFailureAnalysisDate { get; set; }
+	public DateTime? EndOfHardwareRoutineFailureAnalysisDate { get; set; }
 
 	/// <summary>
 	/// Indicates the End of Service Contract Renewal(EoSCR).
@@ -46,7 +46,7 @@ public class HardwareEoxBulletin
 	/// The extension or renewal period may not extend beyond the last date of support.
 	/// </summary>
 	[XmlElement("endOfHardwareServiceContractRenewalDate")]
-	public DateTime EndOfHardwareServiceContractRenewalDate { get; set; }
+	public DateTime? EndOfHardwareServiceContractRenewalDate { get; set; }
 
 	/// <summary>
 	/// Indicates the End-of-Last Date of Support for the device,
@@ -55,21 +55,21 @@ public class HardwareEoxBulletin
 	/// and the product becomes obsolete.
 	/// </summary>
 	[XmlElement("endOfLastDateOfSupport")]
-	public DateTime EndOfLastDateOfSupport { get; set; }
+	public DateTime? EndOfLastDateOfSupport { get; set; }
 
 	/// <summary>
 	/// Indicates the End-of-Life Announcement Date, which is the date the document
 	/// announces the end of sale, and end of life of a product that is distributed to the general public.
 	/// </summary>
 	[XmlElement("endOfLifeExternalAnnouncementDate")]
-	public DateTime EndOfLifeExternalAnnouncementDate { get; set; }
+	public DateTime? EndOfLifeExternalAnnouncementDate { get; set; }
 
 	/// <summary>
 	/// Indicates the End-of-Sale Date, which is the last date to order the product
 	/// through Cisco point-of-sale mechanisms.The product is no longer for sale after this date.
 	/// </summary>
 	[XmlElement("endOfSaleDate")]
-	public DateTime EndOfSaleDate { get; set; }
+	public DateTime? EndOfSaleDate { get; set; }
 
 	/// <summary>
 	/// Indicates the End of Software Maintenance Date,
@@ -78,7 +78,7 @@ public class HardwareEoxBulletin
 	/// develop, repair, maintain, or test the product software.
 	/// </summary>
 	[XmlElement("endOfSoftwareMaintenanceReleasesDate")]
-	public DateTime EndOfSoftwareMaintenanceReleasesDate { get; set; }
+	public DateTime? EndOfSoftwareMaintenanceReleasesDate { get; set; }
 
 	/// <summary>
 	/// Hardware end-of-life id obtained from the previous API call.
@@ -90,5 +90,5 @@ public class HardwareEoxBulletin
 	/// SVC attach end date.
 	/// </summary>
 	[XmlElement("svcAttachEndDate")]
-	public DateTime SvcAttachEndDate { get; set; }
+	public DateTime? SvcAttachEndDate { get; set; }
 }
