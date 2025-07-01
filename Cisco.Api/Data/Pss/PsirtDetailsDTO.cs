@@ -36,7 +36,7 @@ public class PsirtDetailsDTO
     /// Date the PSIRT was first published.
     /// </summary>
     [XmlElement("firstPublished")]
-    public DateTime FirstPublished { get; set; }
+    public DateTime? FirstPublished { get; set; }
 
     /// <summary>
     /// Headline for the PSIRT.
@@ -48,7 +48,7 @@ public class PsirtDetailsDTO
     /// Date the PSIRT was last updated.
     /// </summary>
     [XmlElement("lastUpdated")]
-    public DateTime LastUpdated { get; set; }
+    public DateTime? LastUpdated { get; set; }
 
     /// <summary>
     /// Revision number for the PSIRT.

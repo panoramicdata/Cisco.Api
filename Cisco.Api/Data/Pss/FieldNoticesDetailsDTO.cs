@@ -48,7 +48,7 @@ public class FieldNoticesDetailsDTO
 	/// Date the field notice was first published.
 	/// </summary>
 	[XmlElement("firstPublishDate")]
-	public DateTime FirstPublishDate { get; set; }
+	public DateTime? FirstPublishDate { get; set; }
 
 	/// <summary>
 	/// The available serial number codes for the field notice.
@@ -60,7 +60,7 @@ public class FieldNoticesDetailsDTO
 	/// Date the field notice was last revised.
 	/// </summary>
 	[XmlElement("lastRevisionDate")]
-	public DateTime LastRevisionDate { get; set; }
+	public DateTime? LastRevisionDate { get; set; }
 
 	/// <summary>
 	/// User id of the person who published the field notice.
