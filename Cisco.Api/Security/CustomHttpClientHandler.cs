@@ -156,6 +156,11 @@ internal abstract class CustomHttpClientHandler(
 			await LogRequestHeaders(request).ConfigureAwait(false);
 		}
 
+		if (Options.UserAgent is not null)
+		{
+			request.Headers.Add("User-Agent", Options.UserAgent);
+		}
+
 		var attemptCount = 0;
 		while (true)
 		{

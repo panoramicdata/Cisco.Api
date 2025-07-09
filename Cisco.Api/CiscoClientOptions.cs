@@ -47,4 +47,9 @@ public class CiscoClientOptions
 	/// This property is only for un-official use with Umbrella client to improve performance.
 	/// </summary>
 	public List<CiscoClientCredentials>? ClientCredentialsNotSupported { get; set; }
+
+	/// <summary>
+	/// An optional User-Agent string to attach to outgoing requests.
+	/// </summary>
+	public string? UserAgent { get; set; }
 }
