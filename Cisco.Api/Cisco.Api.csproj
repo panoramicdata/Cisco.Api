@@ -4,7 +4,7 @@
 		<TargetFramework>net7.0</TargetFramework>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Company>Panoramic Data Limited</Company>
-		<Copyright>Copyright © Panoramic Data Limited 2021-2024</Copyright>
+		<Copyright>Copyright © Panoramic Data Limited 2021-2025</Copyright>
 		<Description>Provides access to EoX, Product Information, PSIRT, PSS, Serial Number to Information, PX Cloud and Umbrella APIs. Requires client credentials.</Description>
 		<Authors>Panoramic Data Limited</Authors>
 		<PackageProjectUrl>https://github.com/panoramicdata/Cisco.Api</PackageProjectUrl>
@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>Updated some types in SecurityAdvisories.</PackageReleaseNotes>
+		<PackageReleaseNotes>Added parameters to ISecurityAdvisory.GetAllAdvisories().</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>

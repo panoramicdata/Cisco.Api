@@ -61,22 +61,33 @@ namespace Cisco.Api.Interfaces
 			CancellationToken cancellationToken = default);
 
 		/// <summary>
-		/// Get all security advisories
+		/// Get all security advisories; consider using paging for performance reasons.
 		/// </summary>
+		/// <param name="summaryDetails">Include the Advisory Summary Description or not. Setting to False can reduce the response size significantly.</param>
+		/// <param name="productNames">Include the ProductNames or not. Setting to False can reduce the response size significantly.</param>
 		/// <param name="cancellationToken">An optional CancellationToken</param>
 		/// <returns>The security advisories</returns>
-		[Get("/security/advisories/v2/all")]
-		Task<SecurityAdvisories> GetAllAdvisories(CancellationToken cancellationToken = default);
+		[Get("/security/advisories/v2/all?summaryDetails={summaryDetails}&productNames={productNames}")]
+		Task<SecurityAdvisories> GetAllAdvisories(
+			bool summaryDetails = true,
+			bool productNames = true,
+			CancellationToken cancellationToken = default);
 
 		/// <summary>
 		/// Get all security advisories by page size and index
 		/// </summary>
+		/// <param name="pageSize">The pageIndex field is an integer representing the current page index out of total number of pages. The maximum pageIndex is 100.</param>
+		/// <param name="pageIndex">The pageSize field is an integer representing the maximum number of items requested by the client for the current page. The maximum pageSize limit is 100.</param>
+		/// <param name="summaryDetails">Include the Advisory Summary Description or not. Setting to False can reduce the response size significantly.</param>
+		/// <param name="productNames">Include the ProductNames or not. Setting to False can reduce the response size significantly.</param>
 		/// <param name="cancellationToken">An optional CancellationToken</param>
 		/// <returns>The security advisories</returns>
-		[Get("/security/advisories/v2/all?pageSize={pageSize}&pageIndex={pageIndex}")]
+		[Get("/security/advisories/v2/all?summaryDetails={summaryDetails}&productNames={productNames}&pageSize={pageSize}&pageIndex={pageIndex}")]
 		Task<SecurityAdvisories> GetAllAdvisories(
 			int pageSize,
 			int pageIndex,
+			bool summaryDetails = true,
+			bool productNames = true,
 			CancellationToken cancellationToken = default);
 
 		/// <summary>
