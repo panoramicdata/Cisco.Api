@@ -63,7 +63,7 @@ public class SecurityAdvisory
 	public string PublicationUrl { get; set; } = string.Empty;
 
 	[DataMember(Name = "sir")]
-	public SecurityImpactRating Sir { get; set; }
+	public SecurityImpactRating SecurityImpactRating { get; set; }
 
 	[DataMember(Name = "summary")]
 	public string Summary { get; set; } = string.Empty;
