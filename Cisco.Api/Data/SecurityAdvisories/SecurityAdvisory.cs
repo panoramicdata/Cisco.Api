@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Cisco.Api.Data.Psirt;
+using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace Cisco.Api.Data.SecurityAdvisories;
@@ -43,10 +45,10 @@ public class SecurityAdvisory
 	public List<string> IosReleases { get; set; } = [];
 
 	[DataMember(Name = "firstPublished")]
-	public string FirstPublished { get; set; } = string.Empty;
+	public DateTimeOffset FirstPublished { get; set; }
 
 	[DataMember(Name = "lastUpdated")]
-	public string LastUpdated { get; set; } = string.Empty;
+	public DateTimeOffset LastUpdated { get; set; }
 
 	[DataMember(Name = "status")]
 	public string Status { get; set; } = string.Empty;
@@ -61,7 +63,7 @@ public class SecurityAdvisory
 	public string PublicationUrl { get; set; } = string.Empty;
 
 	[DataMember(Name = "sir")]
-	public string Sir { get; set; } = string.Empty;
+	public SecurityImpactRating Sir { get; set; }
 
 	[DataMember(Name = "summary")]
 	public string Summary { get; set; } = string.Empty;
