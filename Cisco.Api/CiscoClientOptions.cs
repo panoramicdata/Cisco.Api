@@ -52,4 +52,9 @@ public class CiscoClientOptions
 	/// An optional User-Agent string to attach to outgoing requests.
 	/// </summary>
 	public string? UserAgent { get; set; }
+
+	/// <summary>
+	/// If you know that any "invalid_client" token errors are temporary false-positives, then attempt to retry them using MaxAttemptCount.
+	/// </summary>
+	public bool RetryInvalidClientTokenErrors { get; set; }
 }

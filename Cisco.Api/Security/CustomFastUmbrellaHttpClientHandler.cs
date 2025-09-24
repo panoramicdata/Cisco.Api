@@ -63,7 +63,12 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 
 				_logger.LogTrace("{HttpResponseMessage}", httpResponseMessage);
 			}
-			catch (TaskCanceledException ex)
+			catch (Exception ex) when (
+				ex is TaskCanceledException
+				// 2025-09-24 Server can often return (false) 'invalid_client' during periods of maybe an hour at a time
+				// Not sure how many retries are required to push through these periods so
+				// use the standard options for now.
+				|| (ex is SecurityException && ex.Message == "invalid_client") && Options.RetryInvalidClientTokenErrors)
 			{
 				if (++attemptCount < Options.MaxAttemptCount)
 				{
