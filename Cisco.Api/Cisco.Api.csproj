@@ -15,7 +15,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>Added parameters to ISecurityAdvisory.GetAllAdvisories().</PackageReleaseNotes>
+		<PackageReleaseNotes>When getting a new token the Cisco API servers can go through periods (hours) where they return "invalid_client" - if you know these are erroneous in our case, use CiscoClientOptions.RetryInvalidClientTokenErrors</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
