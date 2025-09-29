@@ -24,12 +24,12 @@ public class CiscoClientOptions
 	public string? ClientSecret { get; set; }
 
 	/// <summary>
-	/// The maximum number of query attempts
+	/// The maximum number of query attempts - defaults to 1
 	/// </summary>
 	public int MaxAttemptCount { get; set; } = 1;
 
 	/// <summary>
-	/// Delay between retry attempts
+	/// Delay between retry attempts - defaults to 5 seconds
 	/// </summary>
 	public TimeSpan RetryDelay { get; set; } = TimeSpan.FromSeconds(5);
 
@@ -57,4 +57,16 @@ public class CiscoClientOptions
 	/// If you know that any "invalid_client" token errors are temporary false-positives, then attempt to retry them using MaxAttemptCount.
 	/// </summary>
 	public bool RetryInvalidClientTokenErrors { get; set; }
+
+	/// <summary>
+	/// The maximum number of attempts to gain a token. Only used if RetryInvalidClientTokenErrors is true - defaults to 360
+	/// Defaults give you a one hour window.
+	/// </summary>
+	public int RetryInvalidClientTokenErrorsMaxAttemptCount { get; set; } = 1;
+
+	/// <summary>
+	/// Delay between retry attempts to gain a token. Only used if RetryInvalidClientTokenErrors is true - defaults to 10 seconds
+	/// Defaults give you a one hour window.
+	/// </summary>
+	public TimeSpan RetryInvalidClientTokenErrorsRetryDelay { get; set; } = TimeSpan.FromSeconds(5);
 }

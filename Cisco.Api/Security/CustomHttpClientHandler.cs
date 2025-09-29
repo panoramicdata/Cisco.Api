@@ -41,6 +41,7 @@ internal abstract class CustomHttpClientHandler(
 		_logger.LogDebug("Authenticating...");
 
 		var attemptCount = 0;
+
 		while (true)
 		{
 			using var httpClient = GetHttpClient();
@@ -54,7 +55,35 @@ internal abstract class CustomHttpClientHandler(
 
 				_logger.LogTrace("{HttpResponseMessage}", httpResponseMessage);
 			}
-			catch (TaskCanceledException ex)
+			// Deal with invalid_client when we intentionally want to push through long periods of server errors until we get a new token
+			catch (SecurityException ex) when (
+				ex.Message.StartsWith("invalid_client") && Options.RetryInvalidClientTokenErrors)
+			{
+				if (++attemptCount < Options.RetryInvalidClientTokenErrorsMaxAttemptCount)
+				{
+					_logger.LogWarning("GetAccessTokenAsync(): Attempt {AttemptCount}/{MaxAttemptCount} failed (invalid_client), retrying...",
+						attemptCount,
+						Options.RetryInvalidClientTokenErrorsMaxAttemptCount
+					);
+
+					await Task.Delay(Options.RetryInvalidClientTokenErrorsRetryDelay, cancellationToken)
+						.ConfigureAwait(false);
+
+					continue;
+				}
+
+				_logger.LogError(
+					ex,
+					"GetAccessTokenAsync(): {Message} after {MaxAttemptCount} attempts.",
+					ex.Message,
+					Options.RetryInvalidClientTokenErrorsMaxAttemptCount);
+				throw new CiscoApiException("Timeout during authentication - gave up trying to get token after an invalid_client error.", ex);
+			}
+			// Standard catch
+			catch (Exception ex) when (
+				ex is TaskCanceledException
+				// 2025-09-26 If Options.RetryInvalidClientTokenErrors is false, retry invalid_client errors using the normal query retry defaults.
+				|| (ex is SecurityException && ex.Message.StartsWith("invalid_client")))
 			{
 				if (++attemptCount < Options.MaxAttemptCount)
 				{
