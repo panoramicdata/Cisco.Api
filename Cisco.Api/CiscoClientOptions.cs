@@ -62,11 +62,11 @@ public class CiscoClientOptions
 	/// The maximum number of attempts to gain a token. Only used if RetryInvalidClientTokenErrors is true - defaults to 360
 	/// Defaults give you a one hour window.
 	/// </summary>
-	public int RetryInvalidClientTokenErrorsMaxAttemptCount { get; set; } = 1;
+	public int RetryInvalidClientTokenErrorsMaxAttemptCount { get; set; } = 360;
 
 	/// <summary>
 	/// Delay between retry attempts to gain a token. Only used if RetryInvalidClientTokenErrors is true - defaults to 10 seconds
 	/// Defaults give you a one hour window.
 	/// </summary>
-	public TimeSpan RetryInvalidClientTokenErrorsRetryDelay { get; set; } = TimeSpan.FromSeconds(5);
+	public TimeSpan RetryInvalidClientTokenErrorsRetryDelay { get; set; } = TimeSpan.FromSeconds(10);
 }
