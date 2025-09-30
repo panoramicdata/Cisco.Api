@@ -3,13 +3,16 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Sockets;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Cisco.Api.Security;
 
@@ -64,35 +67,13 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 
 				_logger.LogTrace("{HttpResponseMessage}", httpResponseMessage);
 			}
-			// Deal with invalid_client when we intentionally want to push through long periods of server errors until we get a new token
-			catch (SecurityException ex) when (
-				ex.Message.StartsWith("invalid_client") && Options.RetryInvalidClientTokenErrors)
-				{
-					if (++attemptCount < Options.RetryInvalidClientTokenErrorsMaxAttemptCount)
-					{
-						_logger.LogWarning("GetAccessTokenAsync(): Attempt {AttemptCount}/{MaxAttemptCount} failed (invalid_client), retrying...",
-							attemptCount,
-							Options.RetryInvalidClientTokenErrorsMaxAttemptCount
-						);
-
-						await Task.Delay(Options.RetryInvalidClientTokenErrorsRetryDelay, cancellationToken)
-							.ConfigureAwait(false);
-
-						continue;
-					}
-
-					_logger.LogError(
-						ex,
-						"GetAccessTokenAsync(): {Message} after {MaxAttemptCount} attempts.",
-						ex.Message,
-						Options.RetryInvalidClientTokenErrorsMaxAttemptCount);
-					throw new CiscoApiException("Timeout during authentication - gave up trying to get token after an invalid_client error.", ex);
-				}
-			// Standard catch
+			// Catch exceptions that indicate transient issues that might be resolved by retrying
 			catch (Exception ex) when (
 				ex is TaskCanceledException
-				// 2025-09-26 If Options.RetryInvalidClientTokenErrors is false, retry invalid_client errors using the normal query retry defaults.
-				|| (ex is SecurityException && ex.Message.StartsWith("invalid_client")))
+				|| ex is HttpRequestException
+				|| ex is TimeoutException
+				|| ex is SocketException
+				|| (ex is IOException ioEx && ioEx.InnerException is SocketException))
 			{
 				if (++attemptCount < Options.MaxAttemptCount)
 				{
@@ -112,7 +93,9 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 					"GetAccessTokenAsync(): {Message} after {MaxAttemptCount} attempts.",
 					ex.Message,
 					Options.MaxAttemptCount);
-				throw new CiscoApiException("Timeout during authentication.", ex);
+
+				// Retries not enabled or retries exhausted, so log as error
+				throw new CiscoApiException("Timeout or transient network failure during authentication.", ex);
 			}
 
 			var contents = await httpResponseMessage
@@ -122,9 +105,17 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 
 			var accessTokenResponse = JsonConvert.DeserializeObject<AccessTokenResponse>(contents)
 				?? throw new FormatException("Unable to deserialize access token response");
-			if (accessTokenResponse.ErrorDescription != null || accessTokenResponse.Error != null)
+
+			// Handle error responses (including invalid_client) BEFORE throwing
+			if (accessTokenResponse.Error is not null)
 			{
-				_logger.LogDebug("Authentication failed.");
+				var error = accessTokenResponse.Error;
+				var description = accessTokenResponse.ErrorDescription;
+				var combinedMessage = description is { Length: > 0 }
+					? $"{error}: {description}"
+					: error;
+
+				_logger.LogDebug("Authentication failed. Error={Error} Description={Description}", error, description);
 
 				// If response not yet logged and OnErrorEnsureRequestResponseHeadersLogged is set, then log as error
 				if (!_logger.IsEnabled(LevelToLogAt) && Options.OnErrorEnsureRequestResponseHeadersLogged)
@@ -132,7 +123,40 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 					await LogResponseHeaders(currentCredentialCurrentIndex, httpResponseMessage, true).ConfigureAwait(false);
 				}
 
-				throw new SecurityException($"{accessTokenResponse.Error}: {accessTokenResponse.ErrorDescription}");
+				var isInvalidClient = error.Equals("invalid_client", StringComparison.OrdinalIgnoreCase);
+
+				// Priority: dedicated invalid_client retry settings if enabled
+				if (isInvalidClient && Options.RetryInvalidClientTokenErrors)
+				{
+					if (++attemptCount < Options.RetryInvalidClientTokenErrorsMaxAttemptCount)
+					{
+						_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) – retrying after {Delay}s...",
+							attemptCount,
+							Options.RetryInvalidClientTokenErrorsMaxAttemptCount,
+							Options.RetryInvalidClientTokenErrorsRetryDelay.TotalSeconds);
+
+						await Task.Delay(Options.RetryInvalidClientTokenErrorsRetryDelay, cancellationToken).ConfigureAwait(false);
+						continue;
+					}
+
+					_logger.LogError("GetAccessTokenAsync(): invalid_client exhausted after {MaxAttemptCount} attempts.",
+						Options.RetryInvalidClientTokenErrorsMaxAttemptCount);
+					throw new CiscoApiException("Timeout during authentication - gave up trying to get token after repeated invalid_client errors.");
+				}
+
+				// Fallback: treat invalid_client as part of normal retry window if special retry disabled
+				if (isInvalidClient && ++attemptCount < Options.MaxAttemptCount)
+				{
+					_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) using standard retry settings, retrying after {Delay}s...",
+						attemptCount,
+						Options.MaxAttemptCount,
+						Options.RetryDelay.TotalSeconds);
+					await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
+					continue;
+				}
+
+				// Non-retriable (or retries exhausted)
+				throw new SecurityException(combinedMessage);
 			}
 
 			_logger.LogDebug("Authentication succeeded.");
