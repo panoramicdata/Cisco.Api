@@ -16,14 +16,15 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>Bug fixes. Also added Options.RetryInvalidClientTokenErrorsMaxAttemptCount and Options.RetryInvalidClientTokenErrorsRetryDelay</PackageReleaseNotes>
+		<PackageReleaseNotes>Fixed code quality issues. Added specific exception types for better error handling. Improved symbol package support with SourceLink.</PackageReleaseNotes>
 		
 		<!-- Modern symbol package configuration -->
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
-		<DebugType>embedded</DebugType>
+		<DebugType>portable</DebugType>
+		<EmbedAllSources>true</EmbedAllSources>
 	</PropertyGroup>
 
 	<ItemGroup>
