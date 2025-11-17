@@ -1,8 +1,7 @@
 ﻿using Cisco.Api.Data.Pss;
-using FluentAssertions;
-using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -16,7 +15,7 @@ namespace Cisco.Api.Test;
 public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
 	[Fact]
-	public async void GetCustomersInventoryIdsAsync_Succeeds()
+	public async Task GetCustomersInventoryIdsAsync_Succeeds()
 	{
 		var response = await CiscoClient
 			  .Pss
@@ -38,14 +37,14 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void GetCustomerInventoryAsync_OneCustomer_Succeeds()
+	public async Task GetCustomerInventoryAsync_OneCustomer_Succeeds()
 	{
 		var response = await CiscoClient
 			.Pss
 			.GetCustomersInventoryIdsAsync(
 				new CustomersInventoryRequest
 				{
-					CustomerIds = new List<string> { Config.TestCustomerId }
+					CustomerIds = [Config.TestCustomerId]
 				},
 				CancellationToken.None)
 			.ConfigureAwait(true);
@@ -54,7 +53,7 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void GetCustomerInventoryDetails_Succeeds()
+	public async Task GetCustomerInventoryDetails_Succeeds()
 	{
 		var response = await CiscoClient
 			.Pss
@@ -74,7 +73,7 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void GetExtendedCustomerInventoryDetails_FirstPage_Succeeds()
+	public async Task GetExtendedCustomerInventoryDetails_FirstPage_Succeeds()
 	{
 		var response = await CiscoClient
 			  .Pss
@@ -95,7 +94,7 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void GetAllExtendedDeviceDetail_Succeeds()
+	public async Task GetAllExtendedDeviceDetail_Succeeds()
 	{
 		var deviceDetails = await
 			GetAllExtendedDeviceDetail(
@@ -139,7 +138,7 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void GetCustomerInventoryPaginatedDetails_Succeeds()
+	public async Task GetCustomerInventoryPaginatedDetails_Succeeds()
 	{
 		var response = await CiscoClient
 			.Pss
@@ -159,10 +158,10 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void RetrieveAndConvertDeviceConfigs_Succeeds()
+	public async Task RetrieveAndConvertDeviceConfigs_Succeeds()
 	{
 		string tempPath = Path.GetTempPath();
-		string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+		string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
 		string outputFilePath = Path.Combine(tempPath, $"device_configs_{timestamp}.zip");
 
 		try
@@ -174,7 +173,7 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 					new DeviceConfigsRequest
 					{
 						CustomerId = Config.TestCustomerId,
-						DeviceIds = new List<string> { Config.TestDeviceId },
+						DeviceIds = [Config.TestDeviceId],
 						ConfigType = DeviceConfigsConfigType.Running
 					},
 					CancellationToken.None)
@@ -208,15 +207,6 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 			deviceConfigResponses.Should().NotBeNull();
 			deviceConfigResponses.Should().ContainKey(Config.TestDeviceId);
 		}
-		catch (Exception ex)
-		{
-			// Ensure the file is deleted if an exception occurs
-			if (File.Exists(outputFilePath))
-			{
-				File.Delete(outputFilePath);
-			}
-			throw new Exception("Test failed and the file was deleted.", ex);
-		}
 		finally
 		{
 			// Ensure the file is deleted after the test completes
@@ -228,7 +218,7 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void GetContractCoverageDetailsAsync_Succeeds()
+	public async Task GetContractCoverageDetailsAsync_Succeeds()
 	{
 		var response = await CiscoClient
 			.Pss
@@ -248,7 +238,7 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void GetContractCoverageDetailsOneCardIdAsync_Succeeds()
+	public async Task GetContractCoverageDetailsOneCardIdAsync_Succeeds()
 	{
 		var response = await CiscoClient
 			.Pss
@@ -257,7 +247,7 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 				{
 					CustomerId = Config.TestCustomerId,
 					InventoryId = Config.TestInventoryId,
-					DeviceIds = new List<string> { Config.TestDeviceId }
+					DeviceIds = [Config.TestDeviceId]
 				},
 				CancellationToken.None)
 			.ConfigureAwait(true);
@@ -269,7 +259,7 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void GetContractCoverageDetailsForDeviceIdsAsync_Succeeds()
+	public async Task GetContractCoverageDetailsForDeviceIdsAsync_Succeeds()
 	{
 		// Query upto 100 devices at a time
 		var deviceIds = new List<string> { Config.TestDeviceId };
@@ -293,7 +283,7 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void GetSoftwareEoxAsync_Succeeds()
+	public async Task GetSoftwareEoxAsync_Succeeds()
 	{
 		var response = await CiscoClient
 			.Pss
@@ -313,7 +303,7 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void GetSoftwareEoxBulletinAsync_Succeeds()
+	public async Task GetSoftwareEoxBulletinAsync_Succeeds()
 	{
 		var response = await CiscoClient
 			.Pss
@@ -322,7 +312,7 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 				{
 					SoftwareEoxIds = new SoftwareEoxIds
 					{
-						Ids = new List<string> { Config.TestSoftwareEoxId }
+						Ids = [Config.TestSoftwareEoxId]
 					}
 				},
 				CancellationToken.None)
@@ -335,7 +325,7 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void GetHwEoxAsync_Succeeds()
+	public async Task GetHwEoxAsync_Succeeds()
 	{
 		var response = await CiscoClient
 			.Pss
@@ -355,7 +345,7 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void GetHwEoxBulletinAsync_Succeeds()
+	public async Task GetHwEoxBulletinAsync_Succeeds()
 	{
 		var response = await CiscoClient
 			.Pss
@@ -365,7 +355,7 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 				{
 					HardwareEoxIds = new HardwareEoxIds
 					{
-						Ids = new List<string> { Config.TestHardwareEoxId }
+						Ids = [Config.TestHardwareEoxId]
 					}
 				},
 				CancellationToken.None)
@@ -378,7 +368,7 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void GetPsirtAsync_Succeeds()
+	public async Task GetPsirtAsync_Succeeds()
 	{
 		var response = await CiscoClient
 			.Pss
@@ -398,7 +388,7 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void GetPsirtDetailsAsync_Succeeds()
+	public async Task GetPsirtDetailsAsync_Succeeds()
 	{
 		var ids = new List<string> { Config.TestPsirtId1, Config.TestPsirtId2 };
 
@@ -419,7 +409,7 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void GetFieldNoticesAsync_Succeeds()
+	public async Task GetFieldNoticesAsync_Succeeds()
 	{
 		var response = await CiscoClient
 			.Pss
@@ -439,18 +429,18 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	}
 
 	[Fact]
-	public async void GetFieldNoticesDetailsAsync_Succeeds()
+	public async Task GetFieldNoticesDetailsAsync_Succeeds()
 	{
 		var response = await CiscoClient
 			.Pss
 			.GetFieldNoticesDetailsAsync(
 				new FieldNoticesDetailsRequest
 				{
-					Ids = new List<string>
-						{
+					Ids =
+						[
 							Config.TestFieldNoticesId1,
 							Config.TestFieldNoticesId2
-						}
+						]
 				},
 				CancellationToken.None)
 			.ConfigureAwait(true);

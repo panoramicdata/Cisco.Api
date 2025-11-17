@@ -11,17 +11,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Cisco.Api.Implementations;
-internal class PxCloudReports : IPxCloudReports
+
+internal class PxCloudReports(HttpClient restHttpClient) : IPxCloudReports
 {
-	private HttpClient restHttpClient;
-
-	private IPxCloudReportsInternal _refitClient;
-
-	public PxCloudReports(HttpClient restHttpClient)
-	{
-		this.restHttpClient = restHttpClient;
-		_refitClient = RestService.For<IPxCloudReportsInternal>(restHttpClient);
-	}
+	private readonly IPxCloudReportsInternal _refitClient = RestService.For<IPxCloudReportsInternal>(restHttpClient);
 
 	/// <inheritdoc/>
 	public async Task<RequestCustomerDataReportsAsBulkFilesResponse> RequestCustomerDataReportAsync(string customerId, ReportName reportName, string successTrackId, CancellationToken cancellationToken = default)
@@ -75,7 +68,7 @@ internal class PxCloudReports : IPxCloudReports
 					try
 					{
 						// Extract the content from the response
-						var contentStream = response.Result.Content.ReadAsStreamAsync().Result;
+						var contentStream = response.Result.Content.ReadAsStreamAsync(cancellationToken).Result;
 						var content = new StreamReader(contentStream).ReadToEnd();
 						// Examples:
 						// {"status":"Accepted"}
@@ -86,8 +79,9 @@ internal class PxCloudReports : IPxCloudReports
 					}
 					catch (Exception ex)
 					{
-						throw new Exception("Unable to deserialise JSON response for the requested report.");
+						throw new Exception("Unable to deserialise JSON response for the requested report.", ex);
 					}
+
 					if (reportResponse is null)
 					{
 						throw new Exception("Unable to deserialise JSON response for the requested report.");
@@ -97,7 +91,7 @@ internal class PxCloudReports : IPxCloudReports
 					// await Task.Delay(new TimeSpan(0, reportResponse.SuggestedNextPollTimeInMins, 0));
 
 					// Ignore the interval, repoll in X seconds (above might return 2 mins, but data was ready in under 30 seconds)
-					await Task.Delay(new TimeSpan(0, 0, 15));
+					await Task.Delay(new TimeSpan(0, 0, 15), cancellationToken);
 
 					// Resume loop;
 					continue;
@@ -110,38 +104,30 @@ internal class PxCloudReports : IPxCloudReports
 					try
 					{
 						// Unzip response content using SharpZipLib
-						using (var zipInputStream = new ZipInputStream(response.Result.Content.ReadAsStreamAsync().Result))
+						using var stream = await response.Result.Content.ReadAsStreamAsync(cancellationToken);
+						using var zipInputStream = new ZipInputStream(stream);
+						ZipEntry entry;
+						while ((entry = zipInputStream.GetNextEntry()) != null)
 						{
-							ZipEntry entry;
-							while ((entry = zipInputStream.GetNextEntry()) != null)
-							{
-								using (var ms = new MemoryStream())
-								{
-									zipInputStream.CopyTo(ms);
-									ms.Position = 0;
-									using (var sr = new StreamReader(ms))
-									{
-										content = sr.ReadToEnd();
-									}
-								}
-							}
+							using var ms = new MemoryStream();
+							zipInputStream.CopyTo(ms);
+							ms.Position = 0;
+							using var sr = new StreamReader(ms);
+							content = sr.ReadToEnd();
 						}
 
 					}
 					catch (Exception ex)
 					{
-						throw new Exception("Unable to decompress the zipped response for the requested report.");
+						throw new Exception("Unable to decompress the zipped response for the requested report.", ex);
 					}
 
 					if (content.Length > 0)
 					{
 						// Now that we have the contents, try to deserialize it into ReportPayload so we can check the report name
 
-						var reportPayload = JsonConvert.DeserializeObject<ReportPayloadParent>(content);
-						if (reportPayload is null)
-						{
-							throw new Exception("Unable to deserialise the metadata for the requested report.");
-						}
+						var reportPayload = JsonConvert.DeserializeObject<ReportPayloadParent>(content)
+							?? throw new Exception("Unable to deserialise the metadata for the requested report.");
 
 						var reportName = reportPayload.Metadata.ReportName;
 						try
@@ -152,14 +138,14 @@ internal class PxCloudReports : IPxCloudReports
 							{
 								// Note: This works, but I think this could be more generic and not need each of the ReportPayloadParent classes.
 
-								"Assets" => JsonConvert.DeserializeObject<ReportPayloadParentAssets>(content) ?? throwError(reportName),
-								"Software" => JsonConvert.DeserializeObject<ReportPayloadParentSoftware>(content) ?? throwError(reportName),
-								"Hardware" => JsonConvert.DeserializeObject<ReportPayloadParentHardware>(content) ?? throwError(reportName),
-								"FieldNotices" => JsonConvert.DeserializeObject<ReportPayloadParentFieldNotices>(content) ?? throwError(reportName),
-								"Licenses" => JsonConvert.DeserializeObject<ReportPayloadParentLicensesWithAssets>(content) ?? throwError(reportName),
-								"PurchasedLicenses" => JsonConvert.DeserializeObject<ReportPayloadParentPurchasedLicenses>(content) ?? throwError(reportName),
-								"SecurityAdvisories" => JsonConvert.DeserializeObject<ReportPayloadParentSecurityAdvisories>(content) ?? throwError(reportName),
-								"PriorityBugs" => JsonConvert.DeserializeObject<ReportPayloadParentPriorityBugs>(content) ?? throwError(reportName),
+								"Assets" => JsonConvert.DeserializeObject<ReportPayloadParentAssets>(content) ?? ThrowError(reportName),
+								"Software" => JsonConvert.DeserializeObject<ReportPayloadParentSoftware>(content) ?? ThrowError(reportName),
+								"Hardware" => JsonConvert.DeserializeObject<ReportPayloadParentHardware>(content) ?? ThrowError(reportName),
+								"FieldNotices" => JsonConvert.DeserializeObject<ReportPayloadParentFieldNotices>(content) ?? ThrowError(reportName),
+								"Licenses" => JsonConvert.DeserializeObject<ReportPayloadParentLicensesWithAssets>(content) ?? ThrowError(reportName),
+								"PurchasedLicenses" => JsonConvert.DeserializeObject<ReportPayloadParentPurchasedLicenses>(content) ?? ThrowError(reportName),
+								"SecurityAdvisories" => JsonConvert.DeserializeObject<ReportPayloadParentSecurityAdvisories>(content) ?? ThrowError(reportName),
+								"PriorityBugs" => JsonConvert.DeserializeObject<ReportPayloadParentPriorityBugs>(content) ?? ThrowError(reportName),
 
 								_ => throw new NotSupportedException($"Unsupported report type: '{reportName}'."),
 							};
@@ -169,7 +155,7 @@ internal class PxCloudReports : IPxCloudReports
 						}
 						catch (Exception ex)
 						{
-							throw new Exception($"An error occurred whilst preparing the '{reportName}' report.");
+							throw new Exception($"An error occurred whilst preparing the '{reportName}' report.", ex);
 						}
 					}
 					else
@@ -189,10 +175,8 @@ internal class PxCloudReports : IPxCloudReports
 	}
 
 	// Is fussy about the return type which can't just be null and must match the output of the deserialisation
-	private dynamic throwError(string reportName)
-	{
-		throw new Exception($"An error occurred whilst deserialising the '{reportName}' report.");
-	}
+	private static dynamic ThrowError(string reportName)
+		=> throw new Exception($"An error occurred whilst deserialising the '{reportName}' report.");
 
 	//[Get("/px/v1/customers/{customerId}/reports/{reportId}")]
 	//Task<ReportResponse> GetReportAsync(

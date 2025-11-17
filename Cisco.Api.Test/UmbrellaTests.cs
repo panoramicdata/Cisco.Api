@@ -1,6 +1,6 @@
 ﻿using Cisco.Api.Data.Umbrella;
-using FluentAssertions;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -10,7 +10,7 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 {
 	/*
 	[Fact]
-	public async void CreateInternalNetwork_BadRequestFailed()
+	public async Task CreateInternalNetwork_BadRequestFailed()
 	{
 		await CiscoClient.Awaiting(ciscoClient =>
 			ciscoClient
@@ -33,7 +33,7 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 
 	/*
 	[Fact]
-	public async void CreateInternalNetwork_Succeeds()
+	public async Task CreateInternalNetwork_Succeeds()
 	{
 		// BUG Fix the Umbrella responses, they are not returning the error message.
 		// BUG Not honouring the MaxLength attribute on the Name property.
@@ -57,7 +57,7 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 
 	/*
 	[Fact]
-	public async void AddIdentityToPolicy_Succeeds()
+	public async Task AddIdentityToPolicy_Succeeds()
 	{
 		// NotFound: {"error":"Not Found","statusCode":404,"txId":"5dfc02fd-3df1-46d8-b38a-85b992a161b3"}
 		var response = await CiscoClient
@@ -78,7 +78,7 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 	// This test shows how the Add/Delete's don't return an int as the docs say.
 	// Also, that API limiter is dealt with where MaxAttemptCount is set to 10.
 	[Fact]
-	public async void AddIdentityToPolicy_Succeeds()
+	public async Task AddIdentityToPolicy_Succeeds()
 	{
 		for (int i = 0; i < 200; i++)
 		{
@@ -132,7 +132,7 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 	*/
 
 	[Fact]
-	public async void ListInternalNetworks_Succeeds()
+	public async Task ListInternalNetworks_Succeeds()
 	{
 		var response = await CiscoClient
 			.Umbrella
@@ -145,7 +145,7 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 	}
 
 	[Fact]
-	public async void MultiQueryCredentialCycling_Succeeds()
+	public async Task MultiQueryCredentialCycling_Succeeds()
 	{
 		// Remember to set "DefaultCredentials": "Cae_Umbrella_Fast", which contains 2 client id and secret pairs.
 
@@ -182,7 +182,7 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 
 	/*
 	[Fact]
-	public async void ListInternalNetworks_FailsWith429()
+	public async Task ListInternalNetworks_FailsWith429()
 	{
 		// TODO Need to await each call in the loop
 		// Loop query a 1000 times to eventually trigger a 429. Catch the exception and assert the message.
@@ -208,7 +208,7 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 	*/
 
 	[Fact]
-	public async void ListPolicies_Succeeds()
+	public async Task ListPolicies_Succeeds()
 	{
 		var response = await CiscoClient
 			.Umbrella
@@ -221,7 +221,7 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 	}
 
 	[Fact]
-	public async void ListSites_Succeeds()
+	public async Task ListSites_Succeeds()
 	{
 		var response = await CiscoClient
 			.Umbrella

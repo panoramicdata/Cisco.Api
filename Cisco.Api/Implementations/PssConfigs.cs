@@ -10,15 +10,8 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Cisco.Api.Implementations;
-internal class PssConfigs : IPssConfigs
+internal class PssConfigs(HttpClient restHttpClient) : IPssConfigs
 {
-	private HttpClient restHttpClient;
-
-	public PssConfigs(HttpClient restHttpClient)
-	{
-		this.restHttpClient = restHttpClient;
-	}
-
 	public async Task<MemoryStream> RetrieveDeviceConfigZipAsync(DeviceConfigsRequest deviceConfigsRequest, CancellationToken cancellationToken = default)
 	{
 		// You can retrieve the running and startup configs for up to 5 devices at a time, in the form of a ZIP file.
@@ -103,58 +96,52 @@ internal class PssConfigs : IPssConfigs
 		// This method takes a MemoryStream and returns a Dictionary of DeviceConfigResponse objects.
 		// If storing the result, consider compressing the properties first.
 
-		Dictionary<string, DeviceConfigResponse> output = new();
+		Dictionary<string, DeviceConfigResponse> output = [];
 
 		try
 		{
 			memoryStream.Position = 0; // Ensure the stream is at the beginning
-			using (var zipInputStream = new ZipInputStream(memoryStream))
+			using var zipInputStream = new ZipInputStream(memoryStream);
+			ZipEntry entry;
+
+			while ((entry = zipInputStream.GetNextEntry()) != null)
 			{
-				ZipEntry entry;
+				/* Examples:
+				 switches seem to be in this format:
+				 499665469_2921733_PSS_2713922/1008264179_show running-config_2025_04_28.txt
+				 whilst APs (and others?) are like this:
+				 179888473_2921733_PSS_2713922/1008264180_show run-config_2025_04_28.txt
+				 */
 
-				while ((entry = zipInputStream.GetNextEntry()) != null)
+				var split = entry.Name.Split('/');
+				if (split.Length != 2)
 				{
-					/* Examples:
-					 switches seem to be in this format:
-					 499665469_2921733_PSS_2713922/1008264179_show running-config_2025_04_28.txt
-					 whilst APs (and others?) are like this:
-					 179888473_2921733_PSS_2713922/1008264180_show run-config_2025_04_28.txt
-					 */
+					throw new Exception("Unable to parse the zipped response.");
+				}
 
-					var split = entry.Name.Split('/');
-					if (split.Length != 2)
-					{
-						throw new Exception("Unable to parse the zipped response.");
-					}
+				var deviceId = split[1].Split('_').First();
 
-					var deviceId = split[1].Split('_').First();
+				if (!output.ContainsKey(deviceId))
+				{
+					output[deviceId] = new DeviceConfigResponse();
+				}
 
-					if (!output.ContainsKey(deviceId))
-					{
-						output[deviceId] = new DeviceConfigResponse();
-					}
-
-					using (var ms = new MemoryStream())
-					{
-						await zipInputStream.CopyToAsync(ms);
-						ms.Position = 0;
-						using (var sr = new StreamReader(ms))
-						{
-							var content = await sr.ReadToEndAsync();
-							if (entry.Name.Contains("startup"))
-							{
-								output[deviceId].StartupConfig = content;
-								var date = entry.Name.Split("config_").Last().Split('.').First();
-								output[deviceId].StartupConfigDate = DateTime.ParseExact(date, "yyyy_MM_dd", null);
-							}
-							else if (entry.Name.Contains("running-config") || entry.Name.Contains("run-config"))
-							{
-								output[deviceId].RunningConfig = content;
-								var date = entry.Name.Split("config_").Last().Split('.').First();
-								output[deviceId].RunningConfigDate = DateTime.ParseExact(date, "yyyy_MM_dd", null);
-							}
-						}
-					}
+				using var ms = new MemoryStream();
+				await zipInputStream.CopyToAsync(ms);
+				ms.Position = 0;
+				using var sr = new StreamReader(ms);
+				var content = await sr.ReadToEndAsync();
+				if (entry.Name.Contains("startup"))
+				{
+					output[deviceId].StartupConfig = content;
+					var date = entry.Name.Split("config_").Last().Split('.').First();
+					output[deviceId].StartupConfigDate = DateTime.ParseExact(date, "yyyy_MM_dd", null);
+				}
+				else if (entry.Name.Contains("running-config") || entry.Name.Contains("run-config"))
+				{
+					output[deviceId].RunningConfig = content;
+					var date = entry.Name.Split("config_").Last().Split('.').First();
+					output[deviceId].RunningConfigDate = DateTime.ParseExact(date, "yyyy_MM_dd", null);
 				}
 			}
 		}

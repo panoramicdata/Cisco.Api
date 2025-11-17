@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Cisco.Api.Test;
@@ -23,5 +22,5 @@ public abstract class Test
 	protected CiscoClient CiscoClient { get; }
 
 	protected void AssertIsFast(int durationSeconds)
-		=> Assert.InRange(Stopwatch.ElapsedMilliseconds, 0, durationSeconds * 1000);
+		=> Stopwatch.ElapsedMilliseconds.Should().BeInRange(0, durationSeconds * 1000);
 }

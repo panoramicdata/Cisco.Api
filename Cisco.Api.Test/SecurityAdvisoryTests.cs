@@ -1,6 +1,5 @@
 ﻿using Cisco.Api.Data.SecurityAdvisories;
 using Cisco.Api.Exceptions;
-using FluentAssertions;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Xunit;
@@ -8,12 +7,8 @@ using Xunit.Abstractions;
 
 namespace Cisco.Api.Test
 {
-	public class SecurityAdvisoryTests : Test
+	public class SecurityAdvisoryTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 	{
-		public SecurityAdvisoryTests(ITestOutputHelper iTestOutputHelper) : base(iTestOutputHelper)
-		{
-		}
-
 		[Fact]
 		public async Task GetByTypeAndVersionAsync_Succeeds()
 		{

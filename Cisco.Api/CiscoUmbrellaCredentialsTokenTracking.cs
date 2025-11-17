@@ -3,16 +3,12 @@ using System.Net.Http.Headers;
 
 namespace Cisco.Api;
 
-internal class CiscoUmbrellaCredentialsTokenTracking
+internal class CiscoUmbrellaCredentialsTokenTracking(string clientSecret)
 {
 	//private string clientSecret;
 
-	public CiscoUmbrellaCredentialsTokenTracking(string clientSecret)
-	{
-		ClientSecret = clientSecret;
-	}
 
-	public string ClientSecret { get; set; }
+	public string ClientSecret { get; set; } = clientSecret;
 
 	public string? AccessToken { get; set; }
 

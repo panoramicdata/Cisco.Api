@@ -13,5 +13,5 @@ public class FieldNoticesResponse : PssServiceResponse
 	/// The list of Devices
 	/// </summary>
 	[XmlElement("DeviceFNResponseDTO")]
-	public List<FieldNoticesResponseDeviceDTO> Devices { get; set; } = new List<FieldNoticesResponseDeviceDTO>();
+	public List<FieldNoticesResponseDeviceDTO> Devices { get; set; } = [];
 }

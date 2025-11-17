@@ -12,5 +12,5 @@ namespace Cisco.Api.Data.Pss;
         /// Was obtained from the getSoftwareEoX API service call.
         /// </summary>
         [XmlElement("softwareEoxId")]
-        public List<string> Ids { get; set; } = new List<string>();
+        public List<string> Ids { get; set; } = [];
     }

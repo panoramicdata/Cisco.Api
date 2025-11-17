@@ -30,5 +30,5 @@ namespace Cisco.Api.Data.Pss;
         /// List of CoverageDetails
         /// </summary>
         [XmlElement("coverageDetails")]
-        public List<CoverageDetail> CoverageDetails { get; set; } = new List<CoverageDetail>();
+        public List<CoverageDetail> CoverageDetails { get; set; } = [];
     }

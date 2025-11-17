@@ -1,5 +1,4 @@
 using Cisco.Api.Data.Psirt;
-using FluentAssertions;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;

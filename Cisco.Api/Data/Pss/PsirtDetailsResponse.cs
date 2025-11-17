@@ -13,5 +13,5 @@ public class PsirtDetailsResponse : PssServiceResponse
     /// The List of PsirtDetails
     /// </summary>
     [XmlElement("PSIRTDetailsList")]
-    public List<PsirtDetailsDTO> Details { get; set; } = new List<PsirtDetailsDTO>();
+    public List<PsirtDetailsDTO> Details { get; set; } = [];
 }

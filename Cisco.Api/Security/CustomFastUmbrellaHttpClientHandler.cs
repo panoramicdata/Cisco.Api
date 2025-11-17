@@ -12,7 +12,6 @@ using System.Net.Sockets;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Cisco.Api.Security;
 
@@ -172,6 +171,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 				expireInSeconds -= 60;
 				//_logger.LogDebug("The expiry has been reduced further by a safety margin of 1 minute, to deal with any delay in the token response being returned.");
 			}
+
 			_logger.LogDebug($"Access token should expire in {expireInSeconds} seconds.");
 
 			// Store the expiry timestamp
@@ -206,6 +206,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 		{
 			CurrentCredentialCurrentIndex = (CurrentCredentialCurrentIndex + 1) % CiscoUmbrellaCredentials.Count;
 		}
+
 		var currentCredentialCurrentIndex = CurrentCredentialCurrentIndex;
 		var currentCredentialsInstance = CiscoUmbrellaCredentials.ElementAt(currentCredentialCurrentIndex).Value;
 		// There might be an authentication token already that is about to expire so check first.

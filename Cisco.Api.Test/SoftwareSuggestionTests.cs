@@ -1,4 +1,3 @@
-using FluentAssertions;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -14,7 +13,7 @@ public class SoftwareSuggestionTests(ITestOutputHelper iTestOutputHelper) : Test
 		var softwareSuggestionPage =
 			await CiscoClient
 				.SoftwareSuggestion
-				.GetByProductIdsAsync(new[] { "ASR-903", "N7K-C7018" })
+				.GetByProductIdsAsync(["ASR-903", "N7K-C7018"])
 			.ConfigureAwait(true);
 
 		softwareSuggestionPage.Should().NotBeNull();

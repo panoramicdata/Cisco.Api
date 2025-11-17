@@ -33,11 +33,12 @@ internal abstract class CustomHttpClientHandler(
 		// to reach here, so double check that the appropriate ClientId and ClientSecret are set.
 		if (Options.ClientId is null)
 		{
-			throw new ArgumentException("Options ClientId must be set", nameof(Options));
+			throw new SecurityException("Options ClientId must be set");
 		}
+
 		if (Options.ClientSecret is null)
 		{
-			throw new ArgumentException("Options ClientSecret must be set", nameof(Options));
+			throw new SecurityException("Options ClientSecret must be set");
 		}
 
 		_logger.LogDebug("Authenticating...");
@@ -83,7 +84,7 @@ internal abstract class CustomHttpClientHandler(
 					"GetAccessTokenAsync(): {Message} after {MaxAttemptCount} attempts.",
 					ex.Message,
 					Options.MaxAttemptCount);
-				
+
 				// Retries not enabled or retries exhausted, so log as error
 				throw new CiscoApiException("Timeout or transient network failure during authentication.", ex);
 			}
@@ -161,7 +162,8 @@ internal abstract class CustomHttpClientHandler(
 				expireInSeconds -= 60;
 				//_logger.LogDebug("The expiry has been reduced further by a safety margin of 1 minute, to deal with any delay in the token response being returned.");
 			}
-			_logger.LogDebug($"Access token should expire in {expireInSeconds} seconds.");
+
+			_logger.LogDebug("Access token should expire in {ExpireInSeconds} seconds.", expireInSeconds);
 
 			// Store the expiry timestamp
 			_accessTokenExpiryDateTimeOffset = DateTimeOffset.UtcNow.AddSeconds(expireInSeconds);

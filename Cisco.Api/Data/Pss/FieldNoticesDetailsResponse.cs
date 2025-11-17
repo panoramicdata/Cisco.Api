@@ -13,5 +13,5 @@ public class FieldNoticesDetailsResponse : PssServiceResponse
 	/// The List of FieldNoticesDetails
 	/// </summary>
 	[XmlElement("FNDetailsDTO")]
-	public List<FieldNoticesDetailsDTO> Details { get; set; } = new List<FieldNoticesDetailsDTO>();
+	public List<FieldNoticesDetailsDTO> Details { get; set; } = [];
 }
