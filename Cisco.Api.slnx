@@ -6,6 +6,7 @@
     <File Path="global.json" />
     <File Path="LICENSE" />
     <File Path="nuget-key.txt" />
+    <File Path="publish.ps1" />
     <File Path="README.md" />
     <File Path="version.json" />
   </Folder>
