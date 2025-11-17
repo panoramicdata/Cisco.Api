@@ -9,6 +9,7 @@
     2. Runs unit tests (can be skipped with --skip-tests)
     3. Builds the project in Release mode
     4. Publishes the package to NuGet using the API key from nuget-key.txt
+    5. Publishes symbols package (snupkg) for debugging support
 
 .PARAMETER SkipTests
     Skip running unit tests before publishing
@@ -113,17 +114,17 @@ if ($LASTEXITCODE -ne 0) {
 }
 Write-Success "Build completed successfully"
 
-# Step 6: Pack the project (in case GeneratePackageOnBuild doesn't work as expected)
-Write-Step "Packing NuGet package..."
-dotnet pack $projectFile --configuration Release --no-build
+# Step 6: Pack the project with symbols (using modern embedded symbols format)
+Write-Step "Packing NuGet package with symbols..."
+dotnet pack $projectFile --configuration Release --no-build --include-symbols --include-source -p:SymbolPackageFormat=snupkg
 if ($LASTEXITCODE -ne 0) {
     Write-Error-Message "Pack failed"
     exit 1
 }
 Write-Success "Pack completed successfully"
 
-# Step 7: Find the generated NuGet package
-Write-Step "Locating generated NuGet package..."
+# Step 7: Find the generated NuGet packages
+Write-Step "Locating generated NuGet packages..."
 $packagePath = Get-ChildItem -Path "Cisco.Api\bin\Release" -Filter "*.nupkg" -Recurse |
     Where-Object { $_.Name -notlike "*.symbols.nupkg" } |
     Sort-Object LastWriteTime -Descending |
@@ -137,13 +138,39 @@ if (-not $packagePath) {
 Write-Success "Found package: $($packagePath.Name)"
 Write-Info "Package path: $($packagePath.FullName)"
 
+# Find the symbols package
+$symbolsPackagePath = Get-ChildItem -Path "Cisco.Api\bin\Release" -Filter "*.snupkg" -Recurse |
+    Sort-Object LastWriteTime -Descending |
+    Select-Object -First 1
+
+if ($symbolsPackagePath) {
+    Write-Success "Found symbols package: $($symbolsPackagePath.Name)"
+    Write-Info "Symbols package path: $($symbolsPackagePath.FullName)"
+} else {
+    Write-Info "No symbols package found (this is optional)"
+}
+
 # Step 8: Publish to NuGet
 Write-Step "Publishing to NuGet.org..."
-dotnet nuget push $packagePath.FullName --api-key $nugetApiKey --source https://api.nuget.org/v3/index.json
+dotnet nuget push $packagePath.FullName --api-key $nugetApiKey --source https://api.nuget.org/v3/index.json --skip-duplicate
 if ($LASTEXITCODE -ne 0) {
     Write-Error-Message "NuGet publish failed"
     exit 1
 }
-
 Write-Success "Package published successfully!"
+
+# Step 9: Publish symbols package to NuGet
+if ($symbolsPackagePath) {
+    Write-Step "Publishing symbols package to NuGet.org..."
+    dotnet nuget push $symbolsPackagePath.FullName --api-key $nugetApiKey --source https://api.nuget.org/v3/index.json --skip-duplicate
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error-Message "Symbols package publish failed"
+        exit 1
+    }
+    Write-Success "Symbols package published successfully!"
+}
+
 Write-Host "`n🎉 All done! Package $($packagePath.Name) has been published to NuGet.org" -ForegroundColor Green
+if ($symbolsPackagePath) {
+    Write-Host "   Including symbols package for debugging support" -ForegroundColor Green
+}

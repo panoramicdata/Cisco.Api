@@ -30,11 +30,8 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 	CiscoClientOptions options,
 	ILogger logger) : HttpClientHandler
 {
-	// private AuthenticationHeaderValue? _authenticationHeaderValue;
 	private readonly ILogger _logger = logger;
 	private const LogLevel LevelToLogAt = LogLevel.Trace;
-	// private string? _accessToken = options.Token;
-	// private DateTimeOffset? _accessTokenExpiryDateTimeOffset;
 
 	protected Uri AuthUri { get; } = authenticationUri;
 	protected CiscoClientOptions Options { get; } = options;

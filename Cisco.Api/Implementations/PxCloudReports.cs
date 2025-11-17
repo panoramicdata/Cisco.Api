@@ -1,4 +1,5 @@
 ﻿using Cisco.Api.Data.PxCloud;
+using Cisco.Api.Exceptions;
 using Cisco.Api.Interfaces;
 using ICSharpCode.SharpZipLib.Zip;
 using Newtonsoft.Json;
@@ -38,7 +39,7 @@ internal class PxCloudReports(HttpClient restHttpClient) : IPxCloudReports
 		}
 		else
 		{
-			throw new Exception("No location header found");
+			throw new PxCloudReportException("No location header found in response");
 		}
 	}
 
@@ -79,12 +80,12 @@ internal class PxCloudReports(HttpClient restHttpClient) : IPxCloudReports
 					}
 					catch (Exception ex)
 					{
-						throw new Exception("Unable to deserialise JSON response for the requested report.", ex);
+						throw new PxCloudReportException("Unable to deserialise JSON response for the requested report.", ex);
 					}
 
 					if (reportResponse is null)
 					{
-						throw new Exception("Unable to deserialise JSON response for the requested report.");
+						throw new PxCloudReportException("Unable to deserialise JSON response for the requested report.");
 					}
 
 					// wait for the suggested next poll time
@@ -119,7 +120,7 @@ internal class PxCloudReports(HttpClient restHttpClient) : IPxCloudReports
 					}
 					catch (Exception ex)
 					{
-						throw new Exception("Unable to decompress the zipped response for the requested report.", ex);
+						throw new PxCloudReportException("Unable to decompress the zipped response for the requested report.", ex);
 					}
 
 					if (content.Length > 0)
@@ -127,7 +128,7 @@ internal class PxCloudReports(HttpClient restHttpClient) : IPxCloudReports
 						// Now that we have the contents, try to deserialize it into ReportPayload so we can check the report name
 
 						var reportPayload = JsonConvert.DeserializeObject<ReportPayloadParent>(content)
-							?? throw new Exception("Unable to deserialise the metadata for the requested report.");
+							?? throw new PxCloudReportException("Unable to deserialise the metadata for the requested report.");
 
 						var reportName = reportPayload.Metadata.ReportName;
 						try
@@ -155,33 +156,26 @@ internal class PxCloudReports(HttpClient restHttpClient) : IPxCloudReports
 						}
 						catch (Exception ex)
 						{
-							throw new Exception($"An error occurred whilst preparing the '{reportName}' report.", ex);
+							throw new PxCloudReportException($"An error occurred whilst preparing the '{reportName}' report.", ex);
 						}
 					}
 					else
 					{
-						throw new Exception("Response did not contain valid content.");
+						throw new PxCloudReportException("Response did not contain valid content.");
 					}
 				}
 
 				// Wasn't JSON or zipped report content
-				throw new Exception("Response did not contain a report status or final report content.");
+				throw new PxCloudReportException("Response did not contain a report status or final report content.");
 			}
 			else
 			{
-				throw new Exception("An error occurred whilst requesting the report.");
+				throw new PxCloudReportException("An error occurred whilst requesting the report.");
 			}
 		}
 	}
 
 	// Is fussy about the return type which can't just be null and must match the output of the deserialisation
 	private static dynamic ThrowError(string reportName)
-		=> throw new Exception($"An error occurred whilst deserialising the '{reportName}' report.");
-
-	//[Get("/px/v1/customers/{customerId}/reports/{reportId}")]
-	//Task<ReportResponse> GetReportAsync(
-	//	string customerId,
-	//	string reportId,
-	//	CancellationToken cancellationToken = default);
-
+		=> throw new PxCloudReportException($"An error occurred whilst deserialising the '{reportName}' report.");
 }

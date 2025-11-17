@@ -5,9 +5,6 @@ namespace Cisco.Api;
 
 internal class CiscoUmbrellaCredentialsTokenTracking(string clientSecret)
 {
-	//private string clientSecret;
-
-
 	public string ClientSecret { get; set; } = clientSecret;
 
 	public string? AccessToken { get; set; }

@@ -327,6 +327,9 @@ internal abstract class CustomHttpClientHandler(
 						}
 
 						break;
+					default:
+						// For all other status codes, proceed to error handling below
+						break;
 				}
 
 				// Retries not enabled or retries exhausted, so log as error

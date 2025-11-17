@@ -1,4 +1,5 @@
 ﻿using Cisco.Api.Data.Pss;
+using Cisco.Api.Exceptions;
 using Cisco.Api.Interfaces;
 using ICSharpCode.SharpZipLib.Zip;
 using System;
@@ -27,17 +28,17 @@ internal class PssConfigs(HttpClient restHttpClient) : IPssConfigs
 
 		if (deviceConfigsRequest.DeviceIds.Count == 0)
 		{
-			throw new Exception("No device IDs provided.");
+			throw new PssConfigException("No device IDs provided.");
 		}
 
 		if (deviceConfigsRequest.DeviceIds.Count > 5)
 		{
-			throw new Exception("The deviceIds input is limited to a maximum of 5 devices per call.");
+			throw new PssConfigException("The deviceIds input is limited to a maximum of 5 devices per call.");
 		}
 
 		if (configType != DeviceConfigsConfigType.Running && configType != DeviceConfigsConfigType.Startup && configType != DeviceConfigsConfigType.Both)
 		{
-			throw new Exception("The only valid input strings are RUNNING, STARTUP, and BOTH.");
+			throw new PssConfigException("The only valid input strings are RUNNING, STARTUP, and BOTH.");
 		}
 
 		var url = $"{restHttpClient.BaseAddress}pss/v1.0/inventory/customers/{customerId}/devices/{deviceIds}?configType={configType}";
@@ -46,46 +47,32 @@ internal class PssConfigs(HttpClient restHttpClient) : IPssConfigs
 
 		if (response.StatusCode == System.Net.HttpStatusCode.OK)
 		{
-			// Turns out the 
-
-			/*
-			// Filename is meant to be in the Content-Disposition header, but not always present.
-			// Structure is like deviceconfig_100856745_996296262.zip
-			var isZipped = response.Content.Headers.ContentDisposition?.FileName?.EndsWith("zip") == true;
-
-			if (isZipped)
-			{
-			*/
 			try
 			{
 				var memoryStream = new MemoryStream();
-				await response.Content.CopyToAsync(memoryStream);
+				await response.Content.CopyToAsync(memoryStream, cancellationToken);
 				memoryStream.Position = 0;
 
 				if (memoryStream.Length == 0)
 				{
-					throw new Exception("The zip input stream is empty.");
+					throw new PssConfigException("The zip input stream is empty.");
 				}
 
 				return memoryStream;
 			}
-			catch (Exception ex)
+			catch (Exception ex) when (ex is not PssConfigException)
 			{
-				throw new Exception("Unable to decompress the zipped response.", ex);
+				throw new PssConfigException("Unable to decompress the zipped response.", ex);
 			}
-			/*}
-
-			throw new Exception("Response did not contain a zip file of configs.");
-			*/
 		}
 		else
 		{
 			if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
 			{
-				throw new Exception($"None of the supplied device IDs have a config to return.");
+				throw new PssConfigException($"None of the supplied device IDs have a config to return.");
 			}
 
-			throw new Exception($"An error occurred whilst requesting the config(s): {response.ReasonPhrase}");
+			throw new PssConfigException($"An error occurred whilst requesting the config(s): {response.ReasonPhrase}");
 		}
 	}
 
@@ -116,7 +103,7 @@ internal class PssConfigs(HttpClient restHttpClient) : IPssConfigs
 				var split = entry.Name.Split('/');
 				if (split.Length != 2)
 				{
-					throw new Exception("Unable to parse the zipped response.");
+					throw new PssConfigException("Unable to parse the zipped response.");
 				}
 
 				var deviceId = split[1].Split('_').First();
@@ -145,9 +132,9 @@ internal class PssConfigs(HttpClient restHttpClient) : IPssConfigs
 				}
 			}
 		}
-		catch (Exception ex)
+		catch (Exception ex) when (ex is not PssConfigException)
 		{
-			throw new Exception("Unable to decompress the zipped response.", ex);
+			throw new PssConfigException("Unable to decompress the zipped response.", ex);
 		}
 
 		return output;
