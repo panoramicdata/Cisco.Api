@@ -213,7 +213,7 @@ public partial class CiscoClient : IDisposable
 )
 		{
 			BaseAddress = new("https://swapi.cisco.com/services/api/smart-accounts-and-licensing"),
-			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
+			Timeout = TimeSpan.FromSeconds(alternativeOptionsWithContentTypeAsJson.HttpClientTimeoutSeconds)
 		};
 
 		var refitSettings = new RefitSettings
