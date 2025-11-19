@@ -1,6 +1,7 @@
 using Cisco.Api.Data.EnterpriseAgreement.Responses;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -9,7 +10,7 @@ namespace Cisco.Api.Test;
 public class EnterpriseAgreementTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
 	[Fact]
-	public async void GetConsumptionReport_Succeeds()
+	public async Task GetConsumptionReport_Succeeds()
 	{
 		try
 		{
@@ -22,8 +23,6 @@ public class EnterpriseAgreementTests(ITestOutputHelper iTestOutputHelper) : Tes
 
 			response.Subscriptions.Should().BeOfType<List<Subscription>>();
 			response.Subscriptions.Should().NotBeEmpty();
-
-
 		}
 		catch (Exception ex)
 		{

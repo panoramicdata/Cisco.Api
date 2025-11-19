@@ -1,4 +1,5 @@
 using Cisco.Api.Data.SmartAccountsAndLicensing;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -7,7 +8,7 @@ namespace Cisco.Api.Test;
 public class SmartAccountsAndLicensingTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
     [Fact]
-    public async void ListSmartAccounts_Succeeds()
+    public async Task ListSmartAccounts_Succeeds()
     {
 		var domain = Config.SmartAccountDomainReal;
 
