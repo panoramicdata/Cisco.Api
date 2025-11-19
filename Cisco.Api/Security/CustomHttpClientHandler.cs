@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Sockets;
 using System.Security;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,6 +24,7 @@ internal abstract class CustomHttpClientHandler(
 	private const LogLevel LevelToLogAt = LogLevel.Trace;
 	private string? _accessToken = options.Token;
 	private DateTimeOffset? _accessTokenExpiryDateTimeOffset;
+	private readonly bool _useJsonContentType = options.UseJsonContentType;
 
 	protected Uri AuthUri { get; } = authenticationUri;
 	protected CiscoClientOptions Options { get; } = options;
@@ -199,7 +201,25 @@ internal abstract class CustomHttpClientHandler(
 		//_logger.LogDebug($"SendAsync(): About to send query. The access token expiry date time is '{_accessTokenExpiryDateTimeOffset}'.");
 
 		request.Headers.Authorization = _authenticationHeaderValue;
-		request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
+		if (_useJsonContentType)
+		{
+			request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+			// Convert the request content to JSON if necessary
+			//if (request.Content != null)
+			//{
+			string? originalContent = string.Empty;
+			if (request?.Content != null)
+			{
+				originalContent = await request.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+			}
+			request.Content = new StringContent(originalContent, Encoding.UTF8, "application/json");
+			//}
+		}
+		else
+		{
+			request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
+		}
 
 		// Only do diagnostic logging if we're at the level we want to enable for as this is more efficient
 		if (_logger.IsEnabled(LevelToLogAt))

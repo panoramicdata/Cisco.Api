@@ -87,6 +87,21 @@ public partial class CiscoClient : IDisposable
 			}
 		}
 
+		/////////////////////////////
+		/// Some of the following APIs expect "application/json" as the content type
+		/// Enterprise Agreement and Smart Accounts And Licensing, even for GET requests with no body.
+		var alternativeOptionsWithContentTypeAsJson = new CiscoClientOptions
+		{
+			ClientId = options.ClientId,
+			ClientSecret = options.ClientSecret,
+			HttpClientTimeoutSeconds = options.HttpClientTimeoutSeconds,
+			// IMPORTANT: EA API requires application/json content type
+			// for all requests, regardless of whether there is a body or not
+			UseJsonContentType = true
+		};
+
+		////////////////////////////
+
 		_restHttpClient = new HttpClient(
 			new AuthenticatedHttpClientHandler(
 				new("https://id.cisco.com/oauth2/default/v1/token"),
@@ -104,12 +119,12 @@ public partial class CiscoClient : IDisposable
 		_restEnterpriseAgreementClient = new HttpClient(
 			new AuthenticatedHttpClientHandler(
 				new("https://cloudsso.cisco.com/as/token.oauth2"),
-				options,
+				alternativeOptionsWithContentTypeAsJson,
 				_logger)
 )
 		{
 			BaseAddress = new("https://swapi.cisco.com/services/api/enterprise-agreements"),
-			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
+			Timeout = TimeSpan.FromSeconds(alternativeOptionsWithContentTypeAsJson.HttpClientTimeoutSeconds)
 		};
 
 		///////////////
@@ -193,7 +208,7 @@ public partial class CiscoClient : IDisposable
 		_restSmartAccountsAndLicensingClient = new HttpClient(
 			new AuthenticatedHttpClientHandler(
 				new("https://cloudsso.cisco.com/as/token.oauth2"),
-				options,
+				alternativeOptionsWithContentTypeAsJson,
 				_logger)
 )
 		{
