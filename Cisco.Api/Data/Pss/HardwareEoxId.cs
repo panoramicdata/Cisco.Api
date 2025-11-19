@@ -10,5 +10,5 @@ namespace Cisco.Api.Data.Pss;
         /// any number of parameters listed in the API service call.
         /// </summary>
         [XmlElement("hwEoxId")]
-        public List<string> Ids { get; set; } = new List<string>();
+        public List<string> Ids { get; set; } = [];
     }

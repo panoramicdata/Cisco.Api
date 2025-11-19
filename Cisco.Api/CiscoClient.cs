@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Refit;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 
@@ -229,7 +228,7 @@ public partial class CiscoClient : IDisposable
 					//#if DEBUG
 					//						MissingMemberHandling = MissingMemberHandling.Error,
 					//#endif
-					Converters = new List<JsonConverter> { new StringEnumConverter() }
+					Converters = [new StringEnumConverter()]
 				}
 			)
 		};

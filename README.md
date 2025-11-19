@@ -1,26 +1,60 @@
 # Cisco.Api
 
 [![Nuget](https://img.shields.io/nuget/v/Cisco.Api)](https://www.nuget.org/packages/Cisco.Api/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/0d1b38ded4f44b188f9f5d7eccf49324)](https://app.codacy.com/gh/panoramicdata/Cisco.Api/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
-You must have an SNTC or PSS account in order to be able to use this library.
+A .NET library for accessing Cisco Support APIs, including EoX, Product Information, PSIRT, PSS, Serial Number to Information, PX Cloud, and Umbrella APIs.
 
-To use the Cisco nuget package:
+## Prerequisites
 
-## Visual Studio
+You must have an **SNTC (Smart Net Total Care)** or **PSS (Product Support Services)** account in order to use this library.
+
+## Installation
+
+### Using .NET CLI
+
+```bash
+dotnet add package Cisco.Api
+```
+
+### Using Package Manager Console
+
+```powershell
+Install-Package Cisco.Api
+```
+
+### Using Visual Studio
 
 1. Open your project in Visual Studio
-1. Right-click on the project and click "Manage Nuget packages"
-1. Find the package "Cisco.Api" - install the latest version
-1. Add your application in the Cisco API Console
-1. Add a new Application, selecting the end points that you intend to use
-1. Note the client id and secret.
+2. Right-click on the project and click "Manage NuGet packages"
+3. Search for "Cisco.Api"
+4. Click "Install" to add the latest version to your project
 
-## Example code (C# 8.0):
+### Using PackageReference
 
-``` C#
+Add the following to your `.csproj` file:
+
+```xml
+<PackageReference Include="Cisco.Api" Version="*" />
+```
+
+## Setup
+
+Before using the library, you need to obtain API credentials:
+
+1. Go to the [Cisco API Console](https://apiconsole.cisco.com/)
+2. Sign in with your SNTC or PSS account
+3. Click "Register a New App"
+4. Add a new Application, selecting the API endpoints that you intend to use
+5. Note the **Client ID** and **Client Secret** - you'll need these for authentication
+
+## Example Code
+
+```csharp
 using Cisco.Api;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace My.Project
@@ -30,14 +64,15 @@ namespace My.Project
 		public static async Task Main()
 		{
 			var ciscoClient = new CiscoClient(
-				new CiscoClientOptions {
-					ClientId = "<ID>",
-					ClientSecret = "<SECRET>"
+				new CiscoClientOptions
+				{
+					ClientId = "<YOUR_CLIENT_ID>",
+					ClientSecret = "<YOUR_CLIENT_SECRET>"
 				});
 
-			var productInformation = await CiscoClient
+			var productInformation = await ciscoClient
 				.ProductInfo
-				.GetBySerialNumbersAsync(new [] { "<SERIAL NUMBER>" } )
+				.GetBySerialNumbersAsync(new[] { "<SERIAL_NUMBER>" })
 				.ConfigureAwait(false);
 
 			var productDetails = productInformation.Products.First();
@@ -46,10 +81,23 @@ namespace My.Project
 		}
 	}
 }
-````
+```
+
+## Supported Frameworks
+
+- .NET 9.0
+- .NET 10.0
 
 ## API Documentation
 
 The Cisco Support APIs documentation can be found here:
 
 - [Cisco Support APIs](https://developer.cisco.com/site/support-apis/)
+
+## License
+
+This project is licensed under the MIT License.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.

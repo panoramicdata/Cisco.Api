@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Http;
-using System.Runtime.Serialization;
 
 namespace Cisco.Api.Exceptions;
 
@@ -60,13 +59,6 @@ public class CiscoApiException : Exception
 	/// Constructor
 	/// </summary>
 	public CiscoApiException(string message, Exception innerException) : base(message, innerException)
-	{
-	}
-
-	/// <summary>
-	/// Constructor
-	/// </summary>
-	protected CiscoApiException(SerializationInfo info, StreamingContext context) : base(info, context)
 	{
 	}
 }

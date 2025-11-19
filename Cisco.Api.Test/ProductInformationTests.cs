@@ -1,6 +1,4 @@
 using Cisco.Api.Data.ProductInfo;
-using FluentAssertions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,7 +15,7 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 		// Note: If no serials are found, then Products will have 1 empty record (yet totals say 0) that also has ErrorResponse set
 		var productInformationPage = await CiscoClient
 			.ProductInfo
-			.GetBySerialNumbersAsync(new[] { "`" })
+			.GetBySerialNumbersAsync(["`"])
 			.ConfigureAwait(true);
 
 		productInformationPage.Should().NotBeNull();
@@ -38,7 +36,7 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 		// Note: Serial numbers can be up to 40 chars long.
 		var productInformationPage = await CiscoClient
 			.ProductInfo
-			.GetBySerialNumbersAsync(new[] { "FTX1910100B" })
+			.GetBySerialNumbersAsync(["FTX1910100B"])
 			.ConfigureAwait(true);
 
 		productInformationPage.Should().NotBeNull();
@@ -78,7 +76,7 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 		// Note: Serial numbers can be up to 40 chars long.
 		var productInformationPage = await CiscoClient
 			.ProductInfo
-			.GetBySerialNumbersAsync(new[] { "FCW2234L10F", "FCW2234L12V" })
+			.GetBySerialNumbersAsync(["FCW2234L10F", "FCW2234L12V"])
 			.ConfigureAwait(true);
 
 		productInformationPage.Should().NotBeNull();
@@ -115,10 +113,8 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 	[Fact]
 	public async Task GetBySerialNumberMultipleAsyncTooLong_Succeeds()
 	{
-		try
-		{
-			// serial numbers is limited to 40 characters!
-			var serialNumbers = new[] {
+		// serial numbers is limited to 40 characters!
+		var serialNumbers = new[] {
 					"FCW2234L10F",
 					"FCW2234L12V",
 					"FCW2408P0LF",
@@ -181,23 +177,19 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 					"FCW2408P0NT"
 				};
 
-			ProductInformationPage productInformationPage;
-			var basePids = new List<string>();
-			foreach (var serialNumber in serialNumbers)
-			{
-				productInformationPage = await CiscoClient
-				.ProductInfo
-				.GetBySerialNumbersAsync(new[] { serialNumber })
-				.ConfigureAwait(true);
-
-				basePids.Add(productInformationPage.Products.First().BasePid);
-			}
-
-			basePids = basePids.Distinct().ToList();
-		}
-		catch (Exception ex)
+		ProductInformationPage productInformationPage;
+		var basePids = new List<string>();
+		foreach (var serialNumber in serialNumbers)
 		{
-			throw;
+			productInformationPage = await CiscoClient
+			.ProductInfo
+			.GetBySerialNumbersAsync([serialNumber])
+			.ConfigureAwait(true);
+
+			basePids.Add(productInformationPage.Products.First().BasePid);
 		}
+
+		basePids = [.. basePids.Distinct()];
+		basePids.Count.Should().BeGreaterThan(1);
 	}
 }

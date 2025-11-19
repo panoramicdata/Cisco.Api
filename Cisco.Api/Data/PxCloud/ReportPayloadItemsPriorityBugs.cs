@@ -18,6 +18,8 @@ public class ReportPayloadItemsPriorityBugs : ReportPayloadItem
 	[DataMember(Name = "assetName")]
 	public string? AssetName { get; set; }
 
+	/// <summary>
+	/// Serial number of the asset.
 	/// </summary>
 	[DataMember(Name = "serialNumber")]
 	public string? SerialNumber { get; set; }
@@ -41,31 +43,31 @@ public class ReportPayloadItemsPriorityBugs : ReportPayloadItem
 	public string? SoftwareRelease { get; set; }
 
 	/// <summary>
-	///
+	/// Unique identifier of the bug.
 	/// </summary>
 	[DataMember(Name = "bugId")]
 	public string? BugId { get; set; }
 
 	/// <summary>
-	///
+	/// Title of the bug.
 	/// </summary>
 	[DataMember(Name = "bugTitle")]
 	public string? BugTitle { get; set; }
 
 	/// <summary>
-	///
+	/// Description of the bug.
 	/// </summary>
 	[DataMember(Name = "description")]
 	public string? Description { get; set; }
 
 	/// <summary>
-	///
+	/// URL to the bug details.
 	/// </summary>
 	[DataMember(Name = "url")]
 	public string? Url { get; set; }
 
 	/// <summary>
-	///
+	/// Severity level of the bug.
 	/// </summary>
 	[DataMember(Name = "bugSeverity")]
 	public string? BugSeverity { get; set; }
@@ -77,7 +79,7 @@ public class ReportPayloadItemsPriorityBugs : ReportPayloadItem
 	public List<ReportPayloadItemsSuccessTrack> SuccessTracks { get; set; } = [];
 
 	/// <summary>
-	///
+	/// Impact description of the bug.
 	/// </summary>
 	[DataMember(Name = "impact")]
 	public string? Impact { get; set; }

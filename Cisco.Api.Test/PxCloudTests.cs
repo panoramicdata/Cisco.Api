@@ -1,7 +1,6 @@
 ﻿using Cisco.Api.Data.PxCloud;
-using FluentAssertions;
-using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -10,7 +9,7 @@ namespace Cisco.Api.Test;
 public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
 	[Fact]
-	public async void GetCustomers_Succeeds()
+	public async Task GetCustomers_Succeeds()
 	{
 		var response = await CiscoClient
 			.PxCloud
@@ -23,7 +22,7 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 	}
 
 	[Fact]
-	public async void GetAllCustomers_Succeeds()
+	public async Task GetAllCustomers_Succeeds()
 	{
 		// Offset will store the number of customers retrieved so far. Call GetCustomersAsync with 'max' set to 50, to get the first 50 items, and the total count
 		// Keep calling GetCustomersAsync with 'offset' set to the current count, until the total count is reached
@@ -45,11 +44,7 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 				totalCount = response.TotalCount;
 			}
 
-			if (response.Items.Count == 0)
-			{
-				// 2024-05 Currently, the total does not relate to the number of items returned. This is a bug in the API.
-				throw new Exception("Expected there to be some items.");
-			}
+			response.Items.Should().NotBeEmpty();
 
 			customers.AddRange(response.Items);
 			offset += response.Items.Count;
@@ -59,7 +54,7 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 	}
 
 	[Fact]
-	public async void GetContracts_Succeeds()
+	public async Task GetContracts_Succeeds()
 	{
 		var response = await CiscoClient
 			.PxCloud
@@ -72,7 +67,7 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 	}
 
 	[Fact]
-	public async void GetContractsWithCustomers_Succeeds()
+	public async Task GetContractsWithCustomers_Succeeds()
 	{
 		var response = await CiscoClient
 			.PxCloud
@@ -85,7 +80,7 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 	}
 
 	[Fact]
-	public async void GetContractDetails_Succeeds()
+	public async Task GetContractDetails_Succeeds()
 	{
 		var response = await CiscoClient
 			.PxCloud
@@ -98,7 +93,7 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 	}
 
 	[Fact]
-	public async void GetAllContractDetails_Succeeds()
+	public async Task GetAllContractDetails_Succeeds()
 	{
 		// Offset will store the number of customers retrieved so far. Call GetCustomersAsync with 'max' set to 50, to get the first 50 items, and the total count
 		// Keep calling GetCustomersAsync with 'offset' set to the current count, until the total count is reached
@@ -120,10 +115,7 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 				totalCount = response.TotalCount;
 			}
 
-			if (response.Items.Count == 0)
-			{
-				throw new Exception("Expected there to be some items.");
-			}
+			response.Items.Should().NotBeEmpty();
 
 			contractDetails.AddRange(response.Items);
 			offset += response.Items.Count;
@@ -133,7 +125,7 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 	}
 
 	[Fact]
-	public async void RequestAssetsReport_Succeeds()
+	public async Task RequestAssetsReport_Succeeds()
 	{
 		// KCL has all reports except for PriorityBugs
 

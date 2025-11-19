@@ -1,5 +1,4 @@
 using Cisco.Api.Data.Eox;
-using FluentAssertions;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -48,7 +47,7 @@ public class EoxTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	{
 		var eoxInfoPage = await CiscoClient
 			.Eox
-			.GetBySoftwareReleaseStringAsync(new[] { "12.2,IOS" })
+			.GetBySoftwareReleaseStringAsync(["12.2,IOS"])
 			.ConfigureAwait(true);
 		CheckEoxInfoPage(eoxInfoPage);
 	}
