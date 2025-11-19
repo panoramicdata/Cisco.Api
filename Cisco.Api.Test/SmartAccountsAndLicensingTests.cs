@@ -1,5 +1,4 @@
 using Cisco.Api.Data.SmartAccountsAndLicensing;
-using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 

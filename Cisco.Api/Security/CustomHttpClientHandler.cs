@@ -209,7 +209,7 @@ internal abstract class CustomHttpClientHandler(
 
 			// Convert the request content to JSON if necessary
 			string? originalContent = string.Empty;
-			if (request?.Content != null)
+			if (request.Content != null)
 			{
 				originalContent = await request.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 			}
