@@ -81,6 +81,7 @@ internal sealed class TestPortalConfig
 		TestFieldNoticesId2 = GetProperty(configuration, "TestFieldNoticesId2");
 		TestPsirtId1 = GetProperty(configuration, "TestPsirtId1");
 		TestPsirtId2 = GetProperty(configuration, "TestPsirtId2");
+		SmartAccountDomainReal = GetProperty(configuration, "SmartAccountDomainReal");
 	}
 
 	private static string GetProperty(IConfigurationRoot configuration, string key)
@@ -115,4 +116,8 @@ internal sealed class TestPortalConfig
 	public string TestPsirtId1 { get; }
 
 	public string TestPsirtId2 { get; }
+
+	public string SmartAccountDomainReal { get; }
+
+	public string SmartAccountDomainDemo { get; } = "demo.mule.cisco.com";
 }

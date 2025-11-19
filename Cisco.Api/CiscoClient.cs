@@ -17,11 +17,15 @@ public partial class CiscoClient : IDisposable
 {
 	private readonly ILogger _logger;
 	private readonly HttpClient _restHttpClient;
+	private readonly HttpClient _restEnterpriseAgreementClient;
 	private readonly HttpClient _restUmbrellaClient;
 	private readonly HttpClient _restPssClient;
 	private readonly HttpClient _restPXCloudClient;
+	private readonly HttpClient _restSmartAccountsAndLicensingClient;
 	private readonly HttpClient _soapHttpClient;
 	private bool disposedValue;
+
+	public IEnterpriseAgreement EnterpriseAgreement { get; set; }
 
 	public IEox Eox { get; set; }
 
@@ -42,6 +46,8 @@ public partial class CiscoClient : IDisposable
 	public ISecurityAdvisory SecurityAdvisory { get; set; }
 
 	public ISerialNumberToInfo SerialNumberToInfo { get; set; }
+
+	public ISmartAccountsAndLicensing SmartAccountsAndLicensing { get; set; }
 
 	public ISoftwareSuggestion SoftwareSuggestion { get; set; }
 
@@ -89,6 +95,20 @@ public partial class CiscoClient : IDisposable
 		)
 		{
 			BaseAddress = new("https://apix.cisco.com/"),
+			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
+		};
+
+		///////////////
+		/// Enterprise Agreement
+
+		_restEnterpriseAgreementClient = new HttpClient(
+			new AuthenticatedHttpClientHandler(
+				new("https://cloudsso.cisco.com/as/token.oauth2"),
+				options,
+				_logger)
+)
+		{
+			BaseAddress = new("https://swapi.cisco.com/services/api/enterprise-agreements"),
 			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
 		};
 
@@ -153,6 +173,9 @@ public partial class CiscoClient : IDisposable
 			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
 		};
 
+		///////////////
+		/// PSS
+
 		_soapHttpClient = new HttpClient(
 			new AuthenticatedHttpClientHandler(
 				new("https://api.cisco.com/pss/token"),
@@ -161,6 +184,20 @@ public partial class CiscoClient : IDisposable
 		)
 		{
 			BaseAddress = new("https://api.cisco.com/pss/v1.0/"),
+			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
+		};
+
+		///////////////
+		/// Smart Accounts and Licensing
+
+		_restSmartAccountsAndLicensingClient = new HttpClient(
+			new AuthenticatedHttpClientHandler(
+				new("https://cloudsso.cisco.com/as/token.oauth2"),
+				options,
+				_logger)
+)
+		{
+			BaseAddress = new("https://swapi.cisco.com/services/api/smart-accounts-and-licensing"),
 			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
 		};
 
@@ -183,6 +220,7 @@ public partial class CiscoClient : IDisposable
 		};
 
 		// Interfaces
+		EnterpriseAgreement = RestService.For<IEnterpriseAgreement>(_restEnterpriseAgreementClient, refitSettings);
 		Eox = RestService.For<IEox>(_restHttpClient, refitSettings);
 		Hello = RestService.For<IHello>(_restHttpClient);
 		ProductInfo = RestService.For<IProductInfo>(_restHttpClient, refitSettings);
@@ -193,6 +231,7 @@ public partial class CiscoClient : IDisposable
 		PxCloud = RestService.For<IPxCloud>(_restPXCloudClient, refitSettings);
 		SecurityAdvisory = RestService.For<ISecurityAdvisory>(_restHttpClient, refitSettings);
 		SerialNumberToInfo = RestService.For<ISerialNumberToInfo>(_restHttpClient, refitSettings);
+		SmartAccountsAndLicensing = RestService.For<ISmartAccountsAndLicensing>(_restSmartAccountsAndLicensingClient, refitSettings);
 		SoftwareSuggestion = RestService.For<ISoftwareSuggestion>(_restHttpClient, refitSettings);
 		Umbrella = RestService.For<IUmbrella>(_restUmbrellaClient, refitSettings);
 	}

@@ -19,6 +19,8 @@ public partial class CiscoClient
 		var todayMidnight = DateTime.Today;
 		var yesterdayMidnight = todayMidnight.AddDays(-1);
 
+		// MS-19906 You can search specifically for the demo domain and in that specific case you may get an error depending on your perms but it's a 200
+		var enterpriseAgreementTask = EnterpriseAgreement.GetConsumptionReportForAllSubscriptionsAssociatedWithSmartAccountDomainAsync("demo.mule.cisco.com", cancellationToken);
 		var eoxTask = Eox.GetByDatesAsync(yesterdayMidnight, todayMidnight, 1, cancellationToken);
 		var helloTask = Hello.HelloAsync(cancellationToken);
 		var psirtTask = Psirt.GetLatestAsync(1, cancellationToken);
@@ -28,7 +30,22 @@ public partial class CiscoClient
 		// MS-19906 You cannot use an empty list - you get an API error, but you CAN make one up and if this is supported we get a response
 		var serialNumberToInfoTask = SerialNumberToInfo.GetCoverageStatusBySerialNumbersAsync(["123"], cancellationToken);
 		var softwareSuggestionTask = SoftwareSuggestion.GetByProductIdsAsync(["C9200"], 1, cancellationToken);
+		// MS-19906 You can search for anything
+		var smartAccountsAndLicensingTask = SmartAccountsAndLicensing.SearchSmartAccountsAsync(name: "123", cancellationToken: cancellationToken);
 		var umbrellaTask = Umbrella.ListSitesAsync(cancellationToken: cancellationToken);
+
+		try
+		{
+			_logger.LogDebug("Checking Enterprise Agreement");
+			await enterpriseAgreementTask
+				.ConfigureAwait(false);
+			_logger.LogDebug("Enterprise Agreement succeeded");
+			apiAccess.EnterpriseAgreement = true;
+		}
+		catch (Exception ex)
+		{
+			_logger.LogDebug(ex, "Enterprise Agreement failed");
+		}
 
 		try
 		{
@@ -114,6 +131,19 @@ public partial class CiscoClient
 		catch (Exception ex)
 		{
 			_logger.LogDebug(ex, "SoftwareSuggestion failed");
+		}
+
+		try
+		{
+			_logger.LogDebug("Checking SmartAccountsAndLicensing");
+			await smartAccountsAndLicensingTask
+				.ConfigureAwait(false);
+			_logger.LogDebug("SmartAccountsAndLicensing succeeded");
+			apiAccess.SmartAccountsAndLicensing = true;
+		}
+		catch (Exception ex)
+		{
+			_logger.LogDebug(ex, "SmartAccountsAndLicensing failed");
 		}
 
 		try
