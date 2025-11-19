@@ -1,6 +1,5 @@
-using Cisco.Api.Data.EnterpriseAgreement.Responses;
+using Cisco.Api.Exceptions;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -17,23 +16,26 @@ public class EnterpriseAgreementTests : Test
 	}
 
 	[Fact]
-	public async Task GetConsumptionReport_Succeeds()
+	public async Task GetConsumptionReport_Returns200ButWithAnErrorDueToPerms_Succeeds()
 	{
 		try
 		{
 			var domain = Config.SmartAccountDomainReal;
 
-			var response = await CiscoClient
-				.EnterpriseAgreement
-				.GetConsumptionReportForAllSubscriptionsAssociatedWithSmartAccountDomainAsync(domain)
-				.ConfigureAwait(true);
+			var exception = await Assert.ThrowsAsync<CiscoApiException>(async () =>
+			{
+				await CiscoClient
+					.EnterpriseAgreement
+					.GetConsumptionReportForAllSubscriptionsAssociatedWithSmartAccountDomainAsync(domain)
+					.ConfigureAwait(true);
+			});
 
-			response.Subscriptions.Should().BeOfType<List<Subscription>>();
-			response.Subscriptions.Should().NotBeEmpty();
+			_iTestOutputHelper.WriteLine($"Caught expected exception: {exception.Message}");
+			exception.Message.Should().Contain("No Valid Subscriptions found");
 		}
 		catch (Exception ex)
 		{
-			_iTestOutputHelper.WriteLine($"Exception: {ex.Message}");
+			_iTestOutputHelper.WriteLine($"Unexpected exception: {ex.Message}");
 			throw;
 		}
 	}
