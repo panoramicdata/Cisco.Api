@@ -7,8 +7,15 @@ using Xunit.Abstractions;
 
 namespace Cisco.Api.Test;
 
-public class EnterpriseAgreementTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
+public class EnterpriseAgreementTests : Test
 {
+	private readonly ITestOutputHelper _iTestOutputHelper;
+
+	public EnterpriseAgreementTests(ITestOutputHelper iTestOutputHelper) : base(iTestOutputHelper)
+	{
+		_iTestOutputHelper = iTestOutputHelper;
+	}
+
 	[Fact]
 	public async Task GetConsumptionReport_Succeeds()
 	{
@@ -26,7 +33,7 @@ public class EnterpriseAgreementTests(ITestOutputHelper iTestOutputHelper) : Tes
 		}
 		catch (Exception ex)
 		{
-			iTestOutputHelper.WriteLine($"Exception: {ex.Message}");
+			_iTestOutputHelper.WriteLine($"Exception: {ex.Message}");
 			throw;
 		}
 	}
