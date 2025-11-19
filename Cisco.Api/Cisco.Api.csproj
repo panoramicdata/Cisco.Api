@@ -5,7 +5,7 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Company>Panoramic Data Limited</Company>
 		<Copyright>Copyright © Panoramic Data Limited 2021-2025</Copyright>
-		<Description>Provides access to EoX, Product Information, PSIRT, PSS, Serial Number to Information, PX Cloud and Umbrella APIs. Requires client credentials.</Description>
+		<Description>Provides access to EoX, Enterprise Agreement, Product Information, PSIRT, PSS, Serial Number to Information, PX Cloud, Smart Account and Licensing, and Umbrella APIs. Requires client credentials.</Description>
 		<Authors>Panoramic Data Limited</Authors>
 		<PackageProjectUrl>https://github.com/panoramicdata/Cisco.Api</PackageProjectUrl>
 		<PackageIcon>Icon.png</PackageIcon>
@@ -16,7 +16,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>Fixed code quality issues. Added specific exception types for better error handling. Improved symbol package support with SourceLink.</PackageReleaseNotes>
+		<PackageReleaseNotes>Added some initial endpoints for the 'Smart Accounts and Licensing' and 'Enterprise Agreement' APIs.</PackageReleaseNotes>
 		
 		<!-- Modern symbol package configuration -->
 		<IncludeSymbols>true</IncludeSymbols>
