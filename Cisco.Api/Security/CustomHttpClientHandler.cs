@@ -206,15 +206,15 @@ internal abstract class CustomHttpClientHandler(
 			request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
 			// Convert the request content to JSON if necessary
-			//if (request.Content != null)
-			//{
 			string? originalContent = string.Empty;
 			if (request?.Content != null)
 			{
 				originalContent = await request.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 			}
+
+			// Some of the Cisco APIs require we set the header regardless of whether there is content or not
+			// Hence sending even an empty JSON object if there is no content for GETs.
 			request.Content = new StringContent(originalContent, Encoding.UTF8, "application/json");
-			//}
 		}
 		else
 		{
