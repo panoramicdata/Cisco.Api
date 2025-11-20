@@ -38,7 +38,7 @@ public interface IEox
 	/// <param name="pageIndex">Index number of the page to return; a maximum of 50 records per page are returned.</param>
 	/// <param name="cancellationToken">An optional cancellation token</param>
 	/// <returns>The EOX information</returns>
-	[Get("/supporttools/eox/rest/5/EOXByDates/{pageIndex}/{startDate}/{endDate}?input1={eoxAttrib}")]
+	[Get("/supporttools/eox/rest/5/EOXByDates/{pageIndex}/{startDate}/{endDate}")]
 	Task<EoxInfoPage> GetByDatesAsync(
 		[Query(Format = "yyyy-MM-dd")] DateTime startDate,
 		[Query(Format = "yyyy-MM-dd")] DateTime endDate,
