@@ -16,7 +16,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>Added some initial endpoints for the 'Smart Accounts and Licensing' and 'Enterprise Agreement' APIs.</PackageReleaseNotes>
+		<PackageReleaseNotes>Make the device configs zip file processing more robust.</PackageReleaseNotes>
 		
 		<!-- Modern symbol package configuration -->
 		<IncludeSymbols>true</IncludeSymbols>

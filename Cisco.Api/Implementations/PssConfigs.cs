@@ -121,14 +121,12 @@ internal class PssConfigs(HttpClient restHttpClient) : IPssConfigs
 				if (entry.Name.Contains("startup"))
 				{
 					output[deviceId].StartupConfig = content;
-					var date = entry.Name.Split("config_").Last().Split('.').First();
-					output[deviceId].StartupConfigDate = DateTime.ParseExact(date, "yyyy_MM_dd", null);
+					output[deviceId].StartupConfigDate = TryExtractDateFromEntryName(entry.Name);
 				}
 				else if (entry.Name.Contains("running-config") || entry.Name.Contains("run-config"))
 				{
 					output[deviceId].RunningConfig = content;
-					var date = entry.Name.Split("config_").Last().Split('.').First();
-					output[deviceId].RunningConfigDate = DateTime.ParseExact(date, "yyyy_MM_dd", null);
+					output[deviceId].RunningConfigDate = TryExtractDateFromEntryName(entry.Name);
 				}
 			}
 		}
@@ -138,6 +136,29 @@ internal class PssConfigs(HttpClient restHttpClient) : IPssConfigs
 		}
 
 		return output;
+	}
+
+	/// <summary>
+	/// Attempts to extract a date from a zip entry name.
+	/// Expected format: ...config_yyyy_MM_dd.txt
+	/// Returns null if date cannot be parsed.
+	/// </summary>
+	private static DateTime? TryExtractDateFromEntryName(string entryName)
+	{
+		// Expected format: ...config_yyyy_MM_dd.txt
+		var configSplit = entryName.Split("config_");
+		if (configSplit.Length < 2)
+		{
+			return null;
+		}
+
+		var datePart = configSplit.Last().Split('.').First();
+		if (DateTime.TryParseExact(datePart, "yyyy_MM_dd", null, System.Globalization.DateTimeStyles.None, out var parsedDate))
+		{
+			return parsedDate;
+		}
+
+		return null;
 	}
 
 }
