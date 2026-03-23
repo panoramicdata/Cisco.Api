@@ -16,7 +16,7 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<PackageReleaseNotes>Make the device configs zip file processing more robust.</PackageReleaseNotes>
+		<PackageReleaseNotes>Add [Query] attributes to SmartAccountsAndLicensing POST endpoints</PackageReleaseNotes>
 		
 		<!-- Modern symbol package configuration -->
 		<IncludeSymbols>true</IncludeSymbols>

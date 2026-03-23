@@ -61,10 +61,10 @@ public interface ISmartAccountsAndLicensing
 	[Post("/v1/accounts/{smartAccountDomain}/license-subscriptions")]
 	Task<ListOfLicenseSubscriptionsResponse> LicenseSubscriptionsUsageAsync(
 		string smartAccountDomain,
-		List<LicenseStatus> status,
-		string? virtualAccounts = "DEFAULT",
-		int limit = 50,
-		int offset = 0,
+		[Body] List<LicenseStatus> status,
+		[Query] string? virtualAccounts = null,
+		[Query] int limit = 50,
+		[Query] int offset = 0,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
@@ -78,8 +78,8 @@ public interface ISmartAccountsAndLicensing
 	[Post("/v1/accounts/{smartAccountDomain}/licenses")]
 	Task<ListOfLicensesResponse> SmartLicenseUsageAsync(
 		string smartAccountDomain, 
-		string virtualAccounts = "DEFAULT",
-		int limit = 50,
-		int offset = 0,
+		[Query] string? virtualAccounts = null,
+		[Query] int limit = 50,
+		[Query] int offset = 0,
 		CancellationToken cancellationToken = default);
 }
