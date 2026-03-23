@@ -16,9 +16,10 @@ public class LicenseSubscriptionsUsageRequest
 	public List<LicenseStatus> Status { get; set; } = [];
 
 	/// <summary>
-	/// An optional list of virtual accounts for which users intend to fetch the available licenses.
-	/// Defaults to ["DEFAULT"]. The Cisco API returns 422 if this field is omitted,
-	/// despite documentation stating it is optional.
+	/// A list of virtual accounts for which users intend to fetch the available licenses.
+	/// Defaults to ["DEFAULT"]. While the Cisco API documentation states this is optional,
+	/// omitting it via Refit causes request failures. Most Smart Accounts have a virtual
+	/// account named "DEFAULT". Override this to target specific virtual accounts.
 	/// </summary>
 	[DataMember(Name = "virtualAccounts")]
 	public List<string> VirtualAccounts { get; set; } = ["DEFAULT"];
