@@ -53,16 +53,14 @@ public interface ISmartAccountsAndLicensing
 	/// Virtual Accounts will be returned.
 	/// </summary>
 	/// <param name="smartAccountDomain">Domain of the smart account.</param>
-	/// <param name="status">The status of the subscriptions to be fetched. Valid values are 'Active','Canceled','Expired'</param>
-	/// <param name="virtualAccounts">An optional list of virtual accounts for which users intend to fetch the available licenses. If not specified, all the licenses from the domain for which the user has access to will be returned</param>
+	/// <param name="request">Request body containing status filters and optional virtual account filters</param>
 	/// <param name="limit">Number of records to return; Represents the page size for pagination. If all the data is required without pagination the limit can be set to -1. Default limit will be 50</param>
 	/// <param name="offset">The start offset to fetch data from for pagination. To retrieve data for the first page with a limit of 50, the offset will be 0, for the second page the offset will be 50 and for the third page the offset will be 100 and so on</param>
 	/// <param name="cancellationToken"></param>
 	[Post("/v1/accounts/{smartAccountDomain}/license-subscriptions")]
 	Task<ListOfLicenseSubscriptionsResponse> LicenseSubscriptionsUsageAsync(
 		string smartAccountDomain,
-		[Body] List<LicenseStatus> status,
-		[Query] string? virtualAccounts = null,
+		[Body] LicenseSubscriptionsUsageRequest request,
 		[Query] int limit = 50,
 		[Query] int offset = 0,
 		CancellationToken cancellationToken = default);
@@ -71,14 +69,14 @@ public interface ISmartAccountsAndLicensing
 	/// This API will give the licenses usage in the specified Smart Account Domain and the optional Virtual Accounts.
 	/// </summary>
 	/// <param name="smartAccountDomain">Domain of the smart account.</param>
-	/// <param name="virtualAccounts">An optional list of virtual accounts for which users intend to fetch the available licenses. If not specified, all the licenses from the domain for which the user has access to will be returned. Example: DEFAULT</param>
+	/// <param name="request">Request body containing optional virtual account filters</param>
 	/// <param name="limit">Number of records to return; Represents the page size for pagination. If all the data is required without pagination the limit can be set to -1. Default limit will be 50</param>
 	/// <param name="offset">The start offset to fetch data from for pagination. To retrieve data for the first page with a limit of 50, the offset will be 0, for the second page the offset will be 50 and for the third page the offset will be 100 and so on</param>
 	/// <param name="cancellationToken"></param>
 	[Post("/v1/accounts/{smartAccountDomain}/licenses")]
 	Task<ListOfLicensesResponse> SmartLicenseUsageAsync(
-		string smartAccountDomain, 
-		[Query] string? virtualAccounts = null,
+		string smartAccountDomain,
+		[Body] SmartLicenseUsageRequest request,
 		[Query] int limit = 50,
 		[Query] int offset = 0,
 		CancellationToken cancellationToken = default);
