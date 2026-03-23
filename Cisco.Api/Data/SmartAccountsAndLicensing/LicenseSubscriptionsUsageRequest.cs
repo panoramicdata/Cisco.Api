@@ -17,8 +17,9 @@ public class LicenseSubscriptionsUsageRequest
 
 	/// <summary>
 	/// An optional list of virtual accounts for which users intend to fetch the available licenses.
-	/// If not specified, all the licenses from the domain for which the user has access to will be returned.
+	/// Defaults to ["DEFAULT"]. The Cisco API returns 422 if this field is omitted,
+	/// despite documentation stating it is optional.
 	/// </summary>
 	[DataMember(Name = "virtualAccounts")]
-	public List<string>? VirtualAccounts { get; set; }
+	public List<string> VirtualAccounts { get; set; } = ["DEFAULT"];
 }
