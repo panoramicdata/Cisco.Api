@@ -12,7 +12,7 @@ public class LicenseItem
 	public bool IsPortable { get; set; }
 
 	[DataMember(Name = "licenseSubstitutions")]
-	public List<string> LicenseSubstitutions { get; set; } = new();
+	public List<LicenseSubstitution> LicenseSubstitutions { get; set; } = new();
 
 	[DataMember(Name = "quantity")]
 	public int Quantity { get; set; }
