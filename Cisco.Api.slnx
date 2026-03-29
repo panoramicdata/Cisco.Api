@@ -2,7 +2,7 @@
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
     <File Path=".gitignore" />
-    <File Path="Cisco.Api.sln.dic" />
+    <File Path="Cisco.Api.slnx.dic" />
     <File Path="global.json" />
     <File Path="LICENSE" />
     <File Path="nuget-key.txt" />

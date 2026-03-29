@@ -48,130 +48,108 @@ internal class PxCloudReports(HttpClient restHttpClient) : IPxCloudReports
 	{
 		var url = $"{restHttpClient.BaseAddress}/px/v1/customers/{customerId}/reports/{reportId}";
 
-		// Perform a Get("/px/v1/customers/{customerId}/reports/{reportId}") request to the REST API.
-		// The response will typically be JSON of type PxCloud.ReportResponse. If this is the case, the property 'suggestedNextPollTimeInMins' will
-		// tell us when to poll the report again but it is way off, so just try again after X seconds. If the response is instead a zipped file,
-		// then extract the file just to get the Metadata - that report name will tell us what type of report it is, and then we can deserialise the
-		// extracted zip content from scratch so that Items can have the correct type.
-		// If the response is neither JSON nor a zipped file, then throw an exception.
-
 		while (true)
 		{
 			var response = restHttpClient.GetAsync(url, cancellationToken);
-			if (response.Result.IsSuccessStatusCode)
-			{
-				var isJson = response.Result.Content.Headers.ContentType?.MediaType == "application/json";
-				var isZipped = response.Result.Content.Headers.ContentType?.MediaType == "application/zip";
-
-				if (isJson)
-				{
-					ReportResponse? reportResponse;
-					try
-					{
-						// Extract the content from the response
-						var contentStream = response.Result.Content.ReadAsStreamAsync(cancellationToken).Result;
-						var content = new StreamReader(contentStream).ReadToEnd();
-						// Examples:
-						// {"status":"Accepted"}
-						// {"status":"In Progress","suggestedNextPollTimeInMins":2,"suggestedNextPollInterval":2}
-
-						// try to deserialize the response into reportResponse
-						reportResponse = JsonConvert.DeserializeObject<ReportResponse>(content ?? "");
-					}
-					catch (Exception ex)
-					{
-						throw new PxCloudReportException("Unable to deserialise JSON response for the requested report.", ex);
-					}
-
-					if (reportResponse is null)
-					{
-						throw new PxCloudReportException("Unable to deserialise JSON response for the requested report.");
-					}
-
-					// wait for the suggested next poll time
-					// await Task.Delay(new TimeSpan(0, reportResponse.SuggestedNextPollTimeInMins, 0));
-
-					// Ignore the interval, repoll in X seconds (above might return 2 mins, but data was ready in under 30 seconds)
-					await Task.Delay(new TimeSpan(0, 0, 15), cancellationToken);
-
-					// Resume loop;
-					continue;
-				}
-
-				if (isZipped)
-				{
-					string content = "";
-
-					try
-					{
-						// Unzip response content using SharpZipLib
-						using var stream = await response.Result.Content.ReadAsStreamAsync(cancellationToken);
-						using var zipInputStream = new ZipInputStream(stream);
-						ZipEntry entry;
-						while ((entry = zipInputStream.GetNextEntry()) != null)
-						{
-							using var ms = new MemoryStream();
-							zipInputStream.CopyTo(ms);
-							ms.Position = 0;
-							using var sr = new StreamReader(ms);
-							content = sr.ReadToEnd();
-						}
-
-					}
-					catch (Exception ex)
-					{
-						throw new PxCloudReportException("Unable to decompress the zipped response for the requested report.", ex);
-					}
-
-					if (content.Length > 0)
-					{
-						// Now that we have the contents, try to deserialize it into ReportPayload so we can check the report name
-
-						var reportPayload = JsonConvert.DeserializeObject<ReportPayloadParent>(content)
-							?? throw new PxCloudReportException("Unable to deserialise the metadata for the requested report.");
-
-						var reportName = reportPayload.Metadata.ReportName;
-						try
-						{
-							dynamic? populatedItems = null!;
-
-							populatedItems = reportName switch
-							{
-								// Note: This works, but I think this could be more generic and not need each of the ReportPayloadParent classes.
-
-								"Assets" => JsonConvert.DeserializeObject<ReportPayloadParentAssets>(content) ?? ThrowError(reportName),
-								"Software" => JsonConvert.DeserializeObject<ReportPayloadParentSoftware>(content) ?? ThrowError(reportName),
-								"Hardware" => JsonConvert.DeserializeObject<ReportPayloadParentHardware>(content) ?? ThrowError(reportName),
-								"FieldNotices" => JsonConvert.DeserializeObject<ReportPayloadParentFieldNotices>(content) ?? ThrowError(reportName),
-								"Licenses" => JsonConvert.DeserializeObject<ReportPayloadParentLicensesWithAssets>(content) ?? ThrowError(reportName),
-								"PurchasedLicenses" => JsonConvert.DeserializeObject<ReportPayloadParentPurchasedLicenses>(content) ?? ThrowError(reportName),
-								"SecurityAdvisories" => JsonConvert.DeserializeObject<ReportPayloadParentSecurityAdvisories>(content) ?? ThrowError(reportName),
-								"PriorityBugs" => JsonConvert.DeserializeObject<ReportPayloadParentPriorityBugs>(content) ?? ThrowError(reportName),
-
-								_ => throw new NotSupportedException($"Unsupported report type: '{reportName}'."),
-							};
-
-							return populatedItems;
-
-						}
-						catch (Exception ex)
-						{
-							throw new PxCloudReportException($"An error occurred whilst preparing the '{reportName}' report.", ex);
-						}
-					}
-					else
-					{
-						throw new PxCloudReportException("Response did not contain valid content.");
-					}
-				}
-
-				// Wasn't JSON or zipped report content
-				throw new PxCloudReportException("Response did not contain a report status or final report content.");
-			}
-			else
+			if (!response.Result.IsSuccessStatusCode)
 			{
 				throw new PxCloudReportException("An error occurred whilst requesting the report.");
 			}
+
+			var isJson = response.Result.Content.Headers.ContentType?.MediaType == "application/json";
+			var isZipped = response.Result.Content.Headers.ContentType?.MediaType == "application/zip";
+
+			if (isJson)
+			{
+				await HandleJsonReportPollingAsync(response.Result, cancellationToken).ConfigureAwait(false);
+				continue;
+			}
+
+			if (isZipped)
+			{
+				return await ExtractZippedReportAsync(response.Result, cancellationToken).ConfigureAwait(false);
+			}
+
+			throw new PxCloudReportException("Response did not contain a report status or final report content.");
+		}
+	}
+
+	private async Task HandleJsonReportPollingAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+	{
+		ReportResponse? reportResponse;
+		try
+		{
+			var contentStream = response.Content.ReadAsStreamAsync(cancellationToken).Result;
+			var content = new StreamReader(contentStream).ReadToEnd();
+			reportResponse = JsonConvert.DeserializeObject<ReportResponse>(content ?? "");
+		}
+		catch (Exception ex)
+		{
+			throw new PxCloudReportException("Unable to deserialise JSON response for the requested report.", ex);
+		}
+
+		if (reportResponse is null)
+		{
+			throw new PxCloudReportException("Unable to deserialise JSON response for the requested report.");
+		}
+
+		await Task.Delay(new TimeSpan(0, 0, 15), cancellationToken);
+	}
+
+	private static async Task<ReportPayloadParent> ExtractZippedReportAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+	{
+		string content = "";
+
+		try
+		{
+			using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+			using var zipInputStream = new ZipInputStream(stream);
+			ZipEntry entry;
+			while ((entry = zipInputStream.GetNextEntry()) != null)
+			{
+				using var ms = new MemoryStream();
+				zipInputStream.CopyTo(ms);
+				ms.Position = 0;
+				using var sr = new StreamReader(ms);
+				content = sr.ReadToEnd();
+			}
+		}
+		catch (Exception ex)
+		{
+			throw new PxCloudReportException("Unable to decompress the zipped response for the requested report.", ex);
+		}
+
+		if (content.Length == 0)
+		{
+			throw new PxCloudReportException("Response did not contain valid content.");
+		}
+
+		var reportPayload = JsonConvert.DeserializeObject<ReportPayloadParent>(content)
+			?? throw new PxCloudReportException("Unable to deserialise the metadata for the requested report.");
+
+		return DeserializeReportByName(reportPayload.Metadata.ReportName, content);
+	}
+
+	private static ReportPayloadParent DeserializeReportByName(string reportName, string content)
+	{
+		try
+		{
+			return reportName switch
+			{
+				"Assets" => JsonConvert.DeserializeObject<ReportPayloadParentAssets>(content) ?? ThrowError(reportName),
+				"Software" => JsonConvert.DeserializeObject<ReportPayloadParentSoftware>(content) ?? ThrowError(reportName),
+				"Hardware" => JsonConvert.DeserializeObject<ReportPayloadParentHardware>(content) ?? ThrowError(reportName),
+				"FieldNotices" => JsonConvert.DeserializeObject<ReportPayloadParentFieldNotices>(content) ?? ThrowError(reportName),
+				"Licenses" => JsonConvert.DeserializeObject<ReportPayloadParentLicensesWithAssets>(content) ?? ThrowError(reportName),
+				"PurchasedLicenses" => JsonConvert.DeserializeObject<ReportPayloadParentPurchasedLicenses>(content) ?? ThrowError(reportName),
+				"SecurityAdvisories" => JsonConvert.DeserializeObject<ReportPayloadParentSecurityAdvisories>(content) ?? ThrowError(reportName),
+				"PriorityBugs" => JsonConvert.DeserializeObject<ReportPayloadParentPriorityBugs>(content) ?? ThrowError(reportName),
+				_ => throw new NotSupportedException($"Unsupported report type: '{reportName}'."),
+			};
+		}
+		catch (Exception ex) when (ex is not NotSupportedException and not PxCloudReportException)
+		{
+			throw new PxCloudReportException($"An error occurred whilst preparing the '{reportName}' report.", ex);
 		}
 	}
 

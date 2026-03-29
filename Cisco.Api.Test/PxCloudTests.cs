@@ -17,8 +17,6 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<Customers>();
-		//response.Should().NotBeEmpty();
-		//response.Should().HaveCountGreaterThan(0);
 	}
 
 	[Fact]

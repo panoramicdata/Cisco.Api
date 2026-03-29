@@ -3,10 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net9.0;net10.0</TargetFrameworks>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Company>Panoramic Data Limited</Company>
-		<Copyright>Copyright © Panoramic Data Limited 2021-2025</Copyright>
 		<Description>Provides access to EoX, Enterprise Agreement, Product Information, PSIRT, PSS, Serial Number to Information, PX Cloud, Smart Account and Licensing, and Umbrella APIs. Requires client credentials.</Description>
-		<Authors>Panoramic Data Limited</Authors>
 		<PackageProjectUrl>https://github.com/panoramicdata/Cisco.Api</PackageProjectUrl>
 		<PackageIcon>Icon.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
@@ -15,9 +12,8 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
-		<Nullable>enable</Nullable>
 		<PackageReleaseNotes>Add [Query] attributes to SmartAccountsAndLicensing POST endpoints</PackageReleaseNotes>
-		
+
 		<!-- Modern symbol package configuration -->
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -28,23 +24,23 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.0" />
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
+		<PackageReference Include="Microsoft.Extensions.Logging" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Nerdbank.GitVersioning" Version="3.9.50">
+		<PackageReference Include="Nerdbank.GitVersioning">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="refit" Version="8.0.0" />
-    <PackageReference Include="Refit.Newtonsoft.Json" Version="8.0.0" />
-		<PackageReference Include="SecurityCodeScan.VS2019" Version="5.6.7">
+		<PackageReference Include="refit" />
+		<PackageReference Include="Refit.Newtonsoft.Json" />
+		<PackageReference Include="SecurityCodeScan.VS2019">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="SharpZipLib" Version="1.4.2" />
-		<PackageReference Include="SimpleSOAPClient" Version="2.1.0" />
+		<PackageReference Include="SharpZipLib" />
+		<PackageReference Include="SimpleSOAPClient" />
 	</ItemGroup>
 
 	<ProjectExtensions>

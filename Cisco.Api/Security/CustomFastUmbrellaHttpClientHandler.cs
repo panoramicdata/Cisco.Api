@@ -63,13 +63,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 
 				_logger.LogTrace("{HttpResponseMessage}", httpResponseMessage);
 			}
-			// Catch exceptions that indicate transient issues that might be resolved by retrying
-			catch (Exception ex) when (
-				ex is TaskCanceledException
-				|| ex is HttpRequestException
-				|| ex is TimeoutException
-				|| ex is SocketException
-				|| (ex is IOException ioEx && ioEx.InnerException is SocketException))
+			catch (Exception ex) when (IsTransientException(ex))
 			{
 				if (++attemptCount < Options.MaxAttemptCount)
 				{
@@ -90,7 +84,6 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 					ex.Message,
 					Options.MaxAttemptCount);
 
-				// Retries not enabled or retries exhausted, so log as error
 				throw new CiscoApiException("Timeout or transient network failure during authentication.", ex);
 			}
 
@@ -102,133 +95,118 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 			var accessTokenResponse = JsonConvert.DeserializeObject<AccessTokenResponse>(contents)
 				?? throw new FormatException("Unable to deserialize access token response");
 
-			// Handle error responses (including invalid_client) BEFORE throwing
 			if (accessTokenResponse.Error is not null)
 			{
-				var error = accessTokenResponse.Error;
-				var description = accessTokenResponse.ErrorDescription;
-				var combinedMessage = description is { Length: > 0 }
-					? $"{error}: {description}"
-					: error;
-
-				_logger.LogDebug("Authentication failed. Error={Error} Description={Description}", error, description);
-
-				// If response not yet logged and OnErrorEnsureRequestResponseHeadersLogged is set, then log as error
-				if (!_logger.IsEnabled(LevelToLogAt) && Options.OnErrorEnsureRequestResponseHeadersLogged)
+				var attemptCountRef = new[] { attemptCount };
+				var shouldContinue = await HandleAuthErrorAsync(currentCredentialCurrentIndex, accessTokenResponse, httpResponseMessage, attemptCountRef, cancellationToken)
+					.ConfigureAwait(false);
+				attemptCount = attemptCountRef[0];
+				if (shouldContinue)
 				{
-					await LogResponseHeaders(currentCredentialCurrentIndex, httpResponseMessage, true).ConfigureAwait(false);
-				}
-
-				var isInvalidClient = error.Equals("invalid_client", StringComparison.OrdinalIgnoreCase);
-
-				// Priority: dedicated invalid_client retry settings if enabled
-				if (isInvalidClient && Options.RetryInvalidClientTokenErrors)
-				{
-					if (++attemptCount < Options.RetryInvalidClientTokenErrorsMaxAttemptCount)
-					{
-						_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) – retrying after {Delay}s...",
-							attemptCount,
-							Options.RetryInvalidClientTokenErrorsMaxAttemptCount,
-							Options.RetryInvalidClientTokenErrorsRetryDelay.TotalSeconds);
-
-						await Task.Delay(Options.RetryInvalidClientTokenErrorsRetryDelay, cancellationToken).ConfigureAwait(false);
-						continue;
-					}
-
-					_logger.LogError("GetAccessTokenAsync(): invalid_client exhausted after {MaxAttemptCount} attempts.",
-						Options.RetryInvalidClientTokenErrorsMaxAttemptCount);
-					throw new CiscoApiException("Timeout during authentication - gave up trying to get token after repeated invalid_client errors.");
-				}
-
-				// Fallback: treat invalid_client as part of normal retry window if special retry disabled
-				if (isInvalidClient && ++attemptCount < Options.MaxAttemptCount)
-				{
-					_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) using standard retry settings, retrying after {Delay}s...",
-						attemptCount,
-						Options.MaxAttemptCount,
-						Options.RetryDelay.TotalSeconds);
-					await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
 					continue;
 				}
-
-				// Non-retriable (or retries exhausted)
-				throw new SecurityException(combinedMessage);
 			}
 
-			_logger.LogDebug("Authentication succeeded.");
-
-			// Defaulting to just under 1 hour if not available in response
-			var expireInSeconds = accessTokenResponse.ExpiresInSeconds ?? 3540;
-
-			// If there is an expiry, try to take 1 minute off it unless it is already less than a minute
-			// This is to resolve corner cases where the expiry took a few seconds to be returned, and so the calculated expiry time
-			// leaves a small window for the token to have expired before the next request, allowing a query to fail.
-			if (accessTokenResponse.ExpiresInSeconds - 60 > 0)
-			{
-				expireInSeconds -= 60;
-				//_logger.LogDebug("The expiry has been reduced further by a safety margin of 1 minute, to deal with any delay in the token response being returned.");
-			}
-
-			_logger.LogDebug($"Access token should expire in {expireInSeconds} seconds.");
-
-			// Store the expiry timestamp
-			CiscoUmbrellaCredentials.ElementAt(currentCredentialCurrentIndex).Value.AccessTokenExpiryDateTimeOffset = DateTimeOffset.UtcNow.AddSeconds(expireInSeconds);
-
-			_logger.LogDebug(
-				"The access token '{AccessToken}' expiry date time is '{ExpiryDateTimeUtc}'",
-				accessTokenResponse.AccessToken!,
-				CiscoUmbrellaCredentials.ElementAt(currentCredentialCurrentIndex).Value.AccessTokenExpiryDateTimeOffset
-			);
-
-			return accessTokenResponse.AccessToken!;
+			return StoreAndReturnAccessToken(currentCredentialCurrentIndex, accessTokenResponse);
 		}
+	}
+
+	private static bool IsTransientException(Exception ex)
+		=> ex is TaskCanceledException
+			or HttpRequestException
+			or TimeoutException
+			or SocketException
+			|| (ex is IOException ioEx && ioEx.InnerException is SocketException);
+
+	private async Task<bool> HandleAuthErrorAsync(
+		int currentCredentialCurrentIndex,
+		AccessTokenResponse accessTokenResponse,
+		HttpResponseMessage httpResponseMessage,
+		int[] attemptCount,
+		CancellationToken cancellationToken)
+	{
+		var error = accessTokenResponse.Error!;
+		var description = accessTokenResponse.ErrorDescription;
+		var combinedMessage = description is { Length: > 0 }
+			? $"{error}: {description}"
+			: error;
+
+		_logger.LogDebug("Authentication failed. Error={Error} Description={Description}", error, description);
+
+		if (!_logger.IsEnabled(LevelToLogAt) && Options.OnErrorEnsureRequestResponseHeadersLogged)
+		{
+			await LogResponseHeaders(currentCredentialCurrentIndex, httpResponseMessage, true).ConfigureAwait(false);
+		}
+
+		var isInvalidClient = error.Equals("invalid_client", StringComparison.OrdinalIgnoreCase);
+
+		if (isInvalidClient && Options.RetryInvalidClientTokenErrors)
+		{
+			if (++attemptCount[0] < Options.RetryInvalidClientTokenErrorsMaxAttemptCount)
+			{
+				_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) – retrying after {Delay}s...",
+					attemptCount[0],
+					Options.RetryInvalidClientTokenErrorsMaxAttemptCount,
+					Options.RetryInvalidClientTokenErrorsRetryDelay.TotalSeconds);
+
+				await Task.Delay(Options.RetryInvalidClientTokenErrorsRetryDelay, cancellationToken).ConfigureAwait(false);
+				return true;
+			}
+
+			_logger.LogError("GetAccessTokenAsync(): invalid_client exhausted after {MaxAttemptCount} attempts.",
+				Options.RetryInvalidClientTokenErrorsMaxAttemptCount);
+			throw new CiscoApiException("Timeout during authentication - gave up trying to get token after repeated invalid_client errors.");
+		}
+
+		if (isInvalidClient && ++attemptCount[0] < Options.MaxAttemptCount)
+		{
+			_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) using standard retry settings, retrying after {Delay}s...",
+				attemptCount[0],
+				Options.MaxAttemptCount,
+				Options.RetryDelay.TotalSeconds);
+			await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
+			return true;
+		}
+
+		throw new SecurityException(combinedMessage);
+	}
+
+	private string StoreAndReturnAccessToken(int currentCredentialCurrentIndex, AccessTokenResponse accessTokenResponse)
+	{
+		_logger.LogDebug("Authentication succeeded.");
+
+		var expireInSeconds = accessTokenResponse.ExpiresInSeconds ?? 3540;
+
+		if (accessTokenResponse.ExpiresInSeconds - 60 > 0)
+		{
+			expireInSeconds -= 60;
+		}
+
+		_logger.LogDebug("Access token should expire in {ExpireInSeconds} seconds.", expireInSeconds);
+
+		CiscoUmbrellaCredentials.ElementAt(currentCredentialCurrentIndex).Value.AccessTokenExpiryDateTimeOffset = DateTimeOffset.UtcNow.AddSeconds(expireInSeconds);
+
+		_logger.LogDebug(
+			"The access token '{AccessToken}' expiry date time is '{ExpiryDateTimeUtc}'",
+			accessTokenResponse.AccessToken!,
+			CiscoUmbrellaCredentials.ElementAt(currentCredentialCurrentIndex).Value.AccessTokenExpiryDateTimeOffset
+		);
+
+		return accessTokenResponse.AccessToken!;
 	}
 
 	protected override async Task<HttpResponseMessage> SendAsync(
 		HttpRequestMessage request,
 		CancellationToken cancellationToken)
 	{
-		// Once CurrentCredentialCurrentIndex is set, it is copied to a local variable so that all refs
-		// to it stay the same for the duration of the method, in case another query does a SendAsync() at the same time and changed it, which
-		// probably write new values to the wrong token if I use CurrentCredentialCurrentIndex everywhere, (although it might not be a problem if the token is still valid).
-		// So far I'm not using this in parallel in Nucleus.
-
-		// Use the next credential in the list
-		if (IsFirstQuery)
-		{
-			// Leave the index at 0 for first run
-			IsFirstQuery = false;
-		}
-		else
-		{
-			CurrentCredentialCurrentIndex = (CurrentCredentialCurrentIndex + 1) % CiscoUmbrellaCredentials.Count;
-		}
-
-		var currentCredentialCurrentIndex = CurrentCredentialCurrentIndex;
+		var currentCredentialCurrentIndex = SelectNextCredentialIndex();
 		var currentCredentialsInstance = CiscoUmbrellaCredentials.ElementAt(currentCredentialCurrentIndex).Value;
-		// There might be an authentication token already that is about to expire so check first.
-		if (currentCredentialsInstance.AccessTokenExpiryDateTimeOffset is not null
-			&& currentCredentialsInstance.AccessTokenExpiryDateTimeOffset <= DateTimeOffset.UtcNow)
-		{
-			_logger.LogDebug("SendAsync(): The access token expiry date time ('{AccessTokenExpiryDateTimeOffset}') has expired - getting a new token...", currentCredentialsInstance.AccessTokenExpiryDateTimeOffset);
-			currentCredentialsInstance.AccessToken = await GetAccessTokenAsync(currentCredentialCurrentIndex, cancellationToken)
-				.ConfigureAwait(false);
-			currentCredentialsInstance.AuthenticationHeaderValue = new AuthenticationHeaderValue("Bearer", currentCredentialsInstance.AccessToken);
-		}
 
-		if (currentCredentialsInstance.AuthenticationHeaderValue is null)
-		{
-			currentCredentialsInstance.AccessToken = await GetAccessTokenAsync(currentCredentialCurrentIndex, cancellationToken)
-				.ConfigureAwait(false);
-			currentCredentialsInstance.AuthenticationHeaderValue = new AuthenticationHeaderValue("Bearer", currentCredentialsInstance.AccessToken);
-		}
-
-		//_logger.LogDebug($"SendAsync(): About to send query. The access token expiry date time is '{_accessTokenExpiryDateTimeOffset}'.");
+		await EnsureAuthenticatedAsync(currentCredentialCurrentIndex, currentCredentialsInstance, cancellationToken).ConfigureAwait(false);
 
 		request.Headers.Authorization = currentCredentialsInstance.AuthenticationHeaderValue;
 		request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
 
-		// Only do diagnostic logging if we're at the level we want to enable for as this is more efficient
 		if (_logger.IsEnabled(LevelToLogAt))
 		{
 			await LogRequestHeaders(currentCredentialCurrentIndex, request).ConfigureAwait(false);
@@ -264,10 +242,6 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 					continue;
 				}
 
-				// Retries not enabled or retries exhausted, so log as error
-
-				// If request headers haven't been logged so far, but OnErrorEnsureRequestResponseHeadersShown is true,
-				// then log them. Avoids need for verbose logging of all queries.
 				if (!_logger.IsEnabled(LevelToLogAt) && Options.OnErrorEnsureRequestResponseHeadersLogged)
 				{
 					await LogRequestHeaders(currentCredentialCurrentIndex, request, true).ConfigureAwait(false);
@@ -281,13 +255,11 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 				throw new CiscoApiException(ex.Message, ex);
 			}
 
-			// Only do diagnostic logging if we're at the level we want to enable for as this is more efficient
 			if (_logger.IsEnabled(LevelToLogAt))
 			{
 				await LogResponseHeaders(currentCredentialCurrentIndex, httpResponseMessage).ConfigureAwait(false);
 			}
 
-			// Make response stream content accessible in debug
 			var statusCode = httpResponseMessage.StatusCode;
 			var content = httpResponseMessage.Content;
 #if DEBUG
@@ -300,74 +272,16 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 				var message = await GetResponseContent(statusCode, content).ConfigureAwait(false);
 #endif
 
-				switch (httpResponseMessage.StatusCode)
+				var attemptCountRef = new[] { attemptCount };
+				if (await HandleRetriableStatusCodeAsync(currentCredentialCurrentIndex, currentCredentialsInstance, httpResponseMessage, message, request, attemptCountRef, cancellationToken).ConfigureAwait(false))
 				{
-					case HttpStatusCode.TooManyRequests:
-						if (++attemptCount < Options.MaxAttemptCount)
-						{
-							// Set the retry based on 'retry-after' header, or use Options.RetryDelay
-							var headers = httpResponseMessage.Headers;
-							var retryAfter = headers.RetryAfter?.Delta;
-							var retryDelay = retryAfter is not null
-								? retryAfter.Value
-								: Options.RetryDelay;
-
-							_logger.LogWarning(
-								"Attempt {AttemptCount}/{MaxAttemptCount} failed due to a 429, retrying in {x} seconds...",
-								attemptCount,
-								Options.MaxAttemptCount,
-								retryDelay);
-
-							await Task.Delay(retryDelay, cancellationToken)
-								.ConfigureAwait(false);
-
-							continue;
-						}
-
-						break;
-					case HttpStatusCode.BadGateway:
-					case HttpStatusCode.GatewayTimeout:
-					case HttpStatusCode.InternalServerError:
-					case HttpStatusCode.RequestTimeout:
-					case HttpStatusCode.ServiceUnavailable:
-					// Adding this because it seems that Cisco can return Unauthorized for no reason
-					case HttpStatusCode.Unauthorized:
-						if (++attemptCount < Options.MaxAttemptCount)
-						{
-							if (message.Contains("Developer Inactive"))
-							{
-								// Cisco API can return an incorrect 403 if their load balancer hasn't got access to
-								// the latest state of a token. Request a new token so that follow-up retry probably works.
-								_logger.LogDebug($"SendAsync(): Response content was Developer Inactive - could be a bad API response, requesting a new token.");
-								currentCredentialsInstance.AccessToken = await GetAccessTokenAsync(currentCredentialCurrentIndex, cancellationToken)
-									.ConfigureAwait(false);
-								currentCredentialsInstance.AuthenticationHeaderValue = new AuthenticationHeaderValue("Bearer", currentCredentialsInstance.AccessToken);
-								request.Headers.Authorization = currentCredentialsInstance.AuthenticationHeaderValue;
-							}
-
-							_logger.LogWarning(
-								"Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...",
-								attemptCount,
-								Options.MaxAttemptCount);
-
-							await Task.Delay(Options.RetryDelay, cancellationToken)
-								.ConfigureAwait(false);
-
-							continue;
-						}
-
-						break;
+					attemptCount = attemptCountRef[0];
+					continue;
 				}
 
-				// Retries not enabled or retries exhausted, so log as error
+				attemptCount = attemptCountRef[0];
 
-				// If request/response headers haven't been logged so far, but OnErrorEnsureRequestResponseHeadersShown is true,
-				// then log them both. Avoids need for verbose logging of all queries.
-				if (!_logger.IsEnabled(LevelToLogAt) && Options.OnErrorEnsureRequestResponseHeadersLogged)
-				{
-					await LogRequestHeaders(currentCredentialCurrentIndex, request, true).ConfigureAwait(false);
-					await LogResponseHeaders(currentCredentialCurrentIndex, httpResponseMessage, true).ConfigureAwait(false);
-				}
+				await LogErrorHeadersIfNeeded(currentCredentialCurrentIndex, request, httpResponseMessage).ConfigureAwait(false);
 
 				_logger.LogError(
 					"{Message} after {MaxAttemptCount} attempts.",
@@ -382,6 +296,108 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 			}
 
 			return httpResponseMessage;
+		}
+	}
+
+	private int SelectNextCredentialIndex()
+	{
+		if (IsFirstQuery)
+		{
+			IsFirstQuery = false;
+		}
+		else
+		{
+			CurrentCredentialCurrentIndex = (CurrentCredentialCurrentIndex + 1) % CiscoUmbrellaCredentials.Count;
+		}
+
+		return CurrentCredentialCurrentIndex;
+	}
+
+	private async Task EnsureAuthenticatedAsync(int currentCredentialCurrentIndex, CiscoUmbrellaCredentialsTokenTracking currentCredentialsInstance, CancellationToken cancellationToken)
+	{
+		if (currentCredentialsInstance.AccessTokenExpiryDateTimeOffset is not null
+			&& currentCredentialsInstance.AccessTokenExpiryDateTimeOffset <= DateTimeOffset.UtcNow)
+		{
+			_logger.LogDebug("SendAsync(): The access token expiry date time ('{AccessTokenExpiryDateTimeOffset}') has expired - getting a new token...", currentCredentialsInstance.AccessTokenExpiryDateTimeOffset);
+			currentCredentialsInstance.AccessToken = await GetAccessTokenAsync(currentCredentialCurrentIndex, cancellationToken).ConfigureAwait(false);
+			currentCredentialsInstance.AuthenticationHeaderValue = new AuthenticationHeaderValue("Bearer", currentCredentialsInstance.AccessToken);
+		}
+
+		if (currentCredentialsInstance.AuthenticationHeaderValue is null)
+		{
+			currentCredentialsInstance.AccessToken = await GetAccessTokenAsync(currentCredentialCurrentIndex, cancellationToken).ConfigureAwait(false);
+			currentCredentialsInstance.AuthenticationHeaderValue = new AuthenticationHeaderValue("Bearer", currentCredentialsInstance.AccessToken);
+		}
+	}
+
+	private async Task<bool> HandleRetriableStatusCodeAsync(
+		int currentCredentialCurrentIndex,
+		CiscoUmbrellaCredentialsTokenTracking currentCredentialsInstance,
+		HttpResponseMessage httpResponseMessage,
+		string message,
+		HttpRequestMessage request,
+		int[] attemptCount,
+		CancellationToken cancellationToken)
+	{
+		switch (httpResponseMessage.StatusCode)
+		{
+			case HttpStatusCode.TooManyRequests:
+				if (++attemptCount[0] < Options.MaxAttemptCount)
+				{
+					var headers = httpResponseMessage.Headers;
+					var retryAfter = headers.RetryAfter?.Delta;
+					var retryDelay = retryAfter is not null
+						? retryAfter.Value
+						: Options.RetryDelay;
+
+					_logger.LogWarning(
+						"Attempt {AttemptCount}/{MaxAttemptCount} failed due to a 429, retrying in {x} seconds...",
+						attemptCount[0],
+						Options.MaxAttemptCount,
+						retryDelay);
+
+					await Task.Delay(retryDelay, cancellationToken).ConfigureAwait(false);
+					return true;
+				}
+
+				break;
+			case HttpStatusCode.BadGateway:
+			case HttpStatusCode.GatewayTimeout:
+			case HttpStatusCode.InternalServerError:
+			case HttpStatusCode.RequestTimeout:
+			case HttpStatusCode.ServiceUnavailable:
+			case HttpStatusCode.Unauthorized:
+				if (++attemptCount[0] < Options.MaxAttemptCount)
+				{
+					if (message.Contains("Developer Inactive"))
+					{
+						_logger.LogDebug("SendAsync(): Response content was Developer Inactive - could be a bad API response, requesting a new token.");
+						currentCredentialsInstance.AccessToken = await GetAccessTokenAsync(currentCredentialCurrentIndex, cancellationToken).ConfigureAwait(false);
+						currentCredentialsInstance.AuthenticationHeaderValue = new AuthenticationHeaderValue("Bearer", currentCredentialsInstance.AccessToken);
+						request.Headers.Authorization = currentCredentialsInstance.AuthenticationHeaderValue;
+					}
+
+					_logger.LogWarning(
+						"Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...",
+						attemptCount[0],
+						Options.MaxAttemptCount);
+
+					await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
+					return true;
+				}
+
+				break;
+		}
+
+		return false;
+	}
+
+	private async Task LogErrorHeadersIfNeeded(int currentCredentialCurrentIndex, HttpRequestMessage request, HttpResponseMessage httpResponseMessage)
+	{
+		if (!_logger.IsEnabled(LevelToLogAt) && Options.OnErrorEnsureRequestResponseHeadersLogged)
+		{
+			await LogRequestHeaders(currentCredentialCurrentIndex, request, true).ConfigureAwait(false);
+			await LogResponseHeaders(currentCredentialCurrentIndex, httpResponseMessage, true).ConfigureAwait(false);
 		}
 	}
 

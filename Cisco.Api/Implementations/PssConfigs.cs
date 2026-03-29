@@ -15,17 +15,46 @@ internal class PssConfigs(HttpClient restHttpClient) : IPssConfigs
 {
 	public async Task<MemoryStream> RetrieveDeviceConfigZipAsync(DeviceConfigsRequest deviceConfigsRequest, CancellationToken cancellationToken = default)
 	{
-		// You can retrieve the running and startup configs for up to 5 devices at a time, in the form of a ZIP file.
-		// Docs: https://docs.cloudapps.cisco.com/pss/APIDevGuide/service_inventory.html#getDeviceConfig
-
-		// This method retrieves the zipped config file, and returns it as as a MemoryStream so that user can opt to dump the zip
-		// or pass it to ConvertDeviceConfigsZipToObjectAsync() the contents immediately.
-
+		ValidateDeviceConfigsRequest(deviceConfigsRequest);
 
 		var customerId = deviceConfigsRequest.CustomerId;
 		var deviceIds = string.Join(",", deviceConfigsRequest.DeviceIds);
 		var configType = deviceConfigsRequest.ConfigType;
+		var url = $"{restHttpClient.BaseAddress}pss/v1.0/inventory/customers/{customerId}/devices/{deviceIds}?configType={configType}";
 
+		var response = await restHttpClient.GetAsync(url, cancellationToken);
+
+		if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+		{
+			throw new PssConfigException("None of the supplied device IDs have a config to return.");
+		}
+
+		if (response.StatusCode != System.Net.HttpStatusCode.OK)
+		{
+			throw new PssConfigException($"An error occurred whilst requesting the config(s): {response.ReasonPhrase}");
+		}
+
+		try
+		{
+			var memoryStream = new MemoryStream();
+			await response.Content.CopyToAsync(memoryStream, cancellationToken);
+			memoryStream.Position = 0;
+
+			if (memoryStream.Length == 0)
+			{
+				throw new PssConfigException("The zip input stream is empty.");
+			}
+
+			return memoryStream;
+		}
+		catch (Exception ex) when (ex is not PssConfigException)
+		{
+			throw new PssConfigException("Unable to decompress the zipped response.", ex);
+		}
+	}
+
+	private static void ValidateDeviceConfigsRequest(DeviceConfigsRequest deviceConfigsRequest)
+	{
 		if (deviceConfigsRequest.DeviceIds.Count == 0)
 		{
 			throw new PssConfigException("No device IDs provided.");
@@ -36,43 +65,10 @@ internal class PssConfigs(HttpClient restHttpClient) : IPssConfigs
 			throw new PssConfigException("The deviceIds input is limited to a maximum of 5 devices per call.");
 		}
 
+		var configType = deviceConfigsRequest.ConfigType;
 		if (configType != DeviceConfigsConfigType.Running && configType != DeviceConfigsConfigType.Startup && configType != DeviceConfigsConfigType.Both)
 		{
 			throw new PssConfigException("The only valid input strings are RUNNING, STARTUP, and BOTH.");
-		}
-
-		var url = $"{restHttpClient.BaseAddress}pss/v1.0/inventory/customers/{customerId}/devices/{deviceIds}?configType={configType}";
-
-		var response = await restHttpClient.GetAsync(url, cancellationToken);
-
-		if (response.StatusCode == System.Net.HttpStatusCode.OK)
-		{
-			try
-			{
-				var memoryStream = new MemoryStream();
-				await response.Content.CopyToAsync(memoryStream, cancellationToken);
-				memoryStream.Position = 0;
-
-				if (memoryStream.Length == 0)
-				{
-					throw new PssConfigException("The zip input stream is empty.");
-				}
-
-				return memoryStream;
-			}
-			catch (Exception ex) when (ex is not PssConfigException)
-			{
-				throw new PssConfigException("Unable to decompress the zipped response.", ex);
-			}
-		}
-		else
-		{
-			if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
-			{
-				throw new PssConfigException($"None of the supplied device IDs have a config to return.");
-			}
-
-			throw new PssConfigException($"An error occurred whilst requesting the config(s): {response.ReasonPhrase}");
 		}
 	}
 

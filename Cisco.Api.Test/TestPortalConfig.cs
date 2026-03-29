@@ -32,16 +32,14 @@ internal sealed class TestPortalConfig
 			throw new InvalidOperationException($"Expected to find credentials in the form ClientId;ClientSecret.  Found '{credentialsAppSetting}'");
 		}
 
-		var credentialIndex = -1;
-
 		// Normally, takes just a single client id and secret
 		// but if there are four, then it's to support the Umbrella API key pool to circumvent rate limiting
 		if (credentials.Length == 2)
 		{
 			CiscoClient = new CiscoClient(new CiscoClientOptions
 			{
-				ClientId = credentials[++credentialIndex],
-				ClientSecret = credentials[++credentialIndex],
+				ClientId = credentials[0],
+				ClientSecret = credentials[1],
 				MaxAttemptCount = 100
 			}, logger);
 		}
@@ -54,13 +52,13 @@ internal sealed class TestPortalConfig
 				ClientCredentialsNotSupported = [
 					new CiscoClientCredentials
 					{
-						ClientId = credentials[++credentialIndex],
-						ClientSecret = credentials[++credentialIndex]
+						ClientId = credentials[0],
+						ClientSecret = credentials[1]
 					},
 					new CiscoClientCredentials
 					{
-						ClientId = credentials[++credentialIndex],
-						ClientSecret = credentials[++credentialIndex]
+						ClientId = credentials[2],
+						ClientSecret = credentials[3]
 					},
 				],
 				MaxAttemptCount = 100

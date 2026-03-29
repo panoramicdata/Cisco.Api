@@ -99,121 +99,13 @@ public partial class CiscoClient : IDisposable
 			UseJsonContentType = true
 		};
 
-		////////////////////////////
-
-		_restHttpClient = new HttpClient(
-			new AuthenticatedHttpClientHandler(
-				new("https://id.cisco.com/oauth2/default/v1/token"),
-				options,
-				_logger)
-		)
-		{
-			BaseAddress = new("https://apix.cisco.com/"),
-			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
-		};
-
-		///////////////
-		/// Enterprise Agreement
-
-		_restEnterpriseAgreementClient = new HttpClient(
-			new AuthenticatedHttpClientHandler(
-				new("https://cloudsso.cisco.com/as/token.oauth2"),
-				alternativeOptionsWithContentTypeAsJson,
-				_logger)
-)
-		{
-			BaseAddress = new("https://swapi.cisco.com/services/api/enterprise-agreements"),
-			Timeout = TimeSpan.FromSeconds(alternativeOptionsWithContentTypeAsJson.HttpClientTimeoutSeconds)
-		};
-
-		///////////////
-		// Umbrella uses a different client handler to support API keys
-		// https://docs.umbrella.com/umbrella-api/docs/umbrella-api-quick-start
-
-		if (options.ClientCredentialsNotSupported is not null)
-		{
-			// Supports multiple credentials to circumvent rate limiting
-			_restUmbrellaClient = new HttpClient(
-				new AuthenticatedFastUmbrellaHttpClientHandler(
-					new("https://api.umbrella.com/auth/v2/token"),
-					options,
-					_logger))
-			{
-				BaseAddress = new("https://api.umbrella.com/"),
-				Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
-			};
-		}
-		else
-		{
-			_restUmbrellaClient = new HttpClient(
-				new AuthenticatedUmbrellaHttpClientHandler(
-					new("https://api.umbrella.com/auth/v2/token"),
-					options,
-					_logger))
-			{
-				BaseAddress = new("https://api.umbrella.com/"),
-				Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
-			};
-		}
-
-		///////////////
-		/// PSS Configs
-
-		// Needs the old Cisco token format
-		_restPssClient = new HttpClient(
-			new AuthenticatedHttpClientHandler(
-				new("https://api.cisco.com/pss/token"),
-				options,
-				_logger)
-)
-		{
-			BaseAddress = new("https://api.cisco.com/"),
-			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
-		};
-
-		///////////////
-		/// PX Cloud
-
-		var scope = "api.authz.iam.manage";
-		_restPXCloudClient = new HttpClient(
-			new AuthenticatedHttpClientHandler(
-				new("https://id.cisco.com/oauth2/aus1o4emxorc3wkEe5d7/v1/token"),
-				options,
-				_logger,
-				scope)
-		)
-		{
-			BaseAddress = new("https://api-cx.cisco.com/"),
-			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
-		};
-
-		///////////////
-		/// PSS
-
-		_soapHttpClient = new HttpClient(
-			new AuthenticatedHttpClientHandler(
-				new("https://api.cisco.com/pss/token"),
-				options,
-				_logger)
-		)
-		{
-			BaseAddress = new("https://api.cisco.com/pss/v1.0/"),
-			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
-		};
-
-		///////////////
-		/// Smart Accounts and Licensing
-
-		_restSmartAccountsAndLicensingClient = new HttpClient(
-			new AuthenticatedHttpClientHandler(
-				new("https://cloudsso.cisco.com/as/token.oauth2"),
-				alternativeOptionsWithContentTypeAsJson,
-				_logger)
-)
-		{
-			BaseAddress = new("https://swapi.cisco.com/services/api/smart-accounts-and-licensing"),
-			Timeout = TimeSpan.FromSeconds(alternativeOptionsWithContentTypeAsJson.HttpClientTimeoutSeconds)
-		};
+		_restHttpClient = CreateAuthenticatedHttpClient("https://id.cisco.com/oauth2/default/v1/token", "https://apix.cisco.com/", options);
+		_restEnterpriseAgreementClient = CreateAuthenticatedHttpClient("https://cloudsso.cisco.com/as/token.oauth2", "https://swapi.cisco.com/services/api/enterprise-agreements", alternativeOptionsWithContentTypeAsJson);
+		_restUmbrellaClient = CreateUmbrellaHttpClient(options);
+		_restPssClient = CreateAuthenticatedHttpClient("https://api.cisco.com/pss/token", "https://api.cisco.com/", options);
+		_restPXCloudClient = CreatePxCloudHttpClient(options);
+		_soapHttpClient = CreateAuthenticatedHttpClient("https://api.cisco.com/pss/token", "https://api.cisco.com/pss/v1.0/", options);
+		_restSmartAccountsAndLicensingClient = CreateAuthenticatedHttpClient("https://cloudsso.cisco.com/as/token.oauth2", "https://swapi.cisco.com/services/api/smart-accounts-and-licensing", alternativeOptionsWithContentTypeAsJson);
 
 		var refitSettings = new RefitSettings
 		{
@@ -221,13 +113,7 @@ public partial class CiscoClient : IDisposable
 			ContentSerializer = new NewtonsoftJsonContentSerializer(
 				new JsonSerializerSettings
 				{
-					// By default nulls should not be rendered out, this will allow the receiving API to apply any defaults.
-					// Use [JsonProperty(NullValueHandling = NullValueHandling.Include)] to send
-					// nulls for specific properties, i.e. disassociating port schedule ids from a port
 					NullValueHandling = NullValueHandling.Ignore,
-					//#if DEBUG
-					//						MissingMemberHandling = MissingMemberHandling.Error,
-					//#endif
 					Converters = [new StringEnumConverter()]
 				}
 			)
@@ -249,6 +135,35 @@ public partial class CiscoClient : IDisposable
 		SoftwareSuggestion = RestService.For<ISoftwareSuggestion>(_restHttpClient, refitSettings);
 		Umbrella = RestService.For<IUmbrella>(_restUmbrellaClient, refitSettings);
 	}
+
+	private HttpClient CreateAuthenticatedHttpClient(string tokenUri, string baseAddress, CiscoClientOptions options) => new(
+		new AuthenticatedHttpClientHandler(new(tokenUri), options, _logger))
+	{
+		BaseAddress = new(baseAddress),
+		Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
+	};
+
+	private HttpClient CreateUmbrellaHttpClient(CiscoClientOptions options)
+	{
+		HttpClientHandler handler = options.ClientCredentialsNotSupported is not null
+			? new AuthenticatedFastUmbrellaHttpClientHandler(new("https://api.umbrella.com/auth/v2/token"), options, _logger)
+			: new AuthenticatedUmbrellaHttpClientHandler(new("https://api.umbrella.com/auth/v2/token"), options, _logger);
+
+		return new HttpClient(handler)
+		{
+			BaseAddress = new("https://api.umbrella.com/"),
+			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
+		};
+	}
+
+	private HttpClient CreatePxCloudHttpClient(CiscoClientOptions options) => new(
+		new AuthenticatedHttpClientHandler(
+			new("https://id.cisco.com/oauth2/aus1o4emxorc3wkEe5d7/v1/token"),
+			options, _logger, "api.authz.iam.manage"))
+	{
+		BaseAddress = new("https://api-cx.cisco.com/"),
+		Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
+	};
 
 	protected virtual void Dispose(bool disposing)
 	{
