@@ -104,9 +104,10 @@ internal class PssConfigs(HttpClient restHttpClient) : IPssConfigs
 
 				var deviceId = split[1].Split('_').First();
 
-				if (!output.ContainsKey(deviceId))
+				if (!output.TryGetValue(deviceId, out DeviceConfigResponse? value))
 				{
-					output[deviceId] = new DeviceConfigResponse();
+					value = new DeviceConfigResponse();
+					output[deviceId] = value;
 				}
 
 				using var ms = new MemoryStream();
@@ -116,8 +117,8 @@ internal class PssConfigs(HttpClient restHttpClient) : IPssConfigs
 				var content = await sr.ReadToEndAsync();
 				if (entry.Name.Contains("startup"))
 				{
-					output[deviceId].StartupConfig = content;
-					output[deviceId].StartupConfigDate = TryExtractDateFromEntryName(entry.Name);
+					value.StartupConfig = content;
+					value.StartupConfigDate = TryExtractDateFromEntryName(entry.Name);
 				}
 				else if (entry.Name.Contains("running-config") || entry.Name.Contains("run-config"))
 				{

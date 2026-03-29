@@ -143,6 +143,6 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 			.GetReportAsync("ojD5nF68Lrip1oE", reportId)
 			.ConfigureAwait(true);
 
-		response.Should().NotBeNull();
+		report.Should().NotBeNull();
 	}
 }

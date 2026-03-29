@@ -61,7 +61,7 @@ internal class PxCloudReports(HttpClient restHttpClient) : IPxCloudReports
 
 			if (isJson)
 			{
-				await HandleJsonReportPollingAsync(response.Result, cancellationToken).ConfigureAwait(false);
+				await PxCloudReports.HandleJsonReportPollingAsync(response.Result, cancellationToken).ConfigureAwait(false);
 				continue;
 			}
 
@@ -74,7 +74,7 @@ internal class PxCloudReports(HttpClient restHttpClient) : IPxCloudReports
 		}
 	}
 
-	private async Task HandleJsonReportPollingAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+	private static async Task HandleJsonReportPollingAsync(HttpResponseMessage response, CancellationToken cancellationToken)
 	{
 		ReportResponse? reportResponse;
 		try

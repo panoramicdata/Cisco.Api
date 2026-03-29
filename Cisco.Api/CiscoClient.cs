@@ -58,10 +58,7 @@ public partial class CiscoClient : IDisposable
 	{
 		_logger = logger ?? NullLogger.Instance;
 
-		if (options is null)
-		{
-			throw new ArgumentNullException(nameof(options));
-		}
+		ArgumentNullException.ThrowIfNull(options);
 
 		if (options.ClientCredentialsNotSupported is not null)
 		{
