@@ -14,7 +14,7 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 		// Note: If no serials are found, then Products will have 1 empty record (yet totals say 0) that also has ErrorResponse set
 		var productInformationPage = await CiscoClient
 			.ProductInfo
-			.GetBySerialNumbersAsync(["`"])
+			.GetBySerialNumbersAsync(["`"], default)
 			.ConfigureAwait(true);
 
 		productInformationPage.Should().NotBeNull();
@@ -35,7 +35,7 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 		// Note: Serial numbers can be up to 40 chars long.
 		var productInformationPage = await CiscoClient
 			.ProductInfo
-			.GetBySerialNumbersAsync(["FTX1910100B"])
+			.GetBySerialNumbersAsync(["FTX1910100B"], default)
 			.ConfigureAwait(true);
 
 		productInformationPage.Should().NotBeNull();
@@ -75,7 +75,7 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 		// Note: Serial numbers can be up to 40 chars long.
 		var productInformationPage = await CiscoClient
 			.ProductInfo
-			.GetBySerialNumbersAsync(["FCW2234L10F", "FCW2234L12V"])
+			.GetBySerialNumbersAsync(["FCW2234L10F", "FCW2234L12V"], default)
 			.ConfigureAwait(true);
 
 		productInformationPage.Should().NotBeNull();
@@ -182,7 +182,7 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 		{
 			productInformationPage = await CiscoClient
 			.ProductInfo
-			.GetBySerialNumbersAsync([serialNumber])
+			.GetBySerialNumbersAsync([serialNumber], default)
 			.ConfigureAwait(true);
 
 			basePids.Add(productInformationPage.Products.First().BasePid);

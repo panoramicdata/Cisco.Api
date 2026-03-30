@@ -12,9 +12,9 @@ public class SmartAccountsAndLicensingTests(ITestOutputHelper iTestOutputHelper)
 		var domain = Config.SmartAccountDomainReal;
 
 		var response = await CiscoClient
-            .SmartAccountsAndLicensing
-            .ListSmartAccountsAsync(domain)
-            .ConfigureAwait(true);
+			.SmartAccountsAndLicensing
+			.ListSmartAccountsAsync(domain, default)
+			.ConfigureAwait(true);
 
         response.Should().BeOfType<ListOfSmartAccountsResponse>();
         response.Accounts.Should().NotBeEmpty();

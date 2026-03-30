@@ -12,7 +12,7 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 	{
 		var response = await CiscoClient
 			.Umbrella
-			.ListInternalNetworksAsync()
+			.ListInternalNetworksAsync(null, 1, 100, default)
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<List<InternalNetwork>>();
@@ -28,7 +28,7 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 		// Check that token was first
 		var response = await CiscoClient
 			.Umbrella
-			.ListInternalNetworksAsync()
+			.ListInternalNetworksAsync(null, 1, 100, default)
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<List<InternalNetwork>>();
@@ -38,7 +38,7 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 		// Check that token was second
 		response = await CiscoClient
 			.Umbrella
-			.ListInternalNetworksAsync()
+			.ListInternalNetworksAsync(null, 1, 100, default)
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<List<InternalNetwork>>();
@@ -48,7 +48,7 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 		// Check that token was first again
 		response = await CiscoClient
 			.Umbrella
-			.ListInternalNetworksAsync()
+			.ListInternalNetworksAsync(null, 1, 100, default)
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<List<InternalNetwork>>();
@@ -61,7 +61,7 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 	{
 		var response = await CiscoClient
 			.Umbrella
-			.ListPoliciesAsync()
+			.ListPoliciesAsync("dns", 1, 100, default)
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<List<Policy>>();
@@ -74,7 +74,7 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 	{
 		var response = await CiscoClient
 			.Umbrella
-			.ListSitesAsync()
+			.ListSitesAsync(1, 100, default)
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<List<Site>>();

@@ -17,7 +17,7 @@ public class AuthenticationTests(ITestOutputHelper iTestOutputHelper) : Test(iTe
 				ClientSecret = "set"
 			})
 			.Hello
-			.HelloAsync()
+			.HelloAsync(default)
 			.ConfigureAwait(true);
 		};
 
@@ -38,7 +38,7 @@ public class AuthenticationTests(ITestOutputHelper iTestOutputHelper) : Test(iTe
 				ClientSecret = null
 			})
 			.Hello
-			.HelloAsync()
+			.HelloAsync(default)
 			.ConfigureAwait(true);
 		};
 

@@ -1,6 +1,7 @@
 ﻿using Cisco.Api.Data.SmartAccountsAndLicensing;
 using Cisco.Api.Data.SmartAccountsAndLicensing.Responses;
 using Refit;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,9 +33,11 @@ public interface ISmartAccountsAndLicensing
 		SmartAccountType? type,
 		CancellationToken cancellationToken);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<SearchSmartAccountsResponse> SearchSmartAccountsAsync(string? name, string? domain, int limit, int offset, SmartAccountType? type)
 		=> SearchSmartAccountsAsync(name, domain, limit, offset, type, default);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<SearchSmartAccountsResponse> SearchSmartAccountsAsync()
 		=> SearchSmartAccountsAsync(null, null, 50, 0, null, default);
 
@@ -48,9 +51,11 @@ public interface ISmartAccountsAndLicensing
 		string? domain,
 		CancellationToken cancellationToken);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ListOfSmartAccountsResponse> ListSmartAccountsAsync(string? domain)
 		=> ListSmartAccountsAsync(domain, default);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ListOfSmartAccountsResponse> ListSmartAccountsAsync()
 		=> ListSmartAccountsAsync(null, default);
 
@@ -77,9 +82,11 @@ public interface ISmartAccountsAndLicensing
 		[Query] int offset,
 		CancellationToken cancellationToken);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ListOfLicenseSubscriptionsResponse> LicenseSubscriptionsUsageAsync(string smartAccountDomain, [Body] LicenseSubscriptionsUsageRequest request, [Query] int limit, [Query] int offset)
 		=> LicenseSubscriptionsUsageAsync(smartAccountDomain, request, limit, offset, default);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ListOfLicenseSubscriptionsResponse> LicenseSubscriptionsUsageAsync(string smartAccountDomain, [Body] LicenseSubscriptionsUsageRequest request)
 		=> LicenseSubscriptionsUsageAsync(smartAccountDomain, request, 50, 0, default);
 
@@ -99,9 +106,11 @@ public interface ISmartAccountsAndLicensing
 		[Query] int offset,
 		CancellationToken cancellationToken);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ListOfLicensesResponse> SmartLicenseUsageAsync(string smartAccountDomain, [Body] SmartLicenseUsageRequest request, [Query] int limit, [Query] int offset)
 		=> SmartLicenseUsageAsync(smartAccountDomain, request, limit, offset, default);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ListOfLicensesResponse> SmartLicenseUsageAsync(string smartAccountDomain, [Body] SmartLicenseUsageRequest request)
 		=> SmartLicenseUsageAsync(smartAccountDomain, request, 50, 0, default);
 }

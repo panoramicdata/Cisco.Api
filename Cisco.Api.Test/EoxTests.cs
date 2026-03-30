@@ -16,7 +16,9 @@ public class EoxTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 			.Eox
 			.GetByDatesAsync(
 				DateTime.Parse("2017-01-01", CultureInfo.InvariantCulture),
-				DateTime.Parse("2018-01-01", CultureInfo.InvariantCulture))
+				DateTime.Parse("2018-01-01", CultureInfo.InvariantCulture),
+				1,
+				default)
 			.ConfigureAwait(true);
 		CheckEoxInfoPage(eoxInfoPage);
 	}
@@ -26,7 +28,7 @@ public class EoxTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	{
 		var eoxInfoPage = await CiscoClient
 			.Eox
-			.GetByProductIdAsync("WIC-1T=")
+			.GetByProductIdAsync("WIC-1T=", 1, default)
 			.ConfigureAwait(true);
 		CheckEoxInfoPage(eoxInfoPage);
 	}
@@ -36,7 +38,7 @@ public class EoxTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	{
 		var eoxInfoPage = await CiscoClient
 			.Eox
-			.GetBySerialNumberAsync("FTX1910100B")
+			.GetBySerialNumberAsync("FTX1910100B", 1, default)
 			.ConfigureAwait(true);
 		CheckEoxInfoPage(eoxInfoPage);
 	}
@@ -46,7 +48,7 @@ public class EoxTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 	{
 		var eoxInfoPage = await CiscoClient
 			.Eox
-			.GetBySoftwareReleaseStringAsync(["12.2,IOS"])
+			.GetBySoftwareReleaseStringAsync(["12.2,IOS"], 1, default)
 			.ConfigureAwait(true);
 		CheckEoxInfoPage(eoxInfoPage);
 	}

@@ -1,5 +1,6 @@
-﻿using Cisco.Api.Data.PxCloud;
+using Cisco.Api.Data.PxCloud;
 using Refit;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,9 +23,11 @@ public interface IPxCloud
 		int? max,
 		CancellationToken cancellationToken);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<Customers> GetCustomersAsync(int? offset, int? max)
 		=> GetCustomersAsync(offset, max, default);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<Customers> GetCustomersAsync()
 		=> GetCustomersAsync(0, 10, default);
 
@@ -40,9 +43,11 @@ public interface IPxCloud
 		int? max,
 		CancellationToken cancellationToken);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<Contracts> GetContractsAsync(int? offset, int? max)
 		=> GetContractsAsync(offset, max, default);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<Contracts> GetContractsAsync()
 		=> GetContractsAsync(0, 10, default);
 
@@ -64,9 +69,11 @@ public interface IPxCloud
 		int? successTrackId,
 		CancellationToken cancellationToken);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ContractsWithCustomers> GetContractsWithCustomersAsync(int? offset, int? max, string? customerId, string? customerGUName, int? successTrackId)
 		=> GetContractsWithCustomersAsync(offset, max, customerId, customerGUName, successTrackId, default);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ContractsWithCustomers> GetContractsWithCustomersAsync()
 		=> GetContractsWithCustomersAsync(0, 10, null, null, null, default);
 
@@ -90,12 +97,15 @@ public interface IPxCloud
 		int? successTrackId,
 		CancellationToken cancellationToken);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ContractDetails> GetContractDetailsAsync(string contractNumber, int? offset, int? max, string? customerId, string? contractLineItemType, int? successTrackId)
 		=> GetContractDetailsAsync(contractNumber, offset, max, customerId, contractLineItemType, successTrackId, default);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ContractDetails> GetContractDetailsAsync(string contractNumber, int? offset, int? max)
 		=> GetContractDetailsAsync(contractNumber, offset, max, null, null, null, default);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ContractDetails> GetContractDetailsAsync(string contractNumber)
 		=> GetContractDetailsAsync(contractNumber, 0, 10, null, null, null, default);
 

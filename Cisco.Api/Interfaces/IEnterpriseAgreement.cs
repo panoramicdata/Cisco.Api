@@ -1,5 +1,6 @@
-﻿using Cisco.Api.Data.EnterpriseAgreement.Responses;
+using Cisco.Api.Data.EnterpriseAgreement.Responses;
 using Refit;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,6 +23,7 @@ public interface IEnterpriseAgreement
 		string smartAccountDomain,
 		CancellationToken cancellationToken);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<EaSmartAccountAllSubscriptionConsumptionReportResponse> GetConsumptionReportForAllSubscriptionsAssociatedWithSmartAccountDomainAsync(string smartAccountDomain)
 		=> GetConsumptionReportForAllSubscriptionsAssociatedWithSmartAccountDomainAsync(smartAccountDomain, default);
 }

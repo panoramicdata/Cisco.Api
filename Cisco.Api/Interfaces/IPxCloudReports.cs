@@ -1,5 +1,6 @@
-﻿using Cisco.Api.Data.PxCloud;
+using Cisco.Api.Data.PxCloud;
 using Refit;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,6 +25,7 @@ public interface IPxCloudReports
 		string successTrackId,
 		CancellationToken cancellationToken);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<RequestCustomerDataReportsAsBulkFilesResponse> RequestCustomerDataReportAsync(string customerId, ReportName reportName, string successTrackId)
 		=> RequestCustomerDataReportAsync(customerId, reportName, successTrackId, default);
 
@@ -37,6 +39,7 @@ public interface IPxCloudReports
 		string reportId,
 		CancellationToken cancellationToken);
 
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ReportPayloadParent> GetReportAsync(string customerId, string reportId)
 		=> GetReportAsync(customerId, reportId, default);
 }

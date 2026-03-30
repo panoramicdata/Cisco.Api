@@ -12,7 +12,7 @@ public class SoftwareSuggestionTests(ITestOutputHelper iTestOutputHelper) : Test
 		var softwareSuggestionPage =
 			await CiscoClient
 				.SoftwareSuggestion
-				.GetByProductIdsAsync(["ASR-903", "N7K-C7018"])
+				.GetByProductIdsAsync(["ASR-903", "N7K-C7018"], 1, default)
 			.ConfigureAwait(true);
 
 		softwareSuggestionPage.Should().NotBeNull();

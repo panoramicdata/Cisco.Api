@@ -23,6 +23,7 @@ namespace Cisco.Api.Interfaces
 			string id,
 			CancellationToken cancellationToken);
 
+		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetById(string id)
 			=> GetById(id, default);
 
@@ -41,9 +42,11 @@ namespace Cisco.Api.Interfaces
 			string alias,
 			CancellationToken cancellationToken);
 
+		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetAdvisoriesByOsTypeAndVersion(string type, string version, string alias)
 			=> GetAdvisoriesByOsTypeAndVersion(type, version, alias, default);
 
+		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetAdvisoriesByOsTypeAndVersion(string type, string version)
 			=> GetAdvisoriesByOsTypeAndVersion(type, version, "", default);
 
@@ -58,6 +61,7 @@ namespace Cisco.Api.Interfaces
 			string cvename,
 			CancellationToken cancellationToken);
 
+		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetAdvisoriesByCveName(string cvename)
 			=> GetAdvisoriesByCveName(cvename, default);
 
@@ -72,6 +76,7 @@ namespace Cisco.Api.Interfaces
 			string osType,
 			CancellationToken cancellationToken);
 
+		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<List<OsVersion>> GetOsVersionDataByType(string osType)
 			=> GetOsVersionDataByType(osType, default);
 
@@ -88,9 +93,11 @@ namespace Cisco.Api.Interfaces
 			bool productNames,
 			CancellationToken cancellationToken);
 
+		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetAllAdvisories(bool summaryDetails, bool productNames)
 			=> GetAllAdvisories(summaryDetails, productNames, default);
 
+		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetAllAdvisories()
 			=> GetAllAdvisories(true, true, default);
 
@@ -111,9 +118,11 @@ namespace Cisco.Api.Interfaces
 			bool productNames,
 			CancellationToken cancellationToken);
 
+		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetAllAdvisories(int pageSize, int pageIndex, bool summaryDetails, bool productNames)
 			=> GetAllAdvisories(pageSize, pageIndex, summaryDetails, productNames, default);
 
+		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetAllAdvisories(int pageSize, int pageIndex)
 			=> GetAllAdvisories(pageSize, pageIndex, true, true, default);
 
@@ -128,6 +137,7 @@ namespace Cisco.Api.Interfaces
 			int count,
 			CancellationToken cancellationToken);
 
+		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetLatesAdvisoriesLimitedByCount(int count)
 			=> GetLatesAdvisoriesLimitedByCount(count, default);
 
@@ -143,6 +153,7 @@ namespace Cisco.Api.Interfaces
 			string customRequest,
 			CancellationToken cancellationToken);
 
+		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetAdvisoriesByCustomRequest(string customRequest)
 			=> GetAdvisoriesByCustomRequest(customRequest, default);
 
@@ -157,6 +168,7 @@ namespace Cisco.Api.Interfaces
 			string product,
 			CancellationToken cancellationToken);
 
+		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetAdvisoriesByProduct(string product)
 			=> GetAdvisoriesByProduct(product, default);
 	}

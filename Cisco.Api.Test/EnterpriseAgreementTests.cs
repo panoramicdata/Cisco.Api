@@ -25,7 +25,7 @@ public class EnterpriseAgreementTests : Test
 			{
 				await CiscoClient
 					.EnterpriseAgreement
-					.GetConsumptionReportForAllSubscriptionsAssociatedWithSmartAccountDomainAsync(domain)
+					.GetConsumptionReportForAllSubscriptionsAssociatedWithSmartAccountDomainAsync(domain, default)
 					.ConfigureAwait(true);
 			});
 
