@@ -17,5 +17,8 @@ public interface IHello
 	/// <returns>The EOX information</returns>
 	[Get("/hello")]
 	Task<Response> HelloAsync(
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	Task<Response> HelloAsync()
+		=> HelloAsync(default);
 }

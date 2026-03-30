@@ -67,10 +67,6 @@ public interface IPss
 		CustomerInventoryDetailPaginatedRequest request,
 		CancellationToken cancellationToken);
 
-	//Task<EoswmLifecycleResponse> GetEoswmLifecycleAsync(
-	//	EoswmLifecycleRequest request,
-	//	CancellationToken cancellationToken);
-
 	/// <summary>
 	/// This API service call gets all Field Notices for the specified customer, inventory and devices.
 	/// </summary>

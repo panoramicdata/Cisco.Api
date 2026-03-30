@@ -18,9 +18,15 @@ public interface IPxCloud
 	/// <param name="cancellationToken"></param>
 	[Get("/px/v1/customers")]
 	Task<Customers> GetCustomersAsync(
-		int? offset = 0,
-		int? max = 10,
-		CancellationToken cancellationToken = default);
+		int? offset,
+		int? max,
+		CancellationToken cancellationToken);
+
+	Task<Customers> GetCustomersAsync(int? offset, int? max)
+		=> GetCustomersAsync(offset, max, default);
+
+	Task<Customers> GetCustomersAsync()
+		=> GetCustomersAsync(0, 10, default);
 
 	/// <summary>
 	/// Gets list of partner contracts. Results are paginated, default 10 per page.
@@ -30,9 +36,15 @@ public interface IPxCloud
 	/// <param name="cancellationToken"></param>
 	[Get("/px/v1/contracts")]
 	Task<Contracts> GetContractsAsync(
-		int? offset = 0,
-		int? max = 10,
-		CancellationToken cancellationToken = default);
+		int? offset,
+		int? max,
+		CancellationToken cancellationToken);
+
+	Task<Contracts> GetContractsAsync(int? offset, int? max)
+		=> GetContractsAsync(offset, max, default);
+
+	Task<Contracts> GetContractsAsync()
+		=> GetContractsAsync(0, 10, default);
 
 	/// <summary>
 	/// Gets list of partner contracts with customers. Results are paginated, default 10 per page.
@@ -45,12 +57,18 @@ public interface IPxCloud
 	/// <param name="cancellationToken"></param>
 	[Get("/px/v1/contractsWithCustomers")]
 	Task<ContractsWithCustomers> GetContractsWithCustomersAsync(
-		int? offset = 0,
-		int? max = 10,
-		string? customerId = null,
-		string? customerGUName = null,
-		int? successTrackId = null,
-		CancellationToken cancellationToken = default);
+		int? offset,
+		int? max,
+		string? customerId,
+		string? customerGUName,
+		int? successTrackId,
+		CancellationToken cancellationToken);
+
+	Task<ContractsWithCustomers> GetContractsWithCustomersAsync(int? offset, int? max, string? customerId, string? customerGUName, int? successTrackId)
+		=> GetContractsWithCustomersAsync(offset, max, customerId, customerGUName, successTrackId, default);
+
+	Task<ContractsWithCustomers> GetContractsWithCustomersAsync()
+		=> GetContractsWithCustomersAsync(0, 10, null, null, null, default);
 
 	/// <summary>
 	/// Gets contract details. Results are paginated, default 10 per page.
@@ -65,11 +83,20 @@ public interface IPxCloud
 	[Get("/px/v1/contract/details")]
 	Task<ContractDetails> GetContractDetailsAsync(
 		string contractNumber,
-		int? offset = 0,
-		int? max = 10,
-		string? customerId = null,
-		string? contractLineItemType = null,
-		int? successTrackId = null,
-		CancellationToken cancellationToken = default);
+		int? offset,
+		int? max,
+		string? customerId,
+		string? contractLineItemType,
+		int? successTrackId,
+		CancellationToken cancellationToken);
+
+	Task<ContractDetails> GetContractDetailsAsync(string contractNumber, int? offset, int? max, string? customerId, string? contractLineItemType, int? successTrackId)
+		=> GetContractDetailsAsync(contractNumber, offset, max, customerId, contractLineItemType, successTrackId, default);
+
+	Task<ContractDetails> GetContractDetailsAsync(string contractNumber, int? offset, int? max)
+		=> GetContractDetailsAsync(contractNumber, offset, max, null, null, null, default);
+
+	Task<ContractDetails> GetContractDetailsAsync(string contractNumber)
+		=> GetContractDetailsAsync(contractNumber, 0, 10, null, null, null, default);
 
 	}

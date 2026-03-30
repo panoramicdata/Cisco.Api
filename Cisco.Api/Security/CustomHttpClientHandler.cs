@@ -71,15 +71,9 @@ internal abstract class CustomHttpClientHandler(
 					Options.MaxAttemptCount);
 
 				throw new CiscoApiException("Timeout or transient network failure during authentication.", ex);
-			}
+				}
 
-			var contents = await httpResponseMessage
-				.Content
-				.ReadAsStringAsync(cancellationToken)
-				.ConfigureAwait(false);
-
-			var accessTokenResponse = JsonConvert.DeserializeObject<AccessTokenResponse>(contents)
-				?? throw new FormatException("Unable to deserialize access token response");
+				var accessTokenResponse = await DeserializeTokenResponseAsync(httpResponseMessage, cancellationToken).ConfigureAwait(false);
 
 			if (accessTokenResponse.Error is not null)
 			{
@@ -117,6 +111,13 @@ internal abstract class CustomHttpClientHandler(
 			or SocketException
 			|| (ex is IOException ioEx && ioEx.InnerException is SocketException);
 
+	private static async Task<AccessTokenResponse> DeserializeTokenResponseAsync(HttpResponseMessage httpResponseMessage, CancellationToken cancellationToken)
+	{
+		var contents = await httpResponseMessage.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+		return JsonConvert.DeserializeObject<AccessTokenResponse>(contents)
+			?? throw new FormatException("Unable to deserialize access token response");
+	}
+
 	private async Task<bool> HandleAuthErrorAsync(
 		AccessTokenResponse accessTokenResponse,
 		HttpResponseMessage httpResponseMessage,
@@ -125,9 +126,7 @@ internal abstract class CustomHttpClientHandler(
 	{
 		var error = accessTokenResponse.Error!;
 		var description = accessTokenResponse.ErrorDescription;
-		var combinedMessage = description is { Length: > 0 }
-			? $"{error}: {description}"
-			: error;
+		var combinedMessage = BuildErrorMessage(error, description);
 
 		_logger.LogDebug("Authentication failed. Error={Error} Description={Description}", error, description);
 
@@ -138,36 +137,42 @@ internal abstract class CustomHttpClientHandler(
 
 		var isInvalidClient = error.Equals("invalid_client", StringComparison.OrdinalIgnoreCase);
 
-		if (isInvalidClient && Options.RetryInvalidClientTokenErrors)
+		if (isInvalidClient)
 		{
-			if (++attemptCount[0] < Options.RetryInvalidClientTokenErrorsMaxAttemptCount)
+			if (Options.RetryInvalidClientTokenErrors)
 			{
-				_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) – retrying after {Delay}s...",
-					attemptCount,
-					Options.RetryInvalidClientTokenErrorsMaxAttemptCount,
-					Options.RetryInvalidClientTokenErrorsRetryDelay.TotalSeconds);
+				if (++attemptCount[0] < Options.RetryInvalidClientTokenErrorsMaxAttemptCount)
+				{
+					_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) – retrying after {Delay}s...",
+						attemptCount[0],
+						Options.RetryInvalidClientTokenErrorsMaxAttemptCount,
+						Options.RetryInvalidClientTokenErrorsRetryDelay.TotalSeconds);
 
-				await Task.Delay(Options.RetryInvalidClientTokenErrorsRetryDelay, cancellationToken).ConfigureAwait(false);
-				return true;
+					await Task.Delay(Options.RetryInvalidClientTokenErrorsRetryDelay, cancellationToken).ConfigureAwait(false);
+					return true;
+				}
+
+				_logger.LogError("GetAccessTokenAsync(): invalid_client exhausted after {MaxAttemptCount} attempts.",
+					Options.RetryInvalidClientTokenErrorsMaxAttemptCount);
+				throw new CiscoApiException("Timeout during authentication - gave up trying to get token after repeated invalid_client errors.");
 			}
 
-			_logger.LogError("GetAccessTokenAsync(): invalid_client exhausted after {MaxAttemptCount} attempts.",
-				Options.RetryInvalidClientTokenErrorsMaxAttemptCount);
-			throw new CiscoApiException("Timeout during authentication - gave up trying to get token after repeated invalid_client errors.");
-		}
-
-		if (isInvalidClient && ++attemptCount[0] < Options.MaxAttemptCount)
-		{
-			_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) using standard retry settings, retrying after {Delay}s...",
-				attemptCount,
-				Options.MaxAttemptCount,
-				Options.RetryDelay.TotalSeconds);
-			await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
-			return true;
+			if (++attemptCount[0] < Options.MaxAttemptCount)
+			{
+				_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) using standard retry settings, retrying after {Delay}s...",
+					attemptCount[0],
+					Options.MaxAttemptCount,
+					Options.RetryDelay.TotalSeconds);
+				await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
+				return true;
+			}
 		}
 
 		throw new SecurityException(combinedMessage);
 	}
+
+	private static string BuildErrorMessage(string error, string? description)
+		=> description is { Length: > 0 } ? $"{error}: {description}" : error;
 
 	private string StoreAndReturnAccessToken(AccessTokenResponse accessTokenResponse)
 	{
@@ -197,20 +202,7 @@ internal abstract class CustomHttpClientHandler(
 		HttpRequestMessage request,
 		CancellationToken cancellationToken)
 	{
-		await EnsureAuthenticatedAsync(cancellationToken).ConfigureAwait(false);
-
-		request.Headers.Authorization = _authenticationHeaderValue;
-		await PrepareRequestAsync(request, cancellationToken).ConfigureAwait(false);
-
-		if (_logger.IsEnabled(LevelToLogAt))
-		{
-			await LogRequestHeaders(request).ConfigureAwait(false);
-		}
-
-		if (Options.UserAgent is not null)
-		{
-			request.Headers.Add("User-Agent", Options.UserAgent);
-		}
+		await SetupRequestAsync(request, cancellationToken).ConfigureAwait(false);
 
 		var attemptCount = 0;
 		while (true)
@@ -274,8 +266,6 @@ internal abstract class CustomHttpClientHandler(
 					continue;
 				}
 
-				attemptCount = attemptCountRef[0];
-
 				await LogErrorHeadersIfNeeded(request, httpResponseMessage).ConfigureAwait(false);
 
 				_logger.LogError(
@@ -307,6 +297,24 @@ internal abstract class CustomHttpClientHandler(
 		{
 			var accessToken = await GetAccessTokenAsync(cancellationToken).ConfigureAwait(false);
 			_authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", accessToken);
+		}
+	}
+
+	private async Task SetupRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+	{
+		await EnsureAuthenticatedAsync(cancellationToken).ConfigureAwait(false);
+
+		request.Headers.Authorization = _authenticationHeaderValue;
+		await PrepareRequestAsync(request, cancellationToken).ConfigureAwait(false);
+
+		if (_logger.IsEnabled(LevelToLogAt))
+		{
+			await LogRequestHeaders(request).ConfigureAwait(false);
+		}
+
+		if (Options.UserAgent is not null)
+		{
+			request.Headers.Add("User-Agent", Options.UserAgent);
 		}
 	}
 
@@ -378,6 +386,8 @@ internal abstract class CustomHttpClientHandler(
 					return true;
 				}
 
+				break;
+			default:
 				break;
 		}
 

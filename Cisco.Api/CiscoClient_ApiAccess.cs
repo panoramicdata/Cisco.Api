@@ -31,8 +31,8 @@ public partial class CiscoClient
 		var serialNumberToInfoTask = SerialNumberToInfo.GetCoverageStatusBySerialNumbersAsync(["123"], cancellationToken);
 		var softwareSuggestionTask = SoftwareSuggestion.GetByProductIdsAsync(["C9200"], 1, cancellationToken);
 		// MS-19906 You can search for anything
-		var smartAccountsAndLicensingTask = SmartAccountsAndLicensing.SearchSmartAccountsAsync(name: "123", cancellationToken: cancellationToken);
-		var umbrellaTask = Umbrella.ListSitesAsync(cancellationToken: cancellationToken);
+		var smartAccountsAndLicensingTask = SmartAccountsAndLicensing.SearchSmartAccountsAsync("123", null, 50, 0, null, cancellationToken);
+		var umbrellaTask = Umbrella.ListSitesAsync(1, 100, cancellationToken);
 
 		apiAccess.EnterpriseAgreement = await TryApiAsync("Enterprise Agreement", enterpriseAgreementTask).ConfigureAwait(false);
 		apiAccess.Eox = await TryApiAsync("Eox", eoxTask).ConfigureAwait(false);

@@ -22,8 +22,14 @@ public interface IEox
 	[Get("/supporttools/eox/rest/5/EOXBySerialNumber/{pageIndex}/{serialNumber}")]
 	Task<EoxInfoPage> GetBySerialNumberAsync(
 		[Body] string serialNumber,
-		int pageIndex = 1,
-		CancellationToken cancellationToken = default);
+		int pageIndex,
+		CancellationToken cancellationToken);
+
+	Task<EoxInfoPage> GetBySerialNumberAsync(string serialNumber, int pageIndex)
+		=> GetBySerialNumberAsync(serialNumber, pageIndex, default);
+
+	Task<EoxInfoPage> GetBySerialNumberAsync(string serialNumber)
+		=> GetBySerialNumberAsync(serialNumber, 1, default);
 
 	/// <summary>
 	/// Returns all active and inactive EoX records for all products with the specified eoxAttrib value within the startDate and endDate values, inclusive. If you do not specify an eoxAttrib value, this method returns records with an updated time stamp within the specified date range.
@@ -38,8 +44,14 @@ public interface IEox
 	Task<EoxInfoPage> GetByDatesAsync(
 		[Query(Format = "yyyy-MM-dd")] DateTime startDate,
 		[Query(Format = "yyyy-MM-dd")] DateTime endDate,
-		int pageIndex = 1,
-		CancellationToken cancellationToken = default);
+		int pageIndex,
+		CancellationToken cancellationToken);
+
+	Task<EoxInfoPage> GetByDatesAsync(DateTime startDate, DateTime endDate, int pageIndex)
+		=> GetByDatesAsync(startDate, endDate, pageIndex, default);
+
+	Task<EoxInfoPage> GetByDatesAsync(DateTime startDate, DateTime endDate)
+		=> GetByDatesAsync(startDate, endDate, 1, default);
 
 	/// <summary>
 	/// Returns one or more EOX records for the product or products with the specified product ID (PID) or product IDs.
@@ -51,8 +63,14 @@ public interface IEox
 	[Get("/supporttools/eox/rest/5/EOXByProductID/{pageIndex}/{productId}")]
 	Task<EoxInfoPage> GetByProductIdAsync(
 		string productId,
-		int pageIndex = 1,
-		CancellationToken cancellationToken = default);
+		int pageIndex,
+		CancellationToken cancellationToken);
+
+	Task<EoxInfoPage> GetByProductIdAsync(string productId, int pageIndex)
+		=> GetByProductIdAsync(productId, pageIndex, default);
+
+	Task<EoxInfoPage> GetByProductIdAsync(string productId)
+		=> GetByProductIdAsync(productId, 1, default);
 
 	/// <summary>
 	/// Returns the EoX record for products associated with the specified software release and (optionally) the specified operating system.
@@ -64,6 +82,12 @@ public interface IEox
 	[Get("/supporttools/eox/rest/5/EOXBySWReleaseString/{pageIndex}?input1={softwareReleaseStrings}")]
 	Task<EoxInfoPage> GetBySoftwareReleaseStringAsync(
 		IEnumerable<string> softwareReleaseStrings,
-		int pageIndex = 1,
-		CancellationToken cancellationToken = default);
+		int pageIndex,
+		CancellationToken cancellationToken);
+
+	Task<EoxInfoPage> GetBySoftwareReleaseStringAsync(IEnumerable<string> softwareReleaseStrings, int pageIndex)
+		=> GetBySoftwareReleaseStringAsync(softwareReleaseStrings, pageIndex, default);
+
+	Task<EoxInfoPage> GetBySoftwareReleaseStringAsync(IEnumerable<string> softwareReleaseStrings)
+		=> GetBySoftwareReleaseStringAsync(softwareReleaseStrings, 1, default);
 }

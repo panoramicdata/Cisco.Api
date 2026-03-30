@@ -2,7 +2,6 @@ using Cisco.Api.Exceptions;
 using System;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Cisco.Api.Test;
 

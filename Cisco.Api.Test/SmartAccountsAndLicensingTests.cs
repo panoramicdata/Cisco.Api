@@ -1,7 +1,6 @@
 using Cisco.Api.Data.SmartAccountsAndLicensing;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Cisco.Api.Test;
 

@@ -22,7 +22,10 @@ public interface IPxCloudReports
 		string customerId,
 		ReportName reportName,
 		string successTrackId,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	Task<RequestCustomerDataReportsAsBulkFilesResponse> RequestCustomerDataReportAsync(string customerId, ReportName reportName, string successTrackId)
+		=> RequestCustomerDataReportAsync(customerId, reportName, successTrackId, default);
 
 	/// Returns the scheduled report content; this may take a few minutes to generate.
 	/// <param name="customerId">Unique Identifier of the customer.</param>
@@ -32,5 +35,8 @@ public interface IPxCloudReports
 	Task<ReportPayloadParent> GetReportAsync(
 		string customerId,
 		string reportId,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	Task<ReportPayloadParent> GetReportAsync(string customerId, string reportId)
+		=> GetReportAsync(customerId, reportId, default);
 }

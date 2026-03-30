@@ -1,7 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Cisco.Api.Test;
 

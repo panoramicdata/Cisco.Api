@@ -25,12 +25,18 @@ public interface ISmartAccountsAndLicensing
 	/// <param name="cancellationToken"></param>
 	[Get("/v1/accounts/search")]
 	Task<SearchSmartAccountsResponse> SearchSmartAccountsAsync(
-		string? name = null,
-		string? domain = null,
-		int limit = 50,
-		int offset = 0,
-		SmartAccountType? type = null,
-		CancellationToken cancellationToken = default);
+		string? name,
+		string? domain,
+		int limit,
+		int offset,
+		SmartAccountType? type,
+		CancellationToken cancellationToken);
+
+	Task<SearchSmartAccountsResponse> SearchSmartAccountsAsync(string? name, string? domain, int limit, int offset, SmartAccountType? type)
+		=> SearchSmartAccountsAsync(name, domain, limit, offset, type, default);
+
+	Task<SearchSmartAccountsResponse> SearchSmartAccountsAsync()
+		=> SearchSmartAccountsAsync(null, null, 50, 0, null, default);
 
 	/// <summary>
 	/// Provides the list of Smart Accounts to which the User has access to along with the available roles for each of the Smart Accounts.
@@ -39,8 +45,14 @@ public interface ISmartAccountsAndLicensing
 	/// <param name="cancellationToken"></param>
 	[Get("/v2/accounts/")]
 	Task<ListOfSmartAccountsResponse> ListSmartAccountsAsync(
-		string? domain = null,
-		CancellationToken cancellationToken = default);
+		string? domain,
+		CancellationToken cancellationToken);
+
+	Task<ListOfSmartAccountsResponse> ListSmartAccountsAsync(string? domain)
+		=> ListSmartAccountsAsync(domain, default);
+
+	Task<ListOfSmartAccountsResponse> ListSmartAccountsAsync()
+		=> ListSmartAccountsAsync(null, default);
 
 
 	////////////////////////////////////////
@@ -61,9 +73,15 @@ public interface ISmartAccountsAndLicensing
 	Task<ListOfLicenseSubscriptionsResponse> LicenseSubscriptionsUsageAsync(
 		string smartAccountDomain,
 		[Body] LicenseSubscriptionsUsageRequest request,
-		[Query] int limit = 50,
-		[Query] int offset = 0,
-		CancellationToken cancellationToken = default);
+		[Query] int limit,
+		[Query] int offset,
+		CancellationToken cancellationToken);
+
+	Task<ListOfLicenseSubscriptionsResponse> LicenseSubscriptionsUsageAsync(string smartAccountDomain, [Body] LicenseSubscriptionsUsageRequest request, [Query] int limit, [Query] int offset)
+		=> LicenseSubscriptionsUsageAsync(smartAccountDomain, request, limit, offset, default);
+
+	Task<ListOfLicenseSubscriptionsResponse> LicenseSubscriptionsUsageAsync(string smartAccountDomain, [Body] LicenseSubscriptionsUsageRequest request)
+		=> LicenseSubscriptionsUsageAsync(smartAccountDomain, request, 50, 0, default);
 
 	/// <summary>
 	/// This API will give the licenses usage in the specified Smart Account Domain and the optional Virtual Accounts.
@@ -77,7 +95,13 @@ public interface ISmartAccountsAndLicensing
 	Task<ListOfLicensesResponse> SmartLicenseUsageAsync(
 		string smartAccountDomain,
 		[Body] SmartLicenseUsageRequest request,
-		[Query] int limit = 50,
-		[Query] int offset = 0,
-		CancellationToken cancellationToken = default);
+		[Query] int limit,
+		[Query] int offset,
+		CancellationToken cancellationToken);
+
+	Task<ListOfLicensesResponse> SmartLicenseUsageAsync(string smartAccountDomain, [Body] SmartLicenseUsageRequest request, [Query] int limit, [Query] int offset)
+		=> SmartLicenseUsageAsync(smartAccountDomain, request, limit, offset, default);
+
+	Task<ListOfLicensesResponse> SmartLicenseUsageAsync(string smartAccountDomain, [Body] SmartLicenseUsageRequest request)
+		=> SmartLicenseUsageAsync(smartAccountDomain, request, 50, 0, default);
 }

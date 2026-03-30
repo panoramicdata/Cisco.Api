@@ -8,7 +8,7 @@ namespace Cisco.Api.Data.Converters;
 /// A JSON creation converter
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public abstract class JsonCreationConverter<T> : JsonConverter
+public abstract class JsonCreationConverter<T> : JsonConverter where T : class
 {
 	/// <summary>
 	/// Create an instance of objectType, based properties in the JSON object
@@ -41,9 +41,9 @@ public abstract class JsonCreationConverter<T> : JsonConverter
 		var jObject = JObject.Load(reader);
 
 		// Create target object based on JObject
-		var target = Create(objectType, jObject);
+			var target = Create(objectType, jObject);
 
-		if (target != null)
+			if (target is not null)
 		{
 			// Populate the object properties
 			serializer.Populate(jObject.CreateReader(), target);

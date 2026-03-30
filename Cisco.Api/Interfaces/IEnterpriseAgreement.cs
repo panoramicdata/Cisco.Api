@@ -20,5 +20,8 @@ public interface IEnterpriseAgreement
 	[Get("/v1/subscription/account/{smartAccountDomain}/consumption")]
 	Task<EaSmartAccountAllSubscriptionConsumptionReportResponse> GetConsumptionReportForAllSubscriptionsAssociatedWithSmartAccountDomainAsync(
 		string smartAccountDomain,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	Task<EaSmartAccountAllSubscriptionConsumptionReportResponse> GetConsumptionReportForAllSubscriptionsAssociatedWithSmartAccountDomainAsync(string smartAccountDomain)
+		=> GetConsumptionReportForAllSubscriptionsAssociatedWithSmartAccountDomainAsync(smartAccountDomain, default);
 }

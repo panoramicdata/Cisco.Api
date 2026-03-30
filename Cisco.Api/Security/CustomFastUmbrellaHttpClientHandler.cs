@@ -41,7 +41,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 	  = new ConcurrentDictionary<string, CiscoUmbrellaCredentialsTokenTracking>(
 			 options.ClientCredentialsNotSupported!.ToDictionary(x => x.ClientId, x => new CiscoUmbrellaCredentialsTokenTracking(x.ClientSecret)));
 
-	protected int CurrentCredentialCurrentIndex { get; set; } = 0;
+	protected int CurrentCredentialCurrentIndex { get; set; }
 	public bool IsFirstQuery { get; private set; } = true;
 
 	private async Task<string> GetAccessTokenAsync(int currentCredentialCurrentIndex, CancellationToken cancellationToken)
@@ -62,38 +62,25 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 					.ConfigureAwait(false);
 
 				_logger.LogTrace("{HttpResponseMessage}", httpResponseMessage);
-			}
-			catch (Exception ex) when (IsTransientException(ex))
-			{
-				if (++attemptCount < Options.MaxAttemptCount)
+				}
+				catch (Exception ex) when (IsTransientException(ex))
 				{
-					_logger.LogWarning("GetAccessTokenAsync(): Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...",
-						attemptCount,
-						Options.MaxAttemptCount
-					);
+					if (++attemptCount < Options.MaxAttemptCount)
+					{
+						_logger.LogWarning("GetAccessTokenAsync(): Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...",
+							attemptCount,
+							Options.MaxAttemptCount
+						);
+						await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
+						continue;
+					}
 
-					await Task.Delay(Options.RetryDelay, cancellationToken)
-						.ConfigureAwait(false);
-
-					continue;
+					_logger.LogError(ex, "GetAccessTokenAsync(): {Message} after {MaxAttemptCount} attempts.",
+						ex.Message, Options.MaxAttemptCount);
+					throw new CiscoApiException("Timeout or transient network failure during authentication.", ex);
 				}
 
-				_logger.LogError(
-					ex,
-					"GetAccessTokenAsync(): {Message} after {MaxAttemptCount} attempts.",
-					ex.Message,
-					Options.MaxAttemptCount);
-
-				throw new CiscoApiException("Timeout or transient network failure during authentication.", ex);
-			}
-
-			var contents = await httpResponseMessage
-				.Content
-				.ReadAsStringAsync(cancellationToken)
-				.ConfigureAwait(false);
-
-			var accessTokenResponse = JsonConvert.DeserializeObject<AccessTokenResponse>(contents)
-				?? throw new FormatException("Unable to deserialize access token response");
+				var accessTokenResponse = await DeserializeTokenResponseAsync(httpResponseMessage, cancellationToken).ConfigureAwait(false);
 
 			if (accessTokenResponse.Error is not null)
 			{
@@ -118,6 +105,13 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 			or SocketException
 			|| (ex is IOException ioEx && ioEx.InnerException is SocketException);
 
+	private static async Task<AccessTokenResponse> DeserializeTokenResponseAsync(HttpResponseMessage httpResponseMessage, CancellationToken cancellationToken)
+	{
+		var contents = await httpResponseMessage.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+		return JsonConvert.DeserializeObject<AccessTokenResponse>(contents)
+			?? throw new FormatException("Unable to deserialize access token response");
+	}
+
 	private async Task<bool> HandleAuthErrorAsync(
 		int currentCredentialCurrentIndex,
 		AccessTokenResponse accessTokenResponse,
@@ -127,9 +121,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 	{
 		var error = accessTokenResponse.Error!;
 		var description = accessTokenResponse.ErrorDescription;
-		var combinedMessage = description is { Length: > 0 }
-			? $"{error}: {description}"
-			: error;
+		var combinedMessage = BuildErrorMessage(error, description);
 
 		_logger.LogDebug("Authentication failed. Error={Error} Description={Description}", error, description);
 
@@ -140,36 +132,42 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 
 		var isInvalidClient = error.Equals("invalid_client", StringComparison.OrdinalIgnoreCase);
 
-		if (isInvalidClient && Options.RetryInvalidClientTokenErrors)
+		if (isInvalidClient)
 		{
-			if (++attemptCount[0] < Options.RetryInvalidClientTokenErrorsMaxAttemptCount)
+			if (Options.RetryInvalidClientTokenErrors)
 			{
-				_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) – retrying after {Delay}s...",
-					attemptCount[0],
-					Options.RetryInvalidClientTokenErrorsMaxAttemptCount,
-					Options.RetryInvalidClientTokenErrorsRetryDelay.TotalSeconds);
+				if (++attemptCount[0] < Options.RetryInvalidClientTokenErrorsMaxAttemptCount)
+				{
+					_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) – retrying after {Delay}s...",
+						attemptCount[0],
+						Options.RetryInvalidClientTokenErrorsMaxAttemptCount,
+						Options.RetryInvalidClientTokenErrorsRetryDelay.TotalSeconds);
 
-				await Task.Delay(Options.RetryInvalidClientTokenErrorsRetryDelay, cancellationToken).ConfigureAwait(false);
-				return true;
+					await Task.Delay(Options.RetryInvalidClientTokenErrorsRetryDelay, cancellationToken).ConfigureAwait(false);
+					return true;
+				}
+
+				_logger.LogError("GetAccessTokenAsync(): invalid_client exhausted after {MaxAttemptCount} attempts.",
+					Options.RetryInvalidClientTokenErrorsMaxAttemptCount);
+				throw new CiscoApiException("Timeout during authentication - gave up trying to get token after repeated invalid_client errors.");
 			}
 
-			_logger.LogError("GetAccessTokenAsync(): invalid_client exhausted after {MaxAttemptCount} attempts.",
-				Options.RetryInvalidClientTokenErrorsMaxAttemptCount);
-			throw new CiscoApiException("Timeout during authentication - gave up trying to get token after repeated invalid_client errors.");
-		}
-
-		if (isInvalidClient && ++attemptCount[0] < Options.MaxAttemptCount)
-		{
-			_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) using standard retry settings, retrying after {Delay}s...",
-				attemptCount[0],
-				Options.MaxAttemptCount,
-				Options.RetryDelay.TotalSeconds);
-			await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
-			return true;
+			if (++attemptCount[0] < Options.MaxAttemptCount)
+			{
+				_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) using standard retry settings, retrying after {Delay}s...",
+					attemptCount[0],
+					Options.MaxAttemptCount,
+					Options.RetryDelay.TotalSeconds);
+				await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
+				return true;
+			}
 		}
 
 		throw new SecurityException(combinedMessage);
 	}
+
+	private static string BuildErrorMessage(string error, string? description)
+		=> description is { Length: > 0 } ? $"{error}: {description}" : error;
 
 	private string StoreAndReturnAccessToken(int currentCredentialCurrentIndex, AccessTokenResponse accessTokenResponse)
 	{
@@ -202,20 +200,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 		var currentCredentialCurrentIndex = SelectNextCredentialIndex();
 		var currentCredentialsInstance = CiscoUmbrellaCredentials.ElementAt(currentCredentialCurrentIndex).Value;
 
-		await EnsureAuthenticatedAsync(currentCredentialCurrentIndex, currentCredentialsInstance, cancellationToken).ConfigureAwait(false);
-
-		request.Headers.Authorization = currentCredentialsInstance.AuthenticationHeaderValue;
-		request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
-
-		if (_logger.IsEnabled(LevelToLogAt))
-		{
-			await LogRequestHeaders(currentCredentialCurrentIndex, request).ConfigureAwait(false);
-		}
-
-		if (Options.UserAgent is not null)
-		{
-			request.Headers.Add("User-Agent", Options.UserAgent);
-		}
+		await SetupRequestAsync(currentCredentialCurrentIndex, currentCredentialsInstance, request, cancellationToken).ConfigureAwait(false);
 
 		var attemptCount = 0;
 		while (true)
@@ -279,8 +264,6 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 					continue;
 				}
 
-				attemptCount = attemptCountRef[0];
-
 				await LogErrorHeadersIfNeeded(currentCredentialCurrentIndex, request, httpResponseMessage).ConfigureAwait(false);
 
 				_logger.LogError(
@@ -327,6 +310,24 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 		{
 			currentCredentialsInstance.AccessToken = await GetAccessTokenAsync(currentCredentialCurrentIndex, cancellationToken).ConfigureAwait(false);
 			currentCredentialsInstance.AuthenticationHeaderValue = new AuthenticationHeaderValue("Bearer", currentCredentialsInstance.AccessToken);
+		}
+	}
+
+	private async Task SetupRequestAsync(int currentCredentialCurrentIndex, CiscoUmbrellaCredentialsTokenTracking currentCredentialsInstance, HttpRequestMessage request, CancellationToken cancellationToken)
+	{
+		await EnsureAuthenticatedAsync(currentCredentialCurrentIndex, currentCredentialsInstance, cancellationToken).ConfigureAwait(false);
+
+		request.Headers.Authorization = currentCredentialsInstance.AuthenticationHeaderValue;
+		request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
+
+		if (_logger.IsEnabled(LevelToLogAt))
+		{
+			await LogRequestHeaders(currentCredentialCurrentIndex, request).ConfigureAwait(false);
+		}
+
+		if (Options.UserAgent is not null)
+		{
+			request.Headers.Add("User-Agent", Options.UserAgent);
 		}
 	}
 
@@ -386,6 +387,8 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 					return true;
 				}
 
+				break;
+			default:
 				break;
 		}
 

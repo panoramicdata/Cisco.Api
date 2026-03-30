@@ -18,7 +18,10 @@ public interface IUmbrella
 	[Post("/deployments/v2/internalnetworks")]
 	Task<InternalNetwork> CreateInternalNetworkAsync(
 		[Body] InternalNetworksCreateUpdateRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	Task<InternalNetwork> CreateInternalNetworkAsync([Body] InternalNetworksCreateUpdateRequest request)
+		=> CreateInternalNetworkAsync(request, default);
 
 	/// <summary>
 	/// List the internal networks
@@ -29,10 +32,16 @@ public interface IUmbrella
 	/// <param name="cancellationToken"></param>
 	[Get("/deployments/v2/internalnetworks")]
 	Task<List<InternalNetwork>> ListInternalNetworksAsync(
-		string? name = null,
-		int? page = 1,
-		int? limit = 100,
-		CancellationToken cancellationToken = default);
+		string? name,
+		int? page,
+		int? limit,
+		CancellationToken cancellationToken);
+
+	Task<List<InternalNetwork>> ListInternalNetworksAsync(string? name, int? page, int? limit)
+		=> ListInternalNetworksAsync(name, page, limit, default);
+
+	Task<List<InternalNetwork>> ListInternalNetworksAsync()
+		=> ListInternalNetworksAsync(null, 1, 100, default);
 
 	/// <summary>
 	/// Get an internal network
@@ -42,7 +51,10 @@ public interface IUmbrella
 	[Get("/deployments/v2/internalnetworks/{internalNetworkId}")]
 	Task<InternalNetwork> GetInternalNetworkAsync(
 		int internalNetworkId,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	Task<InternalNetwork> GetInternalNetworkAsync(int internalNetworkId)
+		=> GetInternalNetworkAsync(internalNetworkId, default);
 
 	/// <summary>
 	/// Update an internal network
@@ -53,7 +65,10 @@ public interface IUmbrella
 	Task<InternalNetwork> UpdateInternalNetworkAsync(
 		int internalNetworkId,
 		[Body] InternalNetworksCreateUpdateRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	Task<InternalNetwork> UpdateInternalNetworkAsync(int internalNetworkId, [Body] InternalNetworksCreateUpdateRequest request)
+		=> UpdateInternalNetworkAsync(internalNetworkId, request, default);
 
 	/// <summary>
 	/// Delete an internal network
@@ -63,7 +78,10 @@ public interface IUmbrella
 	[Delete("/deployments/v2/internalnetworks/{internalNetworkId}")]
 	Task DeleteInternalNetworkAsync(
 		int internalNetworkId,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	Task DeleteInternalNetworkAsync(int internalNetworkId)
+		=> DeleteInternalNetworkAsync(internalNetworkId, default);
 
 	/// <summary>
 	/// List Policies for an internal network
@@ -74,8 +92,14 @@ public interface IUmbrella
 	[Get("/deployments/v2/internalnetworks/{internalNetworkId}/policies")]
 	Task<List<InternalNetworkPolicy>> ListPoliciesForInternalNetworkAsync(
 		int internalNetworkId,
-		string? type = "dns",
-		CancellationToken cancellationToken = default);
+		string? type,
+		CancellationToken cancellationToken);
+
+	Task<List<InternalNetworkPolicy>> ListPoliciesForInternalNetworkAsync(int internalNetworkId, string? type)
+		=> ListPoliciesForInternalNetworkAsync(internalNetworkId, type, default);
+
+	Task<List<InternalNetworkPolicy>> ListPoliciesForInternalNetworkAsync(int internalNetworkId)
+		=> ListPoliciesForInternalNetworkAsync(internalNetworkId, "dns", default);
 
 
 	////////////////////////////////////////
@@ -90,10 +114,16 @@ public interface IUmbrella
 	/// <param name="cancellationToken"></param>
 	[Get("/deployments/v2/policies")]
 	Task<List<Policy>> ListPoliciesAsync(
-		string? type = "dns",
-		int? page = 1,
-		int? limit = 100,
-		CancellationToken cancellationToken = default);
+		string? type,
+		int? page,
+		int? limit,
+		CancellationToken cancellationToken);
+
+	Task<List<Policy>> ListPoliciesAsync(string? type, int? page, int? limit)
+		=> ListPoliciesAsync(type, page, limit, default);
+
+	Task<List<Policy>> ListPoliciesAsync()
+		=> ListPoliciesAsync("dns", 1, 100, default);
 
 	/// <summary>
 	/// Add an identity to a Umbrella DNS or Web policy. Policy changes may require up to twenty minutes to take affect globally. For DNS policies, TTLs, caching, and session reuse may cause some devices and domains to appear to take longer to update.
@@ -105,7 +135,10 @@ public interface IUmbrella
 	Task AddIdentityToPolicyAsync(
 		int originId,
 		int policyId,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	Task AddIdentityToPolicyAsync(int originId, int policyId)
+		=> AddIdentityToPolicyAsync(originId, policyId, default);
 
 	/// <summary>
 	/// Remove an identity from an Umbrella policy. Policy changes may require up to 20 minutes to take affect globally. Additionally, for DNS policies, TTLs, caching, and session reuse may cause some devices and domains to appear to take longer to update.
@@ -117,7 +150,10 @@ public interface IUmbrella
 	Task DeleteIdentityFromPolicyAsync(
 		int originId,
 		int policyId,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	Task DeleteIdentityFromPolicyAsync(int originId, int policyId)
+		=> DeleteIdentityFromPolicyAsync(originId, policyId, default);
 
 
 	////////////////////////////////////////
@@ -131,7 +167,13 @@ public interface IUmbrella
 	/// <param name="cancellationToken"></param>
 	[Get("/deployments/v2/sites")]
 	Task<List<Site>> ListSitesAsync(
-		int? page = 1,
-		int? limit = 100,
-		CancellationToken cancellationToken = default);
+		int? page,
+		int? limit,
+		CancellationToken cancellationToken);
+
+	Task<List<Site>> ListSitesAsync(int? page, int? limit)
+		=> ListSitesAsync(page, limit, default);
+
+	Task<List<Site>> ListSitesAsync()
+		=> ListSitesAsync(1, 100, default);
 }

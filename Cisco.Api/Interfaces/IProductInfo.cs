@@ -20,5 +20,8 @@ public interface IProductInfo
 	[Get("/product/v1/information/serial_numbers/{serialNumbers}")]
 	Task<ProductInformationPage> GetBySerialNumbersAsync(
 		[Query(CollectionFormat.Csv)] IEnumerable<string> serialNumbers,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	Task<ProductInformationPage> GetBySerialNumbersAsync([Query(CollectionFormat.Csv)] IEnumerable<string> serialNumbers)
+		=> GetBySerialNumbersAsync(serialNumbers, default);
 }

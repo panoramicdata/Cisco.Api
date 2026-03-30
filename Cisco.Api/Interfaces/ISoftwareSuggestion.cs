@@ -20,6 +20,12 @@ public interface ISoftwareSuggestion
 	[Get("/software/suggestion/v2/suggestions/software/productIds/{productIds}")]
 	Task<SoftwareSuggestionPage> GetByProductIdsAsync(
 		IEnumerable<string> productIds,
-		int pageIndex = 1,
-		CancellationToken cancellationToken = default);
+		int pageIndex,
+		CancellationToken cancellationToken);
+
+	Task<SoftwareSuggestionPage> GetByProductIdsAsync(IEnumerable<string> productIds, int pageIndex)
+		=> GetByProductIdsAsync(productIds, pageIndex, default);
+
+	Task<SoftwareSuggestionPage> GetByProductIdsAsync(IEnumerable<string> productIds)
+		=> GetByProductIdsAsync(productIds, 1, default);
 }

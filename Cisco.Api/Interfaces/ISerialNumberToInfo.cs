@@ -20,7 +20,10 @@ public interface ISerialNumberToInfo
 	[Get("/sn2info/v2/coverage/status/serial_numbers/{serialNumbers}")]
 	Task<CoverageStatusCollection> GetCoverageStatusBySerialNumbersAsync(
 		IEnumerable<string> serialNumbers,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	Task<CoverageStatusCollection> GetCoverageStatusBySerialNumbersAsync(IEnumerable<string> serialNumbers)
+		=> GetCoverageStatusBySerialNumbersAsync(serialNumbers, default);
 
 	/// <summary>
 	/// Gets coverage summary by serial numbers
@@ -31,7 +34,10 @@ public interface ISerialNumberToInfo
 	[Get("/sn2info/v2/coverage/status/serial_numbers/{serialNumbers}")]
 	Task<CoverageSummaryCollection> GetCoverageSummaryBySerialNumbersAsync(
 		IEnumerable<string> serialNumbers,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	Task<CoverageSummaryCollection> GetCoverageSummaryBySerialNumbersAsync(IEnumerable<string> serialNumbers)
+		=> GetCoverageSummaryBySerialNumbersAsync(serialNumbers, default);
 
 	/// <summary>
 	/// Gets coverage summary by serial numbers
@@ -42,5 +48,8 @@ public interface ISerialNumberToInfo
 	[Get("/sn2info/v2/coverage/status/serial_numbers/{serialNumbers}")]
 	Task<OrderablePidCollection> GetOrderableProductIdentifiersBySerialNumbersAsync(
 		IEnumerable<string> serialNumbers,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	Task<OrderablePidCollection> GetOrderableProductIdentifiersBySerialNumbersAsync(IEnumerable<string> serialNumbers)
+		=> GetOrderableProductIdentifiersBySerialNumbersAsync(serialNumbers, default);
 }

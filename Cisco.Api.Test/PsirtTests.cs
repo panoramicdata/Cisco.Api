@@ -2,7 +2,6 @@ using Cisco.Api.Data.Psirt;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Cisco.Api.Test;
 

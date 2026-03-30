@@ -3,7 +3,6 @@ using Cisco.Api.Exceptions;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Cisco.Api.Test
 {
