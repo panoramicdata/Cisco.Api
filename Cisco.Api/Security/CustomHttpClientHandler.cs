@@ -6,6 +6,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Linq;
 using System.Net.Sockets;
 using System.Security;
 using System.Text;
@@ -345,53 +346,96 @@ internal abstract class CustomHttpClientHandler(
 		int[] attemptCount,
 		CancellationToken cancellationToken)
 	{
-		switch (httpResponseMessage.StatusCode)
-		{
-			case HttpStatusCode.TooManyRequests:
-				if (++attemptCount[0] < Options.MaxAttemptCount)
-				{
-					_logger.LogWarning(
-						"Attempt {AttemptCount}/{MaxAttemptCount} failed due to a 429, retrying in {x} seconds...",
-						attemptCount[0],
-						Options.MaxAttemptCount,
-						Options.RetryDelay);
+       // Additional handling for 'Developer over qps' errors with exponential backoff and Retry-After support
+	   if (message.Contains("Developer over qps", StringComparison.OrdinalIgnoreCase))
+	   {
+		   if (++attemptCount[0] < Options.MaxAttemptCount)
+		   {
+			   TimeSpan delay = Options.RetryDelay;
+			   // Check for Retry-After header
+			   if (httpResponseMessage.Headers.TryGetValues("Retry-After", out var values))
+			   {
+				   var retryAfterValue = values.FirstOrDefault();
+				   if (int.TryParse(retryAfterValue, out var seconds))
+				   {
+					   delay = TimeSpan.FromSeconds(seconds);
+				   }
+				   else if (DateTimeOffset.TryParse(retryAfterValue, out var retryAfterDate))
+				   {
+					   var now = DateTimeOffset.UtcNow;
+					   if (retryAfterDate > now)
+					   {
+						   delay = retryAfterDate - now;
+					   }
+				   }
+			   }
+			   else
+			   {
+				   // Exponential backoff: 2^attemptCount seconds, capped at 60s
+				   var expDelay = Math.Min(Math.Pow(2, attemptCount[0]), 60);
+				   delay = TimeSpan.FromSeconds(expDelay);
+			   }
+			   _logger.LogWarning(
+				   "Attempt {AttemptCount}/{MaxAttemptCount} failed due to Developer over qps, retrying in {Delay}s...",
+				   attemptCount[0],
+				   Options.MaxAttemptCount,
+				   delay.TotalSeconds);
+			   await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+			   return true;
+		   }
+           // If we reach here, all retries have been exhausted for qps
+		   var finalMsg = $"All {Options.MaxAttemptCount} attempts failed due to rate limiting (Developer over qps).";
+		   _logger.LogError(finalMsg);
+		   throw new CiscoApiException(finalMsg);
+	   }
 
-					await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
-					return true;
-				}
+	   switch (httpResponseMessage.StatusCode)
+	   {
+		   case HttpStatusCode.TooManyRequests:
+			   if (++attemptCount[0] < Options.MaxAttemptCount)
+			   {
+				   _logger.LogWarning(
+					   "Attempt {AttemptCount}/{MaxAttemptCount} failed due to a 429, retrying in {x} seconds...",
+					   attemptCount[0],
+					   Options.MaxAttemptCount,
+					   Options.RetryDelay);
 
-				break;
-			case HttpStatusCode.BadGateway:
-			case HttpStatusCode.GatewayTimeout:
-			case HttpStatusCode.InternalServerError:
-			case HttpStatusCode.RequestTimeout:
-			case HttpStatusCode.ServiceUnavailable:
-			case HttpStatusCode.Unauthorized:
-				if (++attemptCount[0] < Options.MaxAttemptCount)
-				{
-					if (message.Contains("Developer Inactive"))
-					{
-						_logger.LogDebug("SendAsync(): Response content was Developer Inactive - could be a bad API response, requesting a new token.");
-						var refreshedToken = await GetAccessTokenAsync(cancellationToken).ConfigureAwait(false);
-						_authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", refreshedToken);
-						request.Headers.Authorization = _authenticationHeaderValue;
-					}
+				   await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
+				   return true;
+			   }
 
-					_logger.LogWarning(
-						"Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...",
-						attemptCount[0],
-						Options.MaxAttemptCount);
+			   break;
+		   case HttpStatusCode.BadGateway:
+		   case HttpStatusCode.GatewayTimeout:
+		   case HttpStatusCode.InternalServerError:
+		   case HttpStatusCode.RequestTimeout:
+		   case HttpStatusCode.ServiceUnavailable:
+		   case HttpStatusCode.Unauthorized:
+			   if (++attemptCount[0] < Options.MaxAttemptCount)
+			   {
+				   if (message.Contains("Developer Inactive"))
+				   {
+					   _logger.LogDebug("SendAsync(): Response content was Developer Inactive - could be a bad API response, requesting a new token.");
+					   var refreshedToken = await GetAccessTokenAsync(cancellationToken).ConfigureAwait(false);
+					   _authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", refreshedToken);
+					   request.Headers.Authorization = _authenticationHeaderValue;
+				   }
 
-					await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
-					return true;
-				}
+				   _logger.LogWarning(
+					   "Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...",
+					   attemptCount[0],
+					   Options.MaxAttemptCount);
 
-				break;
-			default:
-				break;
-		}
+				   await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
+				   return true;
+			   }
 
-		return false;
+			   break;
+		   default:
+			   break;
+	   }
+
+	   return false;
 	}
 
 	private async Task LogErrorHeadersIfNeeded(HttpRequestMessage request, HttpResponseMessage httpResponseMessage)
