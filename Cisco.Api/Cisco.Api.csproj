@@ -12,7 +12,7 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<LangVersion>latest</LangVersion>
-		<PackageReleaseNotes>Add [Query] attributes to SmartAccountsAndLicensing POST endpoints</PackageReleaseNotes>
+		<PackageReleaseNotes>Update two API token urls.</PackageReleaseNotes>
 
 		<!-- Modern symbol package configuration -->
 		<IncludeSymbols>true</IncludeSymbols>

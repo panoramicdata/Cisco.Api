@@ -97,12 +97,12 @@ public partial class CiscoClient : IDisposable
 		};
 
 		_restHttpClient = CreateAuthenticatedHttpClient("https://id.cisco.com/oauth2/default/v1/token", "https://apix.cisco.com/", options);
-		_restEnterpriseAgreementClient = CreateAuthenticatedHttpClient("https://cloudsso.cisco.com/as/token.oauth2", "https://swapi.cisco.com/services/api/enterprise-agreements", alternativeOptionsWithContentTypeAsJson);
+		_restEnterpriseAgreementClient = CreateAuthenticatedHttpClient("https://id.cisco.com/oauth2/default/v1/token", "https://swapi.cisco.com/services/api/enterprise-agreements", alternativeOptionsWithContentTypeAsJson);
 		_restUmbrellaClient = CreateUmbrellaHttpClient(options);
 		_restPssClient = CreateAuthenticatedHttpClient("https://api.cisco.com/pss/token", "https://api.cisco.com/", options);
 		_restPXCloudClient = CreatePxCloudHttpClient(options);
 		_soapHttpClient = CreateAuthenticatedHttpClient("https://api.cisco.com/pss/token", "https://api.cisco.com/pss/v1.0/", options);
-		_restSmartAccountsAndLicensingClient = CreateAuthenticatedHttpClient("https://cloudsso.cisco.com/as/token.oauth2", "https://swapi.cisco.com/services/api/smart-accounts-and-licensing", alternativeOptionsWithContentTypeAsJson);
+		_restSmartAccountsAndLicensingClient = CreateAuthenticatedHttpClient("https://id.cisco.com/oauth2/default/v1/token", "https://swapi.cisco.com/services/api/smart-accounts-and-licensing", alternativeOptionsWithContentTypeAsJson);
 
 		var refitSettings = new RefitSettings
 		{
