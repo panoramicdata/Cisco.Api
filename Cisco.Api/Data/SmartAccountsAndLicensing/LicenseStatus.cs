@@ -12,4 +12,7 @@ public enum LicenseStatus
 
 	[DataMember(Name = "Expired")]
 	Expired,
+
+	[DataMember(Name = "Future")]
+	Future,
 }
