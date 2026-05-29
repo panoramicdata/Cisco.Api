@@ -202,14 +202,32 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 
 		await SetupRequestAsync(currentCredentialCurrentIndex, currentCredentialsInstance, request, cancellationToken).ConfigureAwait(false);
 
+		// Pre-read the request body into a byte array so it can be replayed on every retry attempt.
+		// The content stream on an HttpRequestMessage is forward-only: once HttpClient has consumed it
+		// on the first send, it is exhausted and cannot be read again. Without this step, any retry
+		// after a transient failure (e.g. an HttpClient timeout or a 5xx response) would send an
+		// empty body to the server.
+		byte[]? requestBodyBytes = null;
+		if (request.Content is not null)
+		{
+			requestBodyBytes = await request.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
+		}
+
 		var attemptCount = 0;
 		while (true)
 		{
+			// A fresh HttpRequestMessage clone is required for every attempt.
+			// Once base.SendAsync() has been called — even if it times out or throws — the original
+			// HttpRequestMessage is marked as 'already sent' by the framework and will throw
+			// InvalidOperationException: "The request message was already sent" if reused.
+			// Cloning ensures each attempt gets a clean, unsent message with the same headers and body.
+			using var attemptRequest = CloneRequest(request, requestBodyBytes);
+
 			HttpResponseMessage httpResponseMessage;
 			try
 			{
 				httpResponseMessage = await base
-					.SendAsync(request, cancellationToken)
+					.SendAsync(attemptRequest, cancellationToken)
 					.ConfigureAwait(false);
 			}
 			catch (Exception ex)
@@ -221,7 +239,16 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 						attemptCount,
 						Options.MaxAttemptCount);
 
-					await Task.Delay(Options.RetryDelay, cancellationToken)
+					// Deliberately use CancellationToken.None for the inter-retry delay rather than the
+					// caller's cancellationToken. When an HttpClient request times out, the framework
+					// cancels its own internal CancellationTokenSource — it does NOT cancel the token
+					// supplied by the caller. If we passed cancellationToken here, a timeout on attempt N
+					// would cancel the delay and prevent attempt N+1 from ever starting, silently
+					// discarding the configured MaxAttemptCount retries. Using CancellationToken.None
+					// ensures the delay (and the subsequent retry) always runs after a timeout.
+					// The caller's token is still respected on the actual SendAsync call above, so a
+					// deliberate job cancellation (e.g. Quartz shutdown) will still stop the retry loop.
+					await Task.Delay(Options.RetryDelay, CancellationToken.None)
 						.ConfigureAwait(false);
 
 					continue;
@@ -357,7 +384,9 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 						Options.MaxAttemptCount,
 						retryDelay);
 
-					await Task.Delay(retryDelay, cancellationToken).ConfigureAwait(false);
+					// Use CancellationToken.None so that a server-side timeout (which cancels HttpClient's
+					// internal token, not the caller's) does not abort the delay and prevent the retry.
+					await Task.Delay(retryDelay, CancellationToken.None).ConfigureAwait(false);
 					return true;
 				}
 
@@ -383,7 +412,8 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 						attemptCount[0],
 						Options.MaxAttemptCount);
 
-					await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
+					// Use CancellationToken.None so that a server-side timeout does not abort the delay and prevent the retry.
+					await Task.Delay(Options.RetryDelay, CancellationToken.None).ConfigureAwait(false);
 					return true;
 				}
 
@@ -467,6 +497,45 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 		}
 	}
 
+
+	/// <summary>
+	/// Creates a fresh, unsent clone of <paramref name="original"/> suitable for a retry attempt.
+	/// </summary>
+	/// <remarks>
+	/// <see cref="HttpRequestMessage"/> is single-use: the .NET HTTP infrastructure marks it as
+	/// 'already sent' after the first call to <c>base.SendAsync</c>, even if that call threw or
+	/// timed out. Any attempt to pass the same instance to <c>SendAsync</c> a second time throws
+	/// <see cref="InvalidOperationException"/>: "The request message was already sent".
+	/// <para>
+	/// The body bytes are supplied separately because the original <see cref="HttpContent"/> stream
+	/// may already be exhausted by the first send attempt; they were pre-read by the caller before
+	/// the retry loop began.
+	/// </para>
+	/// </remarks>
+	private static HttpRequestMessage CloneRequest(HttpRequestMessage original, byte[]? bodyBytes)
+	{
+		var clone = new HttpRequestMessage(original.Method, original.RequestUri)
+		{
+			Version = original.Version
+		};
+
+		foreach (var header in original.Headers)
+		{
+			clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
+		}
+
+		if (bodyBytes is not null && original.Content is not null)
+		{
+			var clonedContent = new ByteArrayContent(bodyBytes);
+			foreach (var header in original.Content.Headers)
+			{
+				clonedContent.Headers.TryAddWithoutValidation(header.Key, header.Value);
+			}
+			clone.Content = clonedContent;
+		}
+
+		return clone;
+	}
 
 	public abstract HttpClient GetHttpClient(int currentCredentialCurrentIndex);
 
