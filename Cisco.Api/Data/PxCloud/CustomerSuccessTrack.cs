@@ -9,7 +9,7 @@ public class CustomerSuccessTrack
 	/// Unique identifier of the success track. This value can be null if customerAdmin has not yet approved visibility.
 	/// </summary>
 	[DataMember(Name = "id")]
-	public string? Id { get; set; } = null;
+	public string? Id { get; set; }
 
 	/// <summary>
 	/// Access provided by the customer. Currently API providing only the approved success tracks by the customer and this value will be always true.

@@ -1,7 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Cisco.Api.Test;
 
@@ -12,7 +11,7 @@ public class SerialNumberToInfoTests(ITestOutputHelper iTestOutputHelper) : Test
 	{
 		var coverageStatusCollection = await CiscoClient
 			.SerialNumberToInfo
-			.GetCoverageStatusBySerialNumbersAsync(["FTX1910100B"])
+			.GetCoverageStatusBySerialNumbersAsync(["FTX1910100B"], default)
 			.ConfigureAwait(true);
 
 		coverageStatusCollection.Should().NotBeNull();
@@ -26,7 +25,7 @@ public class SerialNumberToInfoTests(ITestOutputHelper iTestOutputHelper) : Test
 	{
 		var coverageSummaryCollection = await CiscoClient
 			.SerialNumberToInfo
-			.GetCoverageSummaryBySerialNumbersAsync(["FTX1910100B"])
+			.GetCoverageSummaryBySerialNumbersAsync(["FTX1910100B"], default)
 			.ConfigureAwait(true);
 		coverageSummaryCollection.Should().NotBeNull();
 		coverageSummaryCollection.CoverageSummaries.Select(cs => cs.BasePid).Should().NotBeNullOrEmpty();
@@ -52,7 +51,7 @@ public class SerialNumberToInfoTests(ITestOutputHelper iTestOutputHelper) : Test
 	{
 		var serialNumberOrderablePids = await CiscoClient
 			.SerialNumberToInfo
-			.GetOrderableProductIdentifiersBySerialNumbersAsync(["FTX1910100B"])
+			.GetOrderableProductIdentifiersBySerialNumbersAsync(["FTX1910100B"], default)
 			.ConfigureAwait(true);
 		serialNumberOrderablePids.Should().NotBeNull();
 		serialNumberOrderablePids.SerialNumberOrderablePids.Select(p => p.SerialNumber).Should().NotBeNullOrEmpty();

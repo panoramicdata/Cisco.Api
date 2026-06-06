@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Cisco.Api.Test;
 
@@ -13,12 +12,10 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 	{
 		var response = await CiscoClient
 			.PxCloud
-			.GetCustomersAsync()
+			.GetCustomersAsync(0, 10, default)
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<Customers>();
-		//response.Should().NotBeEmpty();
-		//response.Should().HaveCountGreaterThan(0);
 	}
 
 	[Fact]
@@ -36,7 +33,7 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 		{
 			response = await CiscoClient
 				.PxCloud
-				.GetCustomersAsync(offset, max)
+				.GetCustomersAsync(offset, max, default)
 				.ConfigureAwait(true);
 
 			if (totalCount == -1)
@@ -58,7 +55,7 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 	{
 		var response = await CiscoClient
 			.PxCloud
-			.GetContractsAsync()
+			.GetContractsAsync(0, 10, default)
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<Contracts>();
@@ -71,7 +68,7 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 	{
 		var response = await CiscoClient
 			.PxCloud
-			.GetContractsWithCustomersAsync()
+			.GetContractsWithCustomersAsync(0, 10, null, null, null, default)
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<ContractsWithCustomers>();
@@ -84,7 +81,7 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 	{
 		var response = await CiscoClient
 			.PxCloud
-			.GetContractDetailsAsync("205241272")
+			.GetContractDetailsAsync("205241272", 0, 10, null, null, null, default)
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<ContractDetails>();
@@ -107,7 +104,7 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 		{
 			response = await CiscoClient
 				.PxCloud
-				.GetContractDetailsAsync("205241272", offset, max)
+				.GetContractDetailsAsync("205241272", offset, max, null, null, null, default)
 				.ConfigureAwait(true);
 
 			if (totalCount == -1)
@@ -132,7 +129,7 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 		// Get the report ID
 		var response = await CiscoClient
 			.PxCloudReports
-			.RequestCustomerDataReportAsync("ojD5nF68Lrip1oE", ReportName.Assets, "38396885")
+			.RequestCustomerDataReportAsync("ojD5nF68Lrip1oE", ReportName.Assets, "38396885", default)
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<RequestCustomerDataReportsAsBulkFilesResponse>();
@@ -142,9 +139,9 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 		// Get the report
 		var report = await CiscoClient
 			.PxCloudReports
-			.GetReportAsync("ojD5nF68Lrip1oE", reportId)
+			.GetReportAsync("ojD5nF68Lrip1oE", reportId, default)
 			.ConfigureAwait(true);
 
-		response.Should().NotBeNull();
+		report.Should().NotBeNull();
 	}
 }

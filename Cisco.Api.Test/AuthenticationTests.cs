@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Cisco.Api.Test;
 
@@ -18,7 +17,7 @@ public class AuthenticationTests(ITestOutputHelper iTestOutputHelper) : Test(iTe
 				ClientSecret = "set"
 			})
 			.Hello
-			.HelloAsync()
+			.HelloAsync(default)
 			.ConfigureAwait(true);
 		};
 
@@ -39,7 +38,7 @@ public class AuthenticationTests(ITestOutputHelper iTestOutputHelper) : Test(iTe
 				ClientSecret = null
 			})
 			.Hello
-			.HelloAsync()
+			.HelloAsync(default)
 			.ConfigureAwait(true);
 		};
 

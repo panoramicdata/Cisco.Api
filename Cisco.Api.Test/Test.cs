@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
-using Xunit.Abstractions;
+using Xunit;
 
 namespace Cisco.Api.Test;
 

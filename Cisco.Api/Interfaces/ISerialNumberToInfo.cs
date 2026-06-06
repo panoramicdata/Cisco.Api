@@ -1,5 +1,6 @@
 ﻿using Cisco.Api.Data.SerialNumberToInfo;
 using Refit;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,7 +21,11 @@ public interface ISerialNumberToInfo
 	[Get("/sn2info/v2/coverage/status/serial_numbers/{serialNumbers}")]
 	Task<CoverageStatusCollection> GetCoverageStatusBySerialNumbersAsync(
 		IEnumerable<string> serialNumbers,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
+	Task<CoverageStatusCollection> GetCoverageStatusBySerialNumbersAsync(IEnumerable<string> serialNumbers)
+		=> GetCoverageStatusBySerialNumbersAsync(serialNumbers, default);
 
 	/// <summary>
 	/// Gets coverage summary by serial numbers
@@ -31,7 +36,11 @@ public interface ISerialNumberToInfo
 	[Get("/sn2info/v2/coverage/status/serial_numbers/{serialNumbers}")]
 	Task<CoverageSummaryCollection> GetCoverageSummaryBySerialNumbersAsync(
 		IEnumerable<string> serialNumbers,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
+	Task<CoverageSummaryCollection> GetCoverageSummaryBySerialNumbersAsync(IEnumerable<string> serialNumbers)
+		=> GetCoverageSummaryBySerialNumbersAsync(serialNumbers, default);
 
 	/// <summary>
 	/// Gets coverage summary by serial numbers
@@ -42,5 +51,9 @@ public interface ISerialNumberToInfo
 	[Get("/sn2info/v2/coverage/status/serial_numbers/{serialNumbers}")]
 	Task<OrderablePidCollection> GetOrderableProductIdentifiersBySerialNumbersAsync(
 		IEnumerable<string> serialNumbers,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
+	Task<OrderablePidCollection> GetOrderableProductIdentifiersBySerialNumbersAsync(IEnumerable<string> serialNumbers)
+		=> GetOrderableProductIdentifiersBySerialNumbersAsync(serialNumbers, default);
 }

@@ -1,5 +1,6 @@
-﻿using Cisco.Api.Data.PxCloud;
+using Cisco.Api.Data.PxCloud;
 using Refit;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,9 +19,17 @@ public interface IPxCloud
 	/// <param name="cancellationToken"></param>
 	[Get("/px/v1/customers")]
 	Task<Customers> GetCustomersAsync(
-		int? offset = 0,
-		int? max = 10,
-		CancellationToken cancellationToken = default);
+		int? offset,
+		int? max,
+		CancellationToken cancellationToken);
+
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
+	Task<Customers> GetCustomersAsync(int? offset, int? max)
+		=> GetCustomersAsync(offset, max, default);
+
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
+	Task<Customers> GetCustomersAsync()
+		=> GetCustomersAsync(0, 10, default);
 
 	/// <summary>
 	/// Gets list of partner contracts. Results are paginated, default 10 per page.
@@ -30,9 +39,17 @@ public interface IPxCloud
 	/// <param name="cancellationToken"></param>
 	[Get("/px/v1/contracts")]
 	Task<Contracts> GetContractsAsync(
-		int? offset = 0,
-		int? max = 10,
-		CancellationToken cancellationToken = default);
+		int? offset,
+		int? max,
+		CancellationToken cancellationToken);
+
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
+	Task<Contracts> GetContractsAsync(int? offset, int? max)
+		=> GetContractsAsync(offset, max, default);
+
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
+	Task<Contracts> GetContractsAsync()
+		=> GetContractsAsync(0, 10, default);
 
 	/// <summary>
 	/// Gets list of partner contracts with customers. Results are paginated, default 10 per page.
@@ -45,12 +62,20 @@ public interface IPxCloud
 	/// <param name="cancellationToken"></param>
 	[Get("/px/v1/contractsWithCustomers")]
 	Task<ContractsWithCustomers> GetContractsWithCustomersAsync(
-		int? offset = 0,
-		int? max = 10,
-		string? customerId = null,
-		string? customerGUName = null,
-		int? successTrackId = null,
-		CancellationToken cancellationToken = default);
+		int? offset,
+		int? max,
+		string? customerId,
+		string? customerGUName,
+		int? successTrackId,
+		CancellationToken cancellationToken);
+
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
+	Task<ContractsWithCustomers> GetContractsWithCustomersAsync(int? offset, int? max, string? customerId, string? customerGUName, int? successTrackId)
+		=> GetContractsWithCustomersAsync(offset, max, customerId, customerGUName, successTrackId, default);
+
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
+	Task<ContractsWithCustomers> GetContractsWithCustomersAsync()
+		=> GetContractsWithCustomersAsync(0, 10, null, null, null, default);
 
 	/// <summary>
 	/// Gets contract details. Results are paginated, default 10 per page.
@@ -65,50 +90,23 @@ public interface IPxCloud
 	[Get("/px/v1/contract/details")]
 	Task<ContractDetails> GetContractDetailsAsync(
 		string contractNumber,
-		int? offset = 0,
-		int? max = 10,
-		string? customerId = null,
-		string? contractLineItemType = null,
-		int? successTrackId = null,
-		CancellationToken cancellationToken = default);
+		int? offset,
+		int? max,
+		string? customerId,
+		string? contractLineItemType,
+		int? successTrackId,
+		CancellationToken cancellationToken);
 
-	/// <summary>
-	/// Gets all the offers created by the Partners. Results are paginated.
-	/// </summary>
-	/// <param name="customerId">Unique identifier of the customer.</param>
-	/// <param name="offset">The number of items to skip before starting to collect the result set. Default value is 0.</param>
-	/// <param name="max">The maximum number of items to return. Max is 200.</param>
-	/// <param name="successTrackId">Unique identifier of the Success Track.</param>
-	/// <param name="offerStatus">Status of the Offer (Possible values : 'Unpublished', 'Published', 'Idle').</param>
-	/// <param name="offerType">Type of the Offer (Possible Values : 'Accelerator', 'Ask the Experts').</param>
-	/// <param name="cancellationToken"></param>
-	//[Get("/px/v1/partnerOffers")]
-	//Task<List<PartnerOffers>> GetPartnerOffersAsync(
-	//	string customerId,
-	//	int? offset = 0,
-	//	int? max = null,
-	//	int? successTrackId = null,
-	//	string? offerStatus = null,
-	//	string? offerType = null,
-	//	CancellationToken cancellationToken = default);
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
+	Task<ContractDetails> GetContractDetailsAsync(string contractNumber, int? offset, int? max, string? customerId, string? contractLineItemType, int? successTrackId)
+		=> GetContractDetailsAsync(contractNumber, offset, max, customerId, contractLineItemType, successTrackId, default);
 
-	/// <summary>
-	/// Gets all the active and inactive sessions of all the Offers created by the Partners. Results are paginated.
-	/// </summary>
-	/// <param name="customerId">Unique identifier of the customer.</param>
-	/// <param name="offset">The number of items to skip before starting to collect the result set. Default value is 0.</param>
-	/// <param name="max">The maximum number of items to return. Max is 200.</param>
-	/// <param name="successTrackId">Unique identifier of the Success Track.</param>
-	/// <param name="offerType">Type of the Offer (Possible Values : 'Accelerator', 'Ask the Experts').</param>
-	/// <param name="offerID">Unique Identifier of the offer.</param>
-	/// <param name="cancellationToken"></param>
-	//[Get("/px/v1/partnerOffers")]
-	//Task<List<PartnerOffersSessions>> GetPartnerOffersSessionsAsync(
-	//	string customerId,
-	//	int? offset = 0,
-	//	int? max = null,
-	//	int? successTrackId = null,
-	//	string? offerType = null,
-	//	string? offerId = null,
-	//	CancellationToken cancellationToken = default);
-}
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
+	Task<ContractDetails> GetContractDetailsAsync(string contractNumber, int? offset, int? max)
+		=> GetContractDetailsAsync(contractNumber, offset, max, null, null, null, default);
+
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
+	Task<ContractDetails> GetContractDetailsAsync(string contractNumber)
+		=> GetContractDetailsAsync(contractNumber, 0, 10, null, null, null, default);
+
+	}

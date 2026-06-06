@@ -19,6 +19,8 @@ public partial class CiscoClient
 		var todayMidnight = DateTime.Today;
 		var yesterdayMidnight = todayMidnight.AddDays(-1);
 
+		// MS-19906 You can search specifically for the demo domain and in that specific case you may get an error depending on your perms but it's a 200
+		var enterpriseAgreementTask = EnterpriseAgreement.GetConsumptionReportForAllSubscriptionsAssociatedWithSmartAccountDomainAsync("demo.mule.cisco.com", cancellationToken);
 		var eoxTask = Eox.GetByDatesAsync(yesterdayMidnight, todayMidnight, 1, cancellationToken);
 		var helloTask = Hello.HelloAsync(cancellationToken);
 		var psirtTask = Psirt.GetLatestAsync(1, cancellationToken);
@@ -28,107 +30,37 @@ public partial class CiscoClient
 		// MS-19906 You cannot use an empty list - you get an API error, but you CAN make one up and if this is supported we get a response
 		var serialNumberToInfoTask = SerialNumberToInfo.GetCoverageStatusBySerialNumbersAsync(["123"], cancellationToken);
 		var softwareSuggestionTask = SoftwareSuggestion.GetByProductIdsAsync(["C9200"], 1, cancellationToken);
-		var umbrellaTask = Umbrella.ListSitesAsync(cancellationToken: cancellationToken);
+		// MS-19906 You can search for anything
+		var smartAccountsAndLicensingTask = SmartAccountsAndLicensing.SearchSmartAccountsAsync("123", null, 50, 0, null, cancellationToken);
+		var umbrellaTask = Umbrella.ListSitesAsync(1, 100, cancellationToken);
 
-		try
-		{
-			_logger.LogDebug("Checking Eox");
-			await eoxTask
-				.ConfigureAwait(false);
-			_logger.LogDebug("Eox succeeded");
-			apiAccess.Eox = true;
-		}
-		catch (Exception ex)
-		{
-			_logger.LogDebug(ex, "Eox failed");
-		}
-
-		try
-		{
-			_logger.LogDebug("Checking Hello");
-			await helloTask.ConfigureAwait(false);
-			_logger.LogDebug("Hello succeeded");
-			apiAccess.Hello = true;
-		}
-		catch (Exception ex)
-		{
-			_logger.LogDebug(ex, "Hello failed");
-		}
-
-		try
-		{
-			_logger.LogDebug("Checking Psirt");
-			await psirtTask.ConfigureAwait(false);
-			apiAccess.Psirt = true;
-		}
-		catch (Exception ex)
-		{
-			_logger.LogDebug(ex, "Psirt failed");
-		}
-
-		try
-		{
-			_logger.LogDebug("Checking ProductInfo");
-			await productInfoTask.ConfigureAwait(false);
-			_logger.LogDebug("ProductInfo succeeded");
-			apiAccess.ProductInfo = true;
-		}
-		catch (Exception ex)
-		{
-			_logger.LogDebug(ex, "ProductInfo failed");
-		}
-
-		try
-		{
-			_logger.LogDebug("Checking Pss");
-			await pssTask
-				.ConfigureAwait(false);
-			_logger.LogDebug("Pss succeeded");
-			apiAccess.Pss = true;
-		}
-		catch (Exception ex)
-		{
-			_logger.LogDebug(ex, "Pss failed");
-		}
-
-		try
-		{
-			_logger.LogDebug("Checking SerialNumberToInfo");
-			await serialNumberToInfoTask.ConfigureAwait(false);
-			_logger.LogDebug("SerialNumberToInfo succeeded");
-			apiAccess.SerialNumberToInfo = true;
-		}
-		catch (Exception ex)
-		{
-			_logger.LogDebug(ex, "SerialNumberToInfo failed");
-		}
-
-		try
-		{
-			_logger.LogDebug("Checking SoftwareSuggestion");
-			await softwareSuggestionTask
-				.ConfigureAwait(false);
-			_logger.LogDebug("SoftwareSuggestion succeeded");
-			apiAccess.SoftwareSuggestion = true;
-		}
-		catch (Exception ex)
-		{
-			_logger.LogDebug(ex, "SoftwareSuggestion failed");
-		}
-
-		try
-		{
-			_logger.LogDebug("Checking Umbrella");
-			await umbrellaTask
-				.ConfigureAwait(false);
-			_logger.LogDebug("Umbrella succeeded");
-			apiAccess.Umbrella = true;
-		}
-		catch (Exception ex)
-		{
-			_logger.LogDebug(ex, "Umbrella failed");
-		}
+		apiAccess.EnterpriseAgreement = await TryApiAsync("Enterprise Agreement", enterpriseAgreementTask).ConfigureAwait(false);
+		apiAccess.Eox = await TryApiAsync("Eox", eoxTask).ConfigureAwait(false);
+		apiAccess.Hello = await TryApiAsync("Hello", helloTask).ConfigureAwait(false);
+		apiAccess.Psirt = await TryApiAsync("Psirt", psirtTask).ConfigureAwait(false);
+		apiAccess.ProductInfo = await TryApiAsync("ProductInfo", productInfoTask).ConfigureAwait(false);
+		apiAccess.Pss = await TryApiAsync("Pss", pssTask).ConfigureAwait(false);
+		apiAccess.SerialNumberToInfo = await TryApiAsync("SerialNumberToInfo", serialNumberToInfoTask).ConfigureAwait(false);
+		apiAccess.SoftwareSuggestion = await TryApiAsync("SoftwareSuggestion", softwareSuggestionTask).ConfigureAwait(false);
+		apiAccess.SmartAccountsAndLicensing = await TryApiAsync("SmartAccountsAndLicensing", smartAccountsAndLicensingTask).ConfigureAwait(false);
+		apiAccess.Umbrella = await TryApiAsync("Umbrella", umbrellaTask).ConfigureAwait(false);
 
 		return apiAccess;
+	}
+
+	private async Task<bool> TryApiAsync(string name, Task task)
+	{
+		try
+		{
+			_logger.LogDebug("Checking {Name}", name);
+			await task.ConfigureAwait(false);
+			_logger.LogDebug("{Name} succeeded", name);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			_logger.LogDebug(ex, "{Name} failed", name);
+			return false;
+		}
 	}
 }

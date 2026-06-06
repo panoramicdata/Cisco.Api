@@ -1,7 +1,6 @@
 ﻿using Cisco.Api.Data.Hello;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Cisco.Api.Test;
 
@@ -12,7 +11,7 @@ public class HelloTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputH
 	{
 		var response = await CiscoClient
 			.Hello
-			.HelloAsync()
+			.HelloAsync(default)
 			.ConfigureAwait(true);
 		response.Should().BeOfType<Response>();
 		response.HelloResponse.Should().NotBeNull();

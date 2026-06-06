@@ -1,5 +1,6 @@
-﻿using Cisco.Api.Data.SoftwareSuggestion;
+using Cisco.Api.Data.SoftwareSuggestion;
 using Refit;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +21,14 @@ public interface ISoftwareSuggestion
 	[Get("/software/suggestion/v2/suggestions/software/productIds/{productIds}")]
 	Task<SoftwareSuggestionPage> GetByProductIdsAsync(
 		IEnumerable<string> productIds,
-		int pageIndex = 1,
-		CancellationToken cancellationToken = default);
+		int pageIndex,
+		CancellationToken cancellationToken);
+
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
+	Task<SoftwareSuggestionPage> GetByProductIdsAsync(IEnumerable<string> productIds, int pageIndex)
+		=> GetByProductIdsAsync(productIds, pageIndex, default);
+
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
+	Task<SoftwareSuggestionPage> GetByProductIdsAsync(IEnumerable<string> productIds)
+		=> GetByProductIdsAsync(productIds, 1, default);
 }

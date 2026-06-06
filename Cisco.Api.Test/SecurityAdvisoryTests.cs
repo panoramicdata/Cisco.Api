@@ -3,7 +3,6 @@ using Cisco.Api.Exceptions;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Cisco.Api.Test
 {
@@ -15,7 +14,7 @@ namespace Cisco.Api.Test
 			var securityAdvisories =
 				await CiscoClient
 					.SecurityAdvisory
-					.GetAdvisoriesByOsTypeAndVersion("asa", "9.8.2")
+					.GetAdvisoriesByOsTypeAndVersion("asa", "9.8.2", "", default)
 				.ConfigureAwait(true);
 
 			securityAdvisories.Should().NotBeNull();
@@ -28,7 +27,7 @@ namespace Cisco.Api.Test
 			var securityAdvisories =
 				await CiscoClient
 					.SecurityAdvisory
-					.GetAdvisoriesByOsTypeAndVersion("asa", "9.8.2", "ASAV")
+					.GetAdvisoriesByOsTypeAndVersion("asa", "9.8.2", "ASAV", default)
 				.ConfigureAwait(true);
 
 			securityAdvisories.Should().NotBeNull();
@@ -41,7 +40,7 @@ namespace Cisco.Api.Test
 			var securityAdvisories =
 				await CiscoClient
 					.SecurityAdvisory
-					.GetAdvisoriesByProduct("Cisco")
+					.GetAdvisoriesByProduct("Cisco", default)
 				.ConfigureAwait(true);
 
 			securityAdvisories.Should().NotBeNull();
@@ -54,7 +53,7 @@ namespace Cisco.Api.Test
 			var securityAdvisories =
 				await CiscoClient
 					.SecurityAdvisory
-					.GetAdvisoriesByProduct("Cisco FirePOWER Services Software for ASA")
+					.GetAdvisoriesByProduct("Cisco FirePOWER Services Software for ASA", default)
 				.ConfigureAwait(true);
 
 			securityAdvisories.Should().NotBeNull();
@@ -67,7 +66,7 @@ namespace Cisco.Api.Test
 			{
 				await CiscoClient
 					.SecurityAdvisory
-					.GetAdvisoriesByProduct("xyz")
+					.GetAdvisoriesByProduct("xyz", default)
 				.ConfigureAwait(true);
 			}
 			catch (CiscoApiException ex)
@@ -88,7 +87,7 @@ namespace Cisco.Api.Test
 			var securityAdvisories =
 				await CiscoClient
 					.SecurityAdvisory
-					.GetAdvisoriesByCveName("CVE-2022-20623")
+					.GetAdvisoriesByCveName("CVE-2022-20623", default)
 				.ConfigureAwait(true);
 
 			securityAdvisories.Should().NotBeNull();
@@ -101,7 +100,7 @@ namespace Cisco.Api.Test
 			var securityAdvisories =
 				await CiscoClient
 					.SecurityAdvisory
-					.GetLatesAdvisoriesLimitedByCount(15)
+					.GetLatesAdvisoriesLimitedByCount(15, default)
 				.ConfigureAwait(true);
 
 			securityAdvisories.Should().NotBeNull();
@@ -114,7 +113,7 @@ namespace Cisco.Api.Test
 			var versions =
 				await CiscoClient
 					.SecurityAdvisory
-					.GetOsVersionDataByType("ios")
+					.GetOsVersionDataByType("ios", default)
 				.ConfigureAwait(true);
 
 			versions.Should().NotBeNull();
@@ -131,7 +130,7 @@ namespace Cisco.Api.Test
 			var versions =
 				await CiscoClient
 					.SecurityAdvisory
-					.GetOsVersionDataByType("nxos")
+					.GetOsVersionDataByType("nxos", default)
 				.ConfigureAwait(true);
 
 			versions.Should().NotBeNull();
@@ -149,7 +148,7 @@ namespace Cisco.Api.Test
 			var securityAdvisories =
 				await CiscoClient
 					.SecurityAdvisory
-					.GetAllAdvisories()
+					.GetAllAdvisories(true, true, default)
 				.ConfigureAwait(true);
 
 			securityAdvisories.Should().NotBeNull();
@@ -162,7 +161,7 @@ namespace Cisco.Api.Test
 			var securityAdvisories =
 				await CiscoClient
 					.SecurityAdvisory
-					.GetAllAdvisories(1, 1)
+					.GetAllAdvisories(1, 1, true, true, default)
 				.ConfigureAwait(true);
 
 			securityAdvisories.Should().NotBeNull();
@@ -175,7 +174,7 @@ namespace Cisco.Api.Test
 			var securityAdvisories =
 				await CiscoClient
 					.SecurityAdvisory
-					.GetById("cisco-sa-tms-portal-xss-AXNeVg3s")
+					.GetById("cisco-sa-tms-portal-xss-AXNeVg3s", default)
 				.ConfigureAwait(true);
 
 			securityAdvisories.Should().NotBeNull();
@@ -188,7 +187,7 @@ namespace Cisco.Api.Test
 			var securityAdvisories =
 				await CiscoClient
 					.SecurityAdvisory
-					.GetAdvisoriesByCustomRequest("latest/1")
+					.GetAdvisoriesByCustomRequest("latest/1", default)
 				.ConfigureAwait(true);
 
 			securityAdvisories.Should().NotBeNull();

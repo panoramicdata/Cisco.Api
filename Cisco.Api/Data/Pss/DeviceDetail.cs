@@ -87,13 +87,13 @@ public class DeviceDetail<TCardDetailType>
 	/// Date the original inventory was performed.
 	/// </summary>
 	[XmlElement("originalInventoryDate")]
-	public DateTime? OriginalInventoryDate;
+	public DateTime? OriginalInventoryDate { get; set; }
 
 	/// <summary>
 	/// The date the last inventory was performed.
 	/// </summary>
 	[XmlElement("lastInventoryDate")]
-	public DateTime? LastInventoryDate;
+	public DateTime? LastInventoryDate { get; set; }
 
 	/// <summary>
 	/// Base product id of the device.

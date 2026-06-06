@@ -1,5 +1,6 @@
-﻿using Cisco.Api.Data.ProductInfo;
+using Cisco.Api.Data.ProductInfo;
 using Refit;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,5 +21,9 @@ public interface IProductInfo
 	[Get("/product/v1/information/serial_numbers/{serialNumbers}")]
 	Task<ProductInformationPage> GetBySerialNumbersAsync(
 		[Query(CollectionFormat.Csv)] IEnumerable<string> serialNumbers,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
+	Task<ProductInformationPage> GetBySerialNumbersAsync([Query(CollectionFormat.Csv)] IEnumerable<string> serialNumbers)
+		=> GetBySerialNumbersAsync(serialNumbers, default);
 }

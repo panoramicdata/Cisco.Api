@@ -30,22 +30,22 @@ $ErrorActionPreference = "Stop"
 # Color output functions
 function Write-Info {
     param([string]$Message)
-    Write-Host "ℹ️  $Message" -ForegroundColor Cyan
+    Write-Information "ℹ️  $Message"
 }
 
 function Write-Success {
     param([string]$Message)
-    Write-Host "✓ $Message" -ForegroundColor Green
+    Write-Information "✓ $Message"
 }
 
 function Write-Error-Message {
     param([string]$Message)
-    Write-Host "✗ $Message" -ForegroundColor Red
+    Write-Information "✗ $Message"
 }
 
 function Write-Step {
     param([string]$Message)
-    Write-Host "`n==> $Message" -ForegroundColor Yellow
+    Write-Information "`n==> $Message"
 }
 
 # Step 1: Check Git Porcelain (clean working directory)
@@ -53,8 +53,8 @@ Write-Step "Checking Git working directory status..."
 $gitStatus = git status --porcelain
 if ($gitStatus) {
     Write-Error-Message "Git working directory is not clean. Please commit or stash changes first."
-    Write-Host "`nUncommitted changes:" -ForegroundColor Yellow
-    Write-Host $gitStatus
+    Write-Information "`nUncommitted changes:"
+    Write-Information $gitStatus
     exit 1
 }
 Write-Success "Git working directory is clean"
@@ -170,7 +170,7 @@ if ($symbolsPackagePath) {
     Write-Success "Symbols package published successfully!"
 }
 
-Write-Host "`n🎉 All done! Package $($packagePath.Name) has been published to NuGet.org" -ForegroundColor Green
+Write-Information "`n🎉 All done! Package $($packagePath.Name) has been published to NuGet.org"
 if ($symbolsPackagePath) {
-    Write-Host "   Including symbols package for debugging support" -ForegroundColor Green
+    Write-Information "   Including symbols package for debugging support"
 }

@@ -16,11 +16,15 @@ public partial class CiscoClient : IDisposable
 {
 	private readonly ILogger _logger;
 	private readonly HttpClient _restHttpClient;
+	private readonly HttpClient _restEnterpriseAgreementClient;
 	private readonly HttpClient _restUmbrellaClient;
 	private readonly HttpClient _restPssClient;
 	private readonly HttpClient _restPXCloudClient;
+	private readonly HttpClient _restSmartAccountsAndLicensingClient;
 	private readonly HttpClient _soapHttpClient;
 	private bool disposedValue;
+
+	public IEnterpriseAgreement EnterpriseAgreement { get; set; }
 
 	public IEox Eox { get; set; }
 
@@ -42,6 +46,8 @@ public partial class CiscoClient : IDisposable
 
 	public ISerialNumberToInfo SerialNumberToInfo { get; set; }
 
+	public ISmartAccountsAndLicensing SmartAccountsAndLicensing { get; set; }
+
 	public ISoftwareSuggestion SoftwareSuggestion { get; set; }
 
 	public IUmbrella Umbrella { get; set; }
@@ -52,10 +58,7 @@ public partial class CiscoClient : IDisposable
 	{
 		_logger = logger ?? NullLogger.Instance;
 
-		if (options is null)
-		{
-			throw new ArgumentNullException(nameof(options));
-		}
+		ArgumentNullException.ThrowIfNull(options);
 
 		if (options.ClientCredentialsNotSupported is not null)
 		{
@@ -80,88 +83,26 @@ public partial class CiscoClient : IDisposable
 			}
 		}
 
-		_restHttpClient = new HttpClient(
-			new AuthenticatedHttpClientHandler(
-				new("https://id.cisco.com/oauth2/default/v1/token"),
-				options,
-				_logger)
-		)
+		/////////////////////////////
+		/// Some of the following APIs expect "application/json" as the content type
+		/// Enterprise Agreement and Smart Accounts And Licensing, even for GET requests with no body.
+		var alternativeOptionsWithContentTypeAsJson = new CiscoClientOptions
 		{
-			BaseAddress = new("https://apix.cisco.com/"),
-			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
+			ClientId = options.ClientId,
+			ClientSecret = options.ClientSecret,
+			HttpClientTimeoutSeconds = options.HttpClientTimeoutSeconds,
+			// IMPORTANT: EA API requires application/json content type
+			// for all requests, regardless of whether there is a body or not
+			UseJsonContentType = true
 		};
 
-		///////////////
-		// Umbrella uses a different client handler to support API keys
-		// https://docs.umbrella.com/umbrella-api/docs/umbrella-api-quick-start
-
-		if (options.ClientCredentialsNotSupported is not null)
-		{
-			// Supports multiple credentials to circumvent rate limiting
-			_restUmbrellaClient = new HttpClient(
-				new AuthenticatedFastUmbrellaHttpClientHandler(
-					new("https://api.umbrella.com/auth/v2/token"),
-					options,
-					_logger))
-			{
-				BaseAddress = new("https://api.umbrella.com/"),
-				Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
-			};
-		}
-		else
-		{
-			_restUmbrellaClient = new HttpClient(
-				new AuthenticatedUmbrellaHttpClientHandler(
-					new("https://api.umbrella.com/auth/v2/token"),
-					options,
-					_logger))
-			{
-				BaseAddress = new("https://api.umbrella.com/"),
-				Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
-			};
-		}
-
-		///////////////
-		/// PSS Configs
-
-		// Needs the old Cisco token format
-		_restPssClient = new HttpClient(
-			new AuthenticatedHttpClientHandler(
-				new("https://api.cisco.com/pss/token"),
-				options,
-				_logger)
-)
-		{
-			BaseAddress = new("https://api.cisco.com/"),
-			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
-		};
-
-		///////////////
-		/// PX Cloud
-
-		var scope = "api.authz.iam.manage";
-		_restPXCloudClient = new HttpClient(
-			new AuthenticatedHttpClientHandler(
-				new("https://id.cisco.com/oauth2/aus1o4emxorc3wkEe5d7/v1/token"),
-				options,
-				_logger,
-				scope)
-		)
-		{
-			BaseAddress = new("https://api-cx.cisco.com/"),
-			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
-		};
-
-		_soapHttpClient = new HttpClient(
-			new AuthenticatedHttpClientHandler(
-				new("https://api.cisco.com/pss/token"),
-				options,
-				_logger)
-		)
-		{
-			BaseAddress = new("https://api.cisco.com/pss/v1.0/"),
-			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
-		};
+		_restHttpClient = CreateAuthenticatedHttpClient("https://id.cisco.com/oauth2/default/v1/token", "https://apix.cisco.com/", options);
+		_restEnterpriseAgreementClient = CreateAuthenticatedHttpClient("https://id.cisco.com/oauth2/default/v1/token", "https://swapi.cisco.com/services/api/enterprise-agreements", alternativeOptionsWithContentTypeAsJson);
+		_restUmbrellaClient = CreateUmbrellaHttpClient(options);
+		_restPssClient = CreateAuthenticatedHttpClient("https://api.cisco.com/pss/token", "https://api.cisco.com/", options);
+		_restPXCloudClient = CreatePxCloudHttpClient(options);
+		_soapHttpClient = CreateAuthenticatedHttpClient("https://api.cisco.com/pss/token", "https://api.cisco.com/pss/v1.0/", options);
+		_restSmartAccountsAndLicensingClient = CreateAuthenticatedHttpClient("https://id.cisco.com/oauth2/default/v1/token", "https://swapi.cisco.com/services/api/smart-accounts-and-licensing", alternativeOptionsWithContentTypeAsJson);
 
 		var refitSettings = new RefitSettings
 		{
@@ -169,19 +110,14 @@ public partial class CiscoClient : IDisposable
 			ContentSerializer = new NewtonsoftJsonContentSerializer(
 				new JsonSerializerSettings
 				{
-					// By default nulls should not be rendered out, this will allow the receiving API to apply any defaults.
-					// Use [JsonProperty(NullValueHandling = NullValueHandling.Include)] to send
-					// nulls for specific properties, i.e. disassociating port schedule ids from a port
 					NullValueHandling = NullValueHandling.Ignore,
-					//#if DEBUG
-					//						MissingMemberHandling = MissingMemberHandling.Error,
-					//#endif
 					Converters = [new StringEnumConverter()]
 				}
 			)
 		};
 
 		// Interfaces
+		EnterpriseAgreement = RestService.For<IEnterpriseAgreement>(_restEnterpriseAgreementClient, refitSettings);
 		Eox = RestService.For<IEox>(_restHttpClient, refitSettings);
 		Hello = RestService.For<IHello>(_restHttpClient);
 		ProductInfo = RestService.For<IProductInfo>(_restHttpClient, refitSettings);
@@ -192,9 +128,39 @@ public partial class CiscoClient : IDisposable
 		PxCloud = RestService.For<IPxCloud>(_restPXCloudClient, refitSettings);
 		SecurityAdvisory = RestService.For<ISecurityAdvisory>(_restHttpClient, refitSettings);
 		SerialNumberToInfo = RestService.For<ISerialNumberToInfo>(_restHttpClient, refitSettings);
+		SmartAccountsAndLicensing = RestService.For<ISmartAccountsAndLicensing>(_restSmartAccountsAndLicensingClient, refitSettings);
 		SoftwareSuggestion = RestService.For<ISoftwareSuggestion>(_restHttpClient, refitSettings);
 		Umbrella = RestService.For<IUmbrella>(_restUmbrellaClient, refitSettings);
 	}
+
+	private HttpClient CreateAuthenticatedHttpClient(string tokenUri, string baseAddress, CiscoClientOptions options) => new(
+		new AuthenticatedHttpClientHandler(new(tokenUri), options, _logger))
+	{
+		BaseAddress = new(baseAddress),
+		Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
+	};
+
+	private HttpClient CreateUmbrellaHttpClient(CiscoClientOptions options)
+	{
+		HttpClientHandler handler = options.ClientCredentialsNotSupported is not null
+			? new AuthenticatedFastUmbrellaHttpClientHandler(new("https://api.umbrella.com/auth/v2/token"), options, _logger)
+			: new AuthenticatedUmbrellaHttpClientHandler(new("https://api.umbrella.com/auth/v2/token"), options, _logger);
+
+		return new HttpClient(handler)
+		{
+			BaseAddress = new("https://api.umbrella.com/"),
+			Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
+		};
+	}
+
+	private HttpClient CreatePxCloudHttpClient(CiscoClientOptions options) => new(
+		new AuthenticatedHttpClientHandler(
+			new("https://id.cisco.com/oauth2/aus1o4emxorc3wkEe5d7/v1/token"),
+			options, _logger, "api.authz.iam.manage"))
+	{
+		BaseAddress = new("https://api-cx.cisco.com/"),
+		Timeout = TimeSpan.FromSeconds(options.HttpClientTimeoutSeconds)
+	};
 
 	protected virtual void Dispose(bool disposing)
 	{

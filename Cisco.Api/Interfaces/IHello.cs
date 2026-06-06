@@ -1,5 +1,6 @@
-﻿using Cisco.Api.Data.Hello;
+using Cisco.Api.Data.Hello;
 using Refit;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,5 +18,9 @@ public interface IHello
 	/// <returns>The EOX information</returns>
 	[Get("/hello")]
 	Task<Response> HelloAsync(
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
+	Task<Response> HelloAsync()
+		=> HelloAsync(default);
 }

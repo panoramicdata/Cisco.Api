@@ -69,4 +69,5 @@ public class CiscoClientOptions
 	/// Defaults give you a one hour window.
 	/// </summary>
 	public TimeSpan RetryInvalidClientTokenErrorsRetryDelay { get; set; } = TimeSpan.FromSeconds(10);
+	public bool UseJsonContentType { get; internal set; }
 }

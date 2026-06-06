@@ -1,5 +1,6 @@
-﻿using Cisco.Api.Data.PxCloud;
+using Cisco.Api.Data.PxCloud;
 using Refit;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,7 +23,11 @@ public interface IPxCloudReports
 		string customerId,
 		ReportName reportName,
 		string successTrackId,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
+	Task<RequestCustomerDataReportsAsBulkFilesResponse> RequestCustomerDataReportAsync(string customerId, ReportName reportName, string successTrackId)
+		=> RequestCustomerDataReportAsync(customerId, reportName, successTrackId, default);
 
 	/// Returns the scheduled report content; this may take a few minutes to generate.
 	/// <param name="customerId">Unique Identifier of the customer.</param>
@@ -32,5 +37,9 @@ public interface IPxCloudReports
 	Task<ReportPayloadParent> GetReportAsync(
 		string customerId,
 		string reportId,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
+
+	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
+	Task<ReportPayloadParent> GetReportAsync(string customerId, string reportId)
+		=> GetReportAsync(customerId, reportId, default);
 }
