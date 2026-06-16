@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net9.0;net10.0</TargetFrameworks>
+		<TargetFrameworks>net10.0;net10.0</TargetFrameworks>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Description>Provides access to EoX, Enterprise Agreement, Product Information, PSIRT, PSS, Serial Number to Information, PX Cloud, Smart Account and Licensing, and Umbrella APIs. Requires client credentials.</Description>
 		<PackageProjectUrl>https://github.com/panoramicdata/Cisco.Api</PackageProjectUrl>
