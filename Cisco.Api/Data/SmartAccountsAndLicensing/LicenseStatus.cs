@@ -15,4 +15,7 @@ public enum LicenseStatus
 
 	[DataMember(Name = "Future")]
 	Future,
+
+	[DataMember(Name = "Pending")]
+	Pending,
 }
