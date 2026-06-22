@@ -29,6 +29,11 @@ internal class PxCloudReports(HttpClient restHttpClient) : IPxCloudReports
 				SuccessTrackId = successTrackId
 			}, cancellationToken).ConfigureAwait(false);
 
+		if(!x.IsSuccessStatusCode)
+		{
+			throw new PxCloudReportException("An error occurred whilst requesting the report.");
+		}
+
 		if (x.Headers.TryGetValues("location", out var location))
 		{
 			return new RequestCustomerDataReportsAsBulkFilesResponse
