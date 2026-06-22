@@ -1,17 +1,12 @@
-#
 name: "CodeQL"
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
-    # The branches below must be a subset of the branches above
     branches: [ "main" ]
   schedule:
-    - cron: '26 0 * * 0'
-
-env:
-  CONFIGURATION: Release
+    - cron: '0 6 * * 1'
 
 jobs:
   analyze:
@@ -29,23 +24,17 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
-          
-    # Initializes the CodeQL tools for scanning.
+      uses: actions/checkout@v6
+
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
+      uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
-        
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
 
-    - name: Build
-      shell: pwsh
-      run: |
-        dotnet build --configuration ${{ env.CONFIGURATION }}
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v3
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{ matrix.language }}"

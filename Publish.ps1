@@ -1,176 +1,59 @@
-﻿#!/usr/bin/env pwsh
-<#
-.SYNOPSIS
-    Publishes the Cisco.Api NuGet package.
+# Panoramic Data NuGet Publish Script (Standard)
+# Tags the current commit with the NBGV version and pushes to trigger CI/CD publishing.
+# Usage: .\Publish.ps1
 
-.DESCRIPTION
-    This script performs the following steps:
-    1. Checks that the git working directory is clean (porcelain)
-    2. Runs unit tests (can be skipped with --skip-tests)
-    3. Builds the project in Release mode
-    4. Publishes the package to NuGet using the API key from nuget-key.txt
-    5. Publishes symbols package (snupkg) for debugging support
+$ErrorActionPreference = 'Stop'
 
-.PARAMETER SkipTests
-    Skip running unit tests before publishing
-
-.EXAMPLE
-    .\publish.ps1
-
-.EXAMPLE
-    .\publish.ps1 --skip-tests
-#>
-
-param(
-    [switch]$SkipTests
-)
-
-$ErrorActionPreference = "Stop"
-
-# Color output functions
-function Write-Info {
-    param([string]$Message)
-    Write-Information "ℹ️  $Message"
-}
-
-function Write-Success {
-    param([string]$Message)
-    Write-Information "✓ $Message"
-}
-
-function Write-Error-Message {
-    param([string]$Message)
-    Write-Information "✗ $Message"
-}
-
-function Write-Step {
-    param([string]$Message)
-    Write-Information "`n==> $Message"
-}
-
-# Step 1: Check Git Porcelain (clean working directory)
-Write-Step "Checking Git working directory status..."
-$gitStatus = git status --porcelain
-if ($gitStatus) {
-    Write-Error-Message "Git working directory is not clean. Please commit or stash changes first."
-    Write-Information "`nUncommitted changes:"
-    Write-Information $gitStatus
+# Check for clean working tree (porcelain)
+$status = git status --porcelain
+if ($status) {
+    Write-Error "Working tree is not clean. Commit or stash changes before publishing.`n$status"
     exit 1
 }
-Write-Success "Git working directory is clean"
 
-# Step 2: Check for nuget-key.txt
-Write-Step "Checking for NuGet API key file..."
-$nugetKeyFile = "nuget-key.txt"
-if (-not (Test-Path $nugetKeyFile)) {
-    Write-Error-Message "NuGet API key file not found: $nugetKeyFile"
-    Write-Info "Please create a file named 'nuget-key.txt' in the root directory containing your NuGet API key"
+# Ensure we are on the main branch
+$branch = git rev-parse --abbrev-ref HEAD
+if ($branch -ne 'main') {
+    Write-Error "Publishing is only supported from the 'main' branch (currently on '$branch')."
     exit 1
 }
-$nugetApiKey = Get-Content $nugetKeyFile -Raw
-$nugetApiKey = $nugetApiKey.Trim()
-if ([string]::IsNullOrWhiteSpace($nugetApiKey)) {
-    Write-Error-Message "NuGet API key file is empty: $nugetKeyFile"
+
+# Ensure local main is up to date with remote
+git fetch origin main --quiet
+$localHead = git rev-parse HEAD
+$remoteHead = git rev-parse origin/main
+if ($localHead -ne $remoteHead) {
+    Write-Error "Local branch is not up to date with origin/main. Pull or push first."
     exit 1
 }
-Write-Success "NuGet API key file found"
 
-# Step 3: Run tests (unless skipped)
-if (-not $SkipTests) {
-    Write-Step "Running unit tests..."
-    $testProject = "Cisco.Api.Test\Cisco.Api.Test.csproj"
-
-    if (-not (Test-Path $testProject)) {
-        Write-Error-Message "Test project not found: $testProject"
-        exit 1
-    }
-
-    dotnet test $testProject --configuration Release --verbosity normal
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error-Message "Unit tests failed"
-        exit 1
-    }
-    Write-Success "All unit tests passed"
-} else {
-    Write-Info "Skipping unit tests (--skip-tests flag specified)"
-}
-
-# Step 4: Clean previous builds
-Write-Step "Cleaning previous builds..."
-dotnet clean --configuration Release
+# Get version from Nerdbank.GitVersioning via the project's MSBuild targets (the
+# referenced NuGet package), so this does not depend on the global 'nbgv' CLI tool
+# being installed or on PATH. The GetBuildVersion target must run for the computed
+# version to be populated (a plain -getProperty evaluation returns the static
+# version.json value without the Git height).
+$project = Join-Path $PSScriptRoot 'Cisco.Api/Cisco.Api.csproj'
+$buildOutput = dotnet build $project -t:GetBuildVersion --getProperty:NuGetPackageVersion -nologo -v:quiet -p:TreatWarningsAsErrors=false
 if ($LASTEXITCODE -ne 0) {
-    Write-Error-Message "Clean failed"
+    Write-Error "Failed to determine version from Nerdbank.GitVersioning.`n$buildOutput"
     exit 1
 }
-Write-Success "Clean completed"
+$version = ($buildOutput | Select-Object -Last 1).ToString().Trim()
 
-# Step 5: Build the project
-Write-Step "Building project in Release mode..."
-$projectFile = "Cisco.Api\Cisco.Api.csproj"
-dotnet build $projectFile --configuration Release
-if ($LASTEXITCODE -ne 0) {
-    Write-Error-Message "Build failed"
-    exit 1
-}
-Write-Success "Build completed successfully"
-
-# Step 6: Pack the project with symbols (using modern embedded symbols format)
-Write-Step "Packing NuGet package with symbols..."
-dotnet pack $projectFile --configuration Release --no-build --include-symbols --include-source -p:SymbolPackageFormat=snupkg
-if ($LASTEXITCODE -ne 0) {
-    Write-Error-Message "Pack failed"
-    exit 1
-}
-Write-Success "Pack completed successfully"
-
-# Step 7: Find the generated NuGet packages
-Write-Step "Locating generated NuGet packages..."
-$packagePath = Get-ChildItem -Path "Cisco.Api\bin\Release" -Filter "*.nupkg" -Recurse |
-    Where-Object { $_.Name -notlike "*.symbols.nupkg" } |
-    Sort-Object LastWriteTime -Descending |
-    Select-Object -First 1
-
-if (-not $packagePath) {
-    Write-Error-Message "No NuGet package found in Cisco.Api\bin\Release"
+if (-not $version) {
+    Write-Error "Failed to determine version from nbgv."
     exit 1
 }
 
-Write-Success "Found package: $($packagePath.Name)"
-Write-Info "Package path: $($packagePath.FullName)"
-
-# Find the symbols package
-$symbolsPackagePath = Get-ChildItem -Path "Cisco.Api\bin\Release" -Filter "*.snupkg" -Recurse |
-    Sort-Object LastWriteTime -Descending |
-    Select-Object -First 1
-
-if ($symbolsPackagePath) {
-    Write-Success "Found symbols package: $($symbolsPackagePath.Name)"
-    Write-Info "Symbols package path: $($symbolsPackagePath.FullName)"
-} else {
-    Write-Info "No symbols package found (this is optional)"
-}
-
-# Step 8: Publish to NuGet
-Write-Step "Publishing to NuGet.org..."
-dotnet nuget push $packagePath.FullName --api-key $nugetApiKey --source https://api.nuget.org/v3/index.json --skip-duplicate
-if ($LASTEXITCODE -ne 0) {
-    Write-Error-Message "NuGet publish failed"
+# Check tag doesn't already exist
+$existingTag = git tag -l $version
+if ($existingTag) {
+    Write-Error "Tag '$version' already exists."
     exit 1
 }
-Write-Success "Package published successfully!"
 
-# Step 9: Publish symbols package to NuGet
-if ($symbolsPackagePath) {
-    Write-Step "Publishing symbols package to NuGet.org..."
-    dotnet nuget push $symbolsPackagePath.FullName --api-key $nugetApiKey --source https://api.nuget.org/v3/index.json --skip-duplicate
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error-Message "Symbols package publish failed"
-        exit 1
-    }
-    Write-Success "Symbols package published successfully!"
-}
+Write-Host "Tagging as $version ..." -ForegroundColor Cyan
+git tag $version
+git push origin $version
 
-Write-Information "`n🎉 All done! Package $($packagePath.Name) has been published to NuGet.org"
-if ($symbolsPackagePath) {
-    Write-Information "   Including symbols package for debugging support"
-}
+Write-Host "✅ Published tag $version — CI will build and push to NuGet." -ForegroundColor Green
