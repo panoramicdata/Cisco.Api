@@ -3,6 +3,7 @@
 public enum LicenseType
 {
 	//Unknown,
+	Demo,
 	Perpetual,
 	Subscription,
 	Term
