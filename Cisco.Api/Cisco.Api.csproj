@@ -2,6 +2,15 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net10.0;net10.0</TargetFrameworks>
+		<!-- RF006: Refit 15 reports that methods taking IEnumerable<string> in the URL template
+		     cannot be built by its source generator and fall back to the reflection request
+		     builder. That path is fine here: CiscoClient constructs every client with
+		     RestService.For<T>(), which is the usage the diagnostic explicitly permits, and this
+		     library is not trimmed or AOT-published. Changing the signatures to plain strings
+		     would be a breaking public API change for no runtime benefit.
+		     If this library ever moves to AddRefitGeneratedClient or NativeAOT, those methods
+		     must be reworked and this suppression removed. -->
+		<NoWarn>$(NoWarn);RF006</NoWarn>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Description>Provides access to EoX, Enterprise Agreement, Product Information, PSIRT, PSS, Serial Number to Information, PX Cloud, Smart Account and Licensing, and Umbrella APIs. Requires client credentials.</Description>
 		<PackageProjectUrl>https://github.com/panoramicdata/Cisco.Api</PackageProjectUrl>
