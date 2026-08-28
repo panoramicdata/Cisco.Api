@@ -10,7 +10,7 @@ internal interface IPxCloudReportsInternal
 	/// Customer Insights and Analytics
 
 	/// <summary>
-	/// This API creates a request for customer data sets *and returns the response as ApiResponse<EmptyResponse>, just to get the Location header.*
+	/// This API creates a request for customer data sets and returns the response as <c>ApiResponse&lt;EmptyResponse&gt;</c>, just to get the Location header.
 	/// You can generate six kinds of reports: 'Assets', 'Software', 'Hardware', 'FieldNotices', 'ProrityBugs', 'SecurityAdvisories', 'PurchasedLicenses', and 'Licenses'.
 	/// The response contains the reportID on the end of the Location header.
 	/// </summary>

@@ -5,7 +5,7 @@ namespace Cisco.Api.Data.Eox;
 /// <summary>
 /// An EOX record
 /// </summary>
-/// <seealso cref="https://developer.cisco.com/docs/support-apis/#!eox/eoxrecordtype"/>
+/// <seealso href="https://developer.cisco.com/docs/support-apis/#!eox/eoxrecordtype"/>
 [DataContract]
 public class EoxRecord
 {

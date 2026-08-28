@@ -47,6 +47,7 @@ public class ContractDetail
 
 	/// <summary>
 	/// Id used when billing the site for the device.
+	/// </summary>
 	[XmlElement("BillToSiteID")]
 	public string BillToSiteID { get; set; } = null!;
 }

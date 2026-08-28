@@ -20,7 +20,7 @@ public abstract class PssServiceRequest
 	/// This parameter is returned in the API service call
 	/// getCustomersInventoryIds.
 	/// inventoryId identifies the inventory whose data will be
-	/// accessed for the chassis & card level details.
+	/// accessed for the chassis &amp; card level details.
 	/// </summary>
 	[XmlElement("inventoryId")]
 	public string InventoryId { get; set; } = null!;
