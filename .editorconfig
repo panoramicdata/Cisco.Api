@@ -1,5 +1,3 @@
-root = true
-
 [*]
 vsspell_section_id = 125582df39a149848d0e4f8457118528
 vsspell_ignored_words_125582df39a149848d0e4f8457118528 = File:Cisco.Api.slnx.dic
@@ -179,4 +177,3 @@ dotnet_naming_style.pascal_case.required_prefix =
 dotnet_naming_style.pascal_case.required_suffix =
 dotnet_naming_style.pascal_case.word_separator =
 dotnet_naming_style.pascal_case.capitalization = pascal_case
-csharp_style_namespace_declarations = file_scoped:error
