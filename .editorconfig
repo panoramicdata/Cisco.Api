@@ -1,3 +1,5 @@
+root = true
+
 [*]
 vsspell_section_id = 125582df39a149848d0e4f8457118528
 vsspell_ignored_words_125582df39a149848d0e4f8457118528 = File:Cisco.Api.slnx.dic
