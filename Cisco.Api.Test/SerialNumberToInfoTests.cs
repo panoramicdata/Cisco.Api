@@ -4,8 +4,15 @@ using Xunit;
 
 namespace Cisco.Api.Test;
 
+/// <summary>
+/// Contains tests for serial number to info operations.
+/// </summary>
+/// <param name="iTestOutputHelper">The test output helper.</param>
 public class SerialNumberToInfoTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
+	/// <summary>
+	/// Verifies the get coverage status by serial number scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetCoverageStatusBySerialNumber()
 	{
@@ -20,6 +27,9 @@ public class SerialNumberToInfoTests(ITestOutputHelper iTestOutputHelper) : Test
 		coverageStatusCollection.CoverageStatuses.Select(c => c.SerialNumber).Should().NotBeNullOrEmpty();
 	}
 
+	/// <summary>
+	/// Verifies the get coverage summary by serial number scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetCoverageSummaryBySerialNumber()
 	{
@@ -46,6 +56,9 @@ public class SerialNumberToInfoTests(ITestOutputHelper iTestOutputHelper) : Test
 		coverageSummaryCollection.CoverageSummaries.Select(cs => cs.WarrantyTypeDescription).Should().NotBeNullOrEmpty();
 	}
 
+	/// <summary>
+	/// Verifies the get orderable product identifier by serial number scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetOrderableProductIdentifierBySerialNumber()
 	{

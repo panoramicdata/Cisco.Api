@@ -10,9 +10,16 @@ using Xunit;
 
 namespace Cisco.Api.Test;
 
+/// <summary>
+/// Contains tests for PSS operations.
+/// </summary>
+/// <param name="iTestOutputHelper">The test output helper.</param>
 [Collection("PssTests")]
 public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
+	/// <summary>
+	/// Verifies the get customers inventory ids async succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetCustomersInventoryIdsAsync_Succeeds()
 	{
@@ -35,6 +42,9 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		response.Message.MessageDetail.Should().NotBeNull();
 	}
 
+	/// <summary>
+	/// Verifies the get customer inventory async one customer succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetCustomerInventoryAsync_OneCustomer_Succeeds()
 	{
@@ -51,6 +61,9 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		response.CustomerInventories.Should().HaveCount(1);
 	}
 
+	/// <summary>
+	/// Verifies the get customer inventory details succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetCustomerInventoryDetails_Succeeds()
 	{
@@ -71,6 +84,9 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		// TODO - property tests
 	}
 
+	/// <summary>
+	/// Verifies the get extended customer inventory details first page succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetExtendedCustomerInventoryDetails_FirstPage_Succeeds()
 	{
@@ -92,6 +108,9 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		// TODO - property tests
 	}
 
+	/// <summary>
+	/// Verifies the get all extended device detail succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetAllExtendedDeviceDetail_Succeeds()
 	{
@@ -136,6 +155,9 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		return deviceDetails;
 	}
 
+	/// <summary>
+	/// Verifies the get customer inventory paginated details succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetCustomerInventoryPaginatedDetails_Succeeds()
 	{
@@ -156,6 +178,9 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		// TODO - property tests
 	}
 
+	/// <summary>
+	/// Verifies the retrieve and convert device configs succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task RetrieveAndConvertDeviceConfigs_Succeeds()
 	{
@@ -216,6 +241,9 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		}
 	}
 
+	/// <summary>
+	/// Verifies the get contract coverage details async succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetContractCoverageDetailsAsync_Succeeds()
 	{
@@ -236,6 +264,9 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		// TODO - property tests
 	}
 
+	/// <summary>
+	/// Verifies the get contract coverage details one card ID async succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetContractCoverageDetailsOneCardIdAsync_Succeeds()
 	{
@@ -257,6 +288,9 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		// TODO - property tests
 	}
 
+	/// <summary>
+	/// Verifies the get contract coverage details for device ids async succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetContractCoverageDetailsForDeviceIdsAsync_Succeeds()
 	{
@@ -281,6 +315,9 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		// TODO - property tests
 	}
 
+	/// <summary>
+	/// Verifies the get software EoX async succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetSoftwareEoxAsync_Succeeds()
 	{
@@ -301,6 +338,9 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		// TODO - property tests
 	}
 
+	/// <summary>
+	/// Verifies the get software EoX bulletin async succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetSoftwareEoxBulletinAsync_Succeeds()
 	{
@@ -323,6 +363,9 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		// TODO - property tests
 	}
 
+	/// <summary>
+	/// Verifies the get hw EoX async succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetHwEoxAsync_Succeeds()
 	{
@@ -343,6 +386,9 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		// TODO - property tests
 	}
 
+	/// <summary>
+	/// Verifies the get hw EoX bulletin async succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetHwEoxBulletinAsync_Succeeds()
 	{
@@ -366,6 +412,9 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		// TODO - property tests
 	}
 
+	/// <summary>
+	/// Verifies the get PSIRT async succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetPsirtAsync_Succeeds()
 	{
@@ -386,6 +435,9 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		// TODO - property tests
 	}
 
+	/// <summary>
+	/// Verifies the get PSIRT details async succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetPsirtDetailsAsync_Succeeds()
 	{
@@ -407,6 +459,9 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		// TODO - property tests
 	}
 
+	/// <summary>
+	/// Verifies the get field notices async succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetFieldNoticesAsync_Succeeds()
 	{
@@ -427,6 +482,9 @@ public class PssTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		// TODO - property tests
 	}
 
+	/// <summary>
+	/// Verifies the get field notices details async succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetFieldNoticesDetailsAsync_Succeeds()
 	{

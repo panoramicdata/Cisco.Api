@@ -5,8 +5,15 @@ using Xunit;
 
 namespace Cisco.Api.Test;
 
+/// <summary>
+/// Contains tests for field notices operations.
+/// </summary>
+/// <param name="iTestOutputHelper">The test output helper.</param>
 public class FieldNoticesTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
+	/// <summary>
+	/// Verifies the get succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task Get_Succeeds()
 	{

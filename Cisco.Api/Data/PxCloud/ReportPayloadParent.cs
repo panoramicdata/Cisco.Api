@@ -2,6 +2,9 @@
 
 namespace Cisco.Api.Data.PxCloud;
 
+/// <summary>
+/// Represents the report payload parent.
+/// </summary>
 [DataContract]
 public class ReportPayloadParent
 {

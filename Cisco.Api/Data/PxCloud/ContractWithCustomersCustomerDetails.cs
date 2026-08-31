@@ -2,6 +2,9 @@
 
 namespace Cisco.Api.Data.PxCloud;
 
+/// <summary>
+/// Represents the contract with customers customer details.
+/// </summary>
 [DataContract]
 public class ContractWithCustomersCustomerDetails
 {

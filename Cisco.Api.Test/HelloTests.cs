@@ -4,8 +4,15 @@ using Xunit;
 
 namespace Cisco.Api.Test;
 
+/// <summary>
+/// Contains tests for hello operations.
+/// </summary>
+/// <param name="iTestOutputHelper">The test output helper.</param>
 public class HelloTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
+	/// <summary>
+	/// Verifies the hello succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task Hello_Succeeds()
 	{

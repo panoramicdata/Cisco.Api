@@ -22,6 +22,9 @@ public class CustomersInventoryResponse
 	[XmlElement("responseTimestamp")]
 	public DateTime ResponseTimestamp { get; set; }
 
+	/// <summary>
+	/// Gets or sets the message.
+	/// </summary>
 	[XmlElement("message")]
 	public Message Message { get; set; } = null!;
 }

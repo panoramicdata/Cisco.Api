@@ -5,6 +5,9 @@ using System.Xml.Serialization;
 
 namespace Cisco.Api.Data.Pss;
 
+/// <summary>
+/// Represents the device detail.
+/// </summary>
 public class DeviceDetail : DeviceDetail<CardDetail>
 {
 }

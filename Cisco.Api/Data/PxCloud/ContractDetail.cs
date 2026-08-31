@@ -4,6 +4,9 @@ using System.Runtime.Serialization;
 
 namespace Cisco.Api.Data.PxCloud;
 
+/// <summary>
+/// Represents the contract detail.
+/// </summary>
 [DataContract]
 public class ContractDetail
 {

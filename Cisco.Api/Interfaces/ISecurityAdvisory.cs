@@ -23,6 +23,9 @@ namespace Cisco.Api.Interfaces
 			string id,
 			CancellationToken cancellationToken);
 
+		/// <summary>
+		/// Performs the get by ID operation.
+		/// </summary>
 		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetById(string id)
 			=> GetById(id, default);
@@ -42,10 +45,16 @@ namespace Cisco.Api.Interfaces
 			string alias,
 			CancellationToken cancellationToken);
 
+		/// <summary>
+		/// Performs the get advisories by OS type and version operation.
+		/// </summary>
 		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetAdvisoriesByOsTypeAndVersion(string type, string version, string alias)
 			=> GetAdvisoriesByOsTypeAndVersion(type, version, alias, default);
 
+		/// <summary>
+		/// Performs the get advisories by OS type and version operation.
+		/// </summary>
 		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetAdvisoriesByOsTypeAndVersion(string type, string version)
 			=> GetAdvisoriesByOsTypeAndVersion(type, version, "", default);
@@ -61,6 +70,9 @@ namespace Cisco.Api.Interfaces
 			string cvename,
 			CancellationToken cancellationToken);
 
+		/// <summary>
+		/// Performs the get advisories by CVE name operation.
+		/// </summary>
 		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetAdvisoriesByCveName(string cvename)
 			=> GetAdvisoriesByCveName(cvename, default);
@@ -76,6 +88,9 @@ namespace Cisco.Api.Interfaces
 			string osType,
 			CancellationToken cancellationToken);
 
+		/// <summary>
+		/// Performs the get OS version data by type operation.
+		/// </summary>
 		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<List<OsVersion>> GetOsVersionDataByType(string osType)
 			=> GetOsVersionDataByType(osType, default);
@@ -93,10 +108,16 @@ namespace Cisco.Api.Interfaces
 			bool productNames,
 			CancellationToken cancellationToken);
 
+		/// <summary>
+		/// Performs the get all advisories operation.
+		/// </summary>
 		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetAllAdvisories(bool summaryDetails, bool productNames)
 			=> GetAllAdvisories(summaryDetails, productNames, default);
 
+		/// <summary>
+		/// Performs the get all advisories operation.
+		/// </summary>
 		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetAllAdvisories()
 			=> GetAllAdvisories(true, true, default);
@@ -118,10 +139,16 @@ namespace Cisco.Api.Interfaces
 			bool productNames,
 			CancellationToken cancellationToken);
 
+		/// <summary>
+		/// Performs the get all advisories operation.
+		/// </summary>
 		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetAllAdvisories(int pageSize, int pageIndex, bool summaryDetails, bool productNames)
 			=> GetAllAdvisories(pageSize, pageIndex, summaryDetails, productNames, default);
 
+		/// <summary>
+		/// Performs the get all advisories operation.
+		/// </summary>
 		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetAllAdvisories(int pageSize, int pageIndex)
 			=> GetAllAdvisories(pageSize, pageIndex, true, true, default);
@@ -137,6 +164,9 @@ namespace Cisco.Api.Interfaces
 			int count,
 			CancellationToken cancellationToken);
 
+		/// <summary>
+		/// Performs the get lates advisories limited by count operation.
+		/// </summary>
 		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetLatesAdvisoriesLimitedByCount(int count)
 			=> GetLatesAdvisoriesLimitedByCount(count, default);
@@ -144,7 +174,7 @@ namespace Cisco.Api.Interfaces
 		/// <summary>
 		/// Use the base advisories URL and provide a custom URL for maximum flexibility
 		/// </summary>
-		/// <param name="requestString">The request string</param>
+		/// <param name="customRequest">The custom request path.</param>
 		/// <param name="cancellationToken">An optional CancellationToken</param>
 		/// <returns></returns>
 		[Get("/security/advisories/v2/{customRequest}")]
@@ -153,6 +183,9 @@ namespace Cisco.Api.Interfaces
 			string customRequest,
 			CancellationToken cancellationToken);
 
+		/// <summary>
+		/// Performs the get advisories by custom request operation.
+		/// </summary>
 		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetAdvisoriesByCustomRequest(string customRequest)
 			=> GetAdvisoriesByCustomRequest(customRequest, default);
@@ -168,6 +201,9 @@ namespace Cisco.Api.Interfaces
 			string product,
 			CancellationToken cancellationToken);
 
+		/// <summary>
+		/// Performs the get advisories by product operation.
+		/// </summary>
 		[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 		Task<SecurityAdvisories> GetAdvisoriesByProduct(string product)
 			=> GetAdvisoriesByProduct(product, default);

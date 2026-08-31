@@ -5,6 +5,7 @@ using ICSharpCode.SharpZipLib.Zip;
 using Newtonsoft.Json;
 using Refit;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -16,6 +17,18 @@ namespace Cisco.Api.Implementations;
 internal class PxCloudReports(HttpClient restHttpClient) : IPxCloudReports
 {
 	private readonly IPxCloudReportsInternal _refitClient = RestService.For<IPxCloudReportsInternal>(restHttpClient);
+	private static readonly IReadOnlyDictionary<string, Func<string, ReportPayloadParent?>> ReportDeserializers =
+		new Dictionary<string, Func<string, ReportPayloadParent?>>(StringComparer.Ordinal)
+		{
+			["Assets"] = content => JsonConvert.DeserializeObject<ReportPayloadParentAssets>(content),
+			["Software"] = content => JsonConvert.DeserializeObject<ReportPayloadParentSoftware>(content),
+			["Hardware"] = content => JsonConvert.DeserializeObject<ReportPayloadParentHardware>(content),
+			["FieldNotices"] = content => JsonConvert.DeserializeObject<ReportPayloadParentFieldNotices>(content),
+			["Licenses"] = content => JsonConvert.DeserializeObject<ReportPayloadParentLicensesWithAssets>(content),
+			["PurchasedLicenses"] = content => JsonConvert.DeserializeObject<ReportPayloadParentPurchasedLicenses>(content),
+			["SecurityAdvisories"] = content => JsonConvert.DeserializeObject<ReportPayloadParentSecurityAdvisories>(content),
+			["PriorityBugs"] = content => JsonConvert.DeserializeObject<ReportPayloadParentPriorityBugs>(content)
+		};
 
 	/// <inheritdoc/>
 	public async Task<RequestCustomerDataReportsAsBulkFilesResponse> RequestCustomerDataReportAsync(string customerId, ReportName reportName, string successTrackId, CancellationToken cancellationToken = default)
@@ -109,8 +122,7 @@ internal class PxCloudReports(HttpClient restHttpClient) : IPxCloudReports
 		{
 			using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
 			using var zipInputStream = new ZipInputStream(stream);
-			ZipEntry entry;
-			while ((entry = zipInputStream.GetNextEntry()) != null)
+			while (zipInputStream.GetNextEntry() is not null)
 			{
 				using var ms = new MemoryStream();
 				zipInputStream.CopyTo(ms);
@@ -137,28 +149,19 @@ internal class PxCloudReports(HttpClient restHttpClient) : IPxCloudReports
 
 	private static ReportPayloadParent DeserializeReportByName(string reportName, string content)
 	{
+		if (!ReportDeserializers.TryGetValue(reportName, out var deserialize))
+		{
+			throw new NotSupportedException($"Unsupported report type: '{reportName}'.");
+		}
+
 		try
 		{
-			return reportName switch
-			{
-				"Assets" => JsonConvert.DeserializeObject<ReportPayloadParentAssets>(content) ?? ThrowError(reportName),
-				"Software" => JsonConvert.DeserializeObject<ReportPayloadParentSoftware>(content) ?? ThrowError(reportName),
-				"Hardware" => JsonConvert.DeserializeObject<ReportPayloadParentHardware>(content) ?? ThrowError(reportName),
-				"FieldNotices" => JsonConvert.DeserializeObject<ReportPayloadParentFieldNotices>(content) ?? ThrowError(reportName),
-				"Licenses" => JsonConvert.DeserializeObject<ReportPayloadParentLicensesWithAssets>(content) ?? ThrowError(reportName),
-				"PurchasedLicenses" => JsonConvert.DeserializeObject<ReportPayloadParentPurchasedLicenses>(content) ?? ThrowError(reportName),
-				"SecurityAdvisories" => JsonConvert.DeserializeObject<ReportPayloadParentSecurityAdvisories>(content) ?? ThrowError(reportName),
-				"PriorityBugs" => JsonConvert.DeserializeObject<ReportPayloadParentPriorityBugs>(content) ?? ThrowError(reportName),
-				_ => throw new NotSupportedException($"Unsupported report type: '{reportName}'."),
-			};
+			return deserialize(content)
+				?? throw new PxCloudReportException($"An error occurred whilst deserialising the '{reportName}' report.");
 		}
-		catch (Exception ex) when (ex is not NotSupportedException and not PxCloudReportException)
+		catch (Exception ex) when (ex is not PxCloudReportException)
 		{
 			throw new PxCloudReportException($"An error occurred whilst preparing the '{reportName}' report.", ex);
 		}
 	}
-
-	// Is fussy about the return type which can't just be null and must match the output of the deserialisation
-	private static dynamic ThrowError(string reportName)
-		=> throw new PxCloudReportException($"An error occurred whilst deserialising the '{reportName}' report.");
 }

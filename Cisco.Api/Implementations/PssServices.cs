@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 
 namespace Cisco.Api.Implementations;
 
+/// <summary>
+/// Represents the PSS services.
+/// </summary>
+/// <param name="soapHttpClient">The HTTP client used to send SOAP requests.</param>
 public class PssServices(HttpClient soapHttpClient) : IPss
 {
 	private readonly SoapClient _soapClient = SoapClient.Prepare(soapHttpClient);
@@ -35,6 +39,9 @@ public class PssServices(HttpClient soapHttpClient) : IPss
 			.Body<TResponse>();
 	}
 
+	/// <summary>
+	/// Performs the get customers inventory ids operation.
+	/// </summary>
 	public Task<CustomersInventoryResponse> GetCustomersInventoryIdsAsync(
 		CustomersInventoryRequest request,
 		CancellationToken cancellationToken)
@@ -44,6 +51,9 @@ public class PssServices(HttpClient soapHttpClient) : IPss
 			request,
 			cancellationToken);
 
+	/// <summary>
+	/// Performs the get customer inventory details operation.
+	/// </summary>
 	public Task<CustomerInventoryDetailsResponse> GetCustomerInventoryDetailsAsync(
 		CustomerInventoryDetailsRequest request,
 		CancellationToken cancellationToken)
@@ -53,6 +63,9 @@ public class PssServices(HttpClient soapHttpClient) : IPss
 			request,
 			cancellationToken);
 
+	/// <summary>
+	/// Performs the get customer extended inventory details operation.
+	/// </summary>
 	public Task<CustomerExtendedInventoryDetailsResponse> GetCustomerExtendedInventoryDetailsAsync(
 		CustomerExtendedInventoryDetailsRequest request,
 		CancellationToken cancellationToken)
@@ -62,6 +75,9 @@ public class PssServices(HttpClient soapHttpClient) : IPss
 			request,
 			cancellationToken);
 
+	/// <summary>
+	/// Performs the get customer inventory paginated details operation.
+	/// </summary>
 	public Task<CustomerInventoryDetailPaginatedResponse> GetCustomerInventoryPaginatedDetailsAsync(
 		CustomerInventoryDetailPaginatedRequest request,
 		CancellationToken cancellationToken)
@@ -71,6 +87,9 @@ public class PssServices(HttpClient soapHttpClient) : IPss
 			request,
 			cancellationToken);
 
+	/// <summary>
+	/// Performs the get contract coverage operation.
+	/// </summary>
 	public Task<ContractCoverageResponse> GetContractCoverageAsync(
 		ContractCoverageRequest request,
 		CancellationToken cancellationToken)
@@ -80,6 +99,9 @@ public class PssServices(HttpClient soapHttpClient) : IPss
 			request,
 			cancellationToken);
 
+	/// <summary>
+	/// Performs the get software EoX operation.
+	/// </summary>
 	public Task<SoftwareEoxResponse> GetSoftwareEoxAsync(
 		SoftwareEoxRequest request,
 		CancellationToken cancellationToken)
@@ -89,6 +111,9 @@ public class PssServices(HttpClient soapHttpClient) : IPss
 			request,
 			cancellationToken);
 
+	/// <summary>
+	/// Performs the get software EoX bulletin operation.
+	/// </summary>
 	public Task<SoftwareEoxBulletinResponse> GetSoftwareEoxBulletinAsync(
 		SoftwareEoxBulletinRequest request,
 		CancellationToken cancellationToken)
@@ -98,6 +123,9 @@ public class PssServices(HttpClient soapHttpClient) : IPss
 			request,
 			cancellationToken);
 
+	/// <summary>
+	/// Performs the get hardware EoX operation.
+	/// </summary>
 	public Task<HardwareEoxResponse> GetHardwareEoxAsync(
 		HardwareEoxRequest request,
 		CancellationToken cancellationToken)
@@ -107,6 +135,9 @@ public class PssServices(HttpClient soapHttpClient) : IPss
 			request,
 			cancellationToken);
 
+	/// <summary>
+	/// Performs the get hardware EoX bulletin operation.
+	/// </summary>
 	public Task<HardwareEoxBulletinResponse> GetHardwareEoxBulletinAsync(
 		HardwareEoxBulletinRequest request,
 		CancellationToken cancellationToken)
@@ -116,6 +147,9 @@ public class PssServices(HttpClient soapHttpClient) : IPss
 			request,
 			cancellationToken);
 
+	/// <summary>
+	/// Performs the get EOSWM lifecycle operation.
+	/// </summary>
 	public Task<EoswmLifecycleResponse> GetEoswmLifecycleAsync(
 		EoswmLifecycleRequest request,
 		CancellationToken cancellationToken)
@@ -125,6 +159,9 @@ public class PssServices(HttpClient soapHttpClient) : IPss
 			request,
 			cancellationToken);
 
+	/// <summary>
+	/// Performs the get PSIRT operation.
+	/// </summary>
 	public Task<PsirtResponse> GetPsirtAsync(
 		PsirtRequest request,
 		CancellationToken cancellationToken)
@@ -134,6 +171,9 @@ public class PssServices(HttpClient soapHttpClient) : IPss
 			request,
 			cancellationToken);
 
+	/// <summary>
+	/// Performs the get PSIRT details operation.
+	/// </summary>
 	public Task<PsirtDetailsResponse> GetPsirtDetailsAsync(
 		PsirtDetailsRequest request,
 		CancellationToken cancellationToken)
@@ -144,6 +184,9 @@ public class PssServices(HttpClient soapHttpClient) : IPss
 			cancellationToken
 			);
 
+	/// <summary>
+	/// Performs the get field notices operation.
+	/// </summary>
 	public Task<FieldNoticesResponse> GetFieldNoticesAsync(
 		FieldNoticesRequest request,
 		CancellationToken cancellationToken)
@@ -152,6 +195,9 @@ public class PssServices(HttpClient soapHttpClient) : IPss
 			"getFN",
 			request,
 			cancellationToken);
+	/// <summary>
+	/// Performs the get field notices details operation.
+	/// </summary>
 	public Task<FieldNoticesDetailsResponse> GetFieldNoticesDetailsAsync(
 		FieldNoticesDetailsRequest request,
 		CancellationToken cancellationToken)

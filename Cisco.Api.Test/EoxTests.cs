@@ -7,8 +7,15 @@ using Xunit;
 
 namespace Cisco.Api.Test;
 
+/// <summary>
+/// Contains tests for EoX operations.
+/// </summary>
+/// <param name="iTestOutputHelper">The test output helper.</param>
 public class EoxTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
+	/// <summary>
+	/// Verifies the get by dates async succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetByDatesAsync_Succeeds()
 	{
@@ -23,6 +30,9 @@ public class EoxTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		CheckEoxInfoPage(eoxInfoPage);
 	}
 
+	/// <summary>
+	/// Verifies the get by product ID async succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetByProductIdAsync_Succeeds()
 	{
@@ -33,6 +43,9 @@ public class EoxTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		CheckEoxInfoPage(eoxInfoPage);
 	}
 
+	/// <summary>
+	/// Verifies the get by serial number async succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetBySerialNumberAsync_Succeeds()
 	{
@@ -43,6 +56,9 @@ public class EoxTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHel
 		CheckEoxInfoPage(eoxInfoPage);
 	}
 
+	/// <summary>
+	/// Verifies the get by software release string async succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetBySoftwareReleaseStringAsync_Succeeds()
 	{

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Cisco.Api.Interfaces;
 
+/// <summary>
+/// Defines operations for the umbrella API.
+/// </summary>
 public interface IUmbrella
 {
 	////////////////////////////////////////
@@ -15,12 +18,16 @@ public interface IUmbrella
 	/// <summary>
 	/// Create an internal network
 	/// </summary>
+	/// <param name="request">The internal network to create.</param>
 	/// <param name="cancellationToken"></param>
 	[Post("/deployments/v2/internalnetworks")]
 	Task<InternalNetwork> CreateInternalNetworkAsync(
 		[Body] InternalNetworksCreateUpdateRequest request,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the create internal network operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<InternalNetwork> CreateInternalNetworkAsync([Body] InternalNetworksCreateUpdateRequest request)
 		=> CreateInternalNetworkAsync(request, default);
@@ -39,10 +46,16 @@ public interface IUmbrella
 		int? limit,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the list internal networks operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<List<InternalNetwork>> ListInternalNetworksAsync(string? name, int? page, int? limit)
 		=> ListInternalNetworksAsync(name, page, limit, default);
 
+	/// <summary>
+	/// Performs the list internal networks operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<List<InternalNetwork>> ListInternalNetworksAsync()
 		=> ListInternalNetworksAsync(null, 1, 100, default);
@@ -57,6 +70,9 @@ public interface IUmbrella
 		int internalNetworkId,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the get internal network operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<InternalNetwork> GetInternalNetworkAsync(int internalNetworkId)
 		=> GetInternalNetworkAsync(internalNetworkId, default);
@@ -65,6 +81,7 @@ public interface IUmbrella
 	/// Update an internal network
 	/// </summary>
 	/// <param name="internalNetworkId">The origin ID (originId) of the internal network</param>
+	/// <param name="request">The updated internal network details.</param>
 	/// <param name="cancellationToken"></param>
 	[Put("/deployments/v2/internalnetworks/{internalNetworkId}")]
 	Task<InternalNetwork> UpdateInternalNetworkAsync(
@@ -72,6 +89,9 @@ public interface IUmbrella
 		[Body] InternalNetworksCreateUpdateRequest request,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the update internal network operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<InternalNetwork> UpdateInternalNetworkAsync(int internalNetworkId, [Body] InternalNetworksCreateUpdateRequest request)
 		=> UpdateInternalNetworkAsync(internalNetworkId, request, default);
@@ -86,6 +106,9 @@ public interface IUmbrella
 		int internalNetworkId,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the delete internal network operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task DeleteInternalNetworkAsync(int internalNetworkId)
 		=> DeleteInternalNetworkAsync(internalNetworkId, default);
@@ -102,10 +125,16 @@ public interface IUmbrella
 		string? type,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the list policies for internal network operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<List<InternalNetworkPolicy>> ListPoliciesForInternalNetworkAsync(int internalNetworkId, string? type)
 		=> ListPoliciesForInternalNetworkAsync(internalNetworkId, type, default);
 
+	/// <summary>
+	/// Performs the list policies for internal network operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<List<InternalNetworkPolicy>> ListPoliciesForInternalNetworkAsync(int internalNetworkId)
 		=> ListPoliciesForInternalNetworkAsync(internalNetworkId, "dns", default);
@@ -128,10 +157,16 @@ public interface IUmbrella
 		int? limit,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the list policies operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<List<Policy>> ListPoliciesAsync(string? type, int? page, int? limit)
 		=> ListPoliciesAsync(type, page, limit, default);
 
+	/// <summary>
+	/// Performs the list policies operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<List<Policy>> ListPoliciesAsync()
 		=> ListPoliciesAsync("dns", 1, 100, default);
@@ -148,6 +183,9 @@ public interface IUmbrella
 		int policyId,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the add identity to policy operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task AddIdentityToPolicyAsync(int originId, int policyId)
 		=> AddIdentityToPolicyAsync(originId, policyId, default);
@@ -164,6 +202,9 @@ public interface IUmbrella
 		int policyId,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the delete identity from policy operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task DeleteIdentityFromPolicyAsync(int originId, int policyId)
 		=> DeleteIdentityFromPolicyAsync(originId, policyId, default);
@@ -184,10 +225,16 @@ public interface IUmbrella
 		int? limit,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the list sites operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<List<Site>> ListSitesAsync(int? page, int? limit)
 		=> ListSitesAsync(page, limit, default);
 
+	/// <summary>
+	/// Performs the list sites operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<List<Site>> ListSitesAsync()
 		=> ListSitesAsync(1, 100, default);

@@ -1,5 +1,8 @@
 ﻿namespace Cisco.Api;
 
+/// <summary>
+/// Represents the Cisco client credentials.
+/// </summary>
 public class CiscoClientCredentials
 {
 	/// <summary>

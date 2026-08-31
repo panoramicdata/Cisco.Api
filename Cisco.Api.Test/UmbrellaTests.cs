@@ -5,8 +5,15 @@ using Xunit;
 
 namespace Cisco.Api.Test;
 
+/// <summary>
+/// Contains tests for umbrella operations.
+/// </summary>
+/// <param name="iTestOutputHelper">The test output helper.</param>
 public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
+	/// <summary>
+	/// Verifies the list internal networks succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task ListInternalNetworks_Succeeds()
 	{
@@ -20,6 +27,9 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 		response.Should().HaveCountGreaterThan(0);
 	}
 
+	/// <summary>
+	/// Verifies the multi query credential cycling succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task MultiQueryCredentialCycling_Succeeds()
 	{
@@ -56,6 +66,9 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 		response.Should().HaveCountGreaterThan(0);
 	}
 
+	/// <summary>
+	/// Verifies the list policies succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task ListPolicies_Succeeds()
 	{
@@ -69,6 +82,9 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 		response.Should().HaveCountGreaterThan(0);
 	}
 
+	/// <summary>
+	/// Verifies the list sites succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task ListSites_Succeeds()
 	{

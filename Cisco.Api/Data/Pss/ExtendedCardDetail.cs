@@ -2,6 +2,9 @@
 
 namespace Cisco.Api.Data.Pss;
 
+/// <summary>
+/// Represents the extended card detail.
+/// </summary>
 public class ExtendedCardDetail : CardDetail
 {
 	/// <summary>

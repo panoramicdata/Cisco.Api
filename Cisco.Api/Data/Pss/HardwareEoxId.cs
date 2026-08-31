@@ -3,6 +3,9 @@ using System.Xml.Serialization;
 
 namespace Cisco.Api.Data.Pss;
 
+    /// <summary>
+    /// Represents the hardware EoX ids.
+    /// </summary>
     public class HardwareEoxIds
     {
         /// <summary>

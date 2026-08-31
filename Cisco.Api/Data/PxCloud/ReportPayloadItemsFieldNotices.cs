@@ -3,6 +3,9 @@ using System.Runtime.Serialization;
 
 namespace Cisco.Api.Data.PxCloud;
 
+/// <summary>
+/// Represents the report payload items field notices.
+/// </summary>
 [DataContract]
 public class ReportPayloadItemsFieldNotices // : ReportPayloadItem
 {

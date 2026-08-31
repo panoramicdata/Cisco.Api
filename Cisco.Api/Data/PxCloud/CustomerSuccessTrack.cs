@@ -2,6 +2,9 @@
 
 namespace Cisco.Api.Data.PxCloud;
 
+/// <summary>
+/// Represents the customer success track.
+/// </summary>
 [DataContract]
 public class CustomerSuccessTrack
 {

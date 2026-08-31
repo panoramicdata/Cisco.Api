@@ -85,46 +85,9 @@ internal class PssConfigs(HttpClient restHttpClient) : IPssConfigs
 		{
 			memoryStream.Position = 0; // Ensure the stream is at the beginning
 			using var zipInputStream = new ZipInputStream(memoryStream);
-			ZipEntry entry;
-
-			while ((entry = zipInputStream.GetNextEntry()) != null)
+			while (zipInputStream.GetNextEntry() is { } entry)
 			{
-				/* Examples:
-				 switches seem to be in this format:
-				 499665469_2921733_PSS_2713922/1008264179_show running-config_2025_04_28.txt
-				 whilst APs (and others?) are like this:
-				 179888473_2921733_PSS_2713922/1008264180_show run-config_2025_04_28.txt
-				 */
-
-				var split = entry.Name.Split('/');
-				if (split.Length != 2)
-				{
-					throw new PssConfigException("Unable to parse the zipped response.");
-				}
-
-				var deviceId = split[1].Split('_').First();
-
-				if (!output.TryGetValue(deviceId, out DeviceConfigResponse? value))
-				{
-					value = new DeviceConfigResponse();
-					output[deviceId] = value;
-				}
-
-				using var ms = new MemoryStream();
-				await zipInputStream.CopyToAsync(ms);
-				ms.Position = 0;
-				using var sr = new StreamReader(ms);
-				var content = await sr.ReadToEndAsync();
-				if (entry.Name.Contains("startup"))
-				{
-					value.StartupConfig = content;
-					value.StartupConfigDate = TryExtractDateFromEntryName(entry.Name);
-				}
-				else if (entry.Name.Contains("running-config") || entry.Name.Contains("run-config"))
-				{
-					output[deviceId].RunningConfig = content;
-					output[deviceId].RunningConfigDate = TryExtractDateFromEntryName(entry.Name);
-				}
+				await AddEntryAsync(zipInputStream, entry, output).ConfigureAwait(false);
 			}
 		}
 		catch (Exception ex) when (ex is not PssConfigException)
@@ -133,6 +96,58 @@ internal class PssConfigs(HttpClient restHttpClient) : IPssConfigs
 		}
 
 		return output;
+	}
+
+	private static async Task AddEntryAsync(
+		ZipInputStream zipInputStream,
+		ZipEntry entry,
+		Dictionary<string, DeviceConfigResponse> output)
+	{
+		var deviceId = GetDeviceId(entry.Name);
+		if (!output.TryGetValue(deviceId, out var deviceConfig))
+		{
+			deviceConfig = new DeviceConfigResponse();
+			output[deviceId] = deviceConfig;
+		}
+
+		using var memoryStream = new MemoryStream();
+		await zipInputStream.CopyToAsync(memoryStream).ConfigureAwait(false);
+		memoryStream.Position = 0;
+		using var reader = new StreamReader(memoryStream);
+		var content = await reader.ReadToEndAsync().ConfigureAwait(false);
+		SetConfig(entry.Name, content, deviceConfig);
+	}
+
+	private static string GetDeviceId(string entryName)
+	{
+		/* Examples:
+		 switches seem to be in this format:
+		 499665469_2921733_PSS_2713922/1008264179_show running-config_2025_04_28.txt
+		 whilst APs (and others?) are like this:
+		 179888473_2921733_PSS_2713922/1008264180_show run-config_2025_04_28.txt
+		 */
+		var split = entryName.Split('/');
+		if (split.Length != 2)
+		{
+			throw new PssConfigException("Unable to parse the zipped response.");
+		}
+
+		return split[1].Split('_').First();
+	}
+
+	private static void SetConfig(string entryName, string content, DeviceConfigResponse deviceConfig)
+	{
+		if (entryName.Contains("startup", StringComparison.Ordinal))
+		{
+			deviceConfig.StartupConfig = content;
+			deviceConfig.StartupConfigDate = TryExtractDateFromEntryName(entryName);
+		}
+		else if (entryName.Contains("running-config", StringComparison.Ordinal)
+			|| entryName.Contains("run-config", StringComparison.Ordinal))
+		{
+			deviceConfig.RunningConfig = content;
+			deviceConfig.RunningConfigDate = TryExtractDateFromEntryName(entryName);
+		}
 	}
 
 	/// <summary>

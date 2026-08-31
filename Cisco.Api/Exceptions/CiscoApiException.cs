@@ -9,6 +9,9 @@ namespace Cisco.Api.Exceptions;
 [Serializable]
 public class CiscoApiException : Exception
 {
+	/// <summary>
+	/// Gets or sets the response.
+	/// </summary>
 	public HttpResponseMessage Response { get; } = null!;
 
 	/// <summary>
@@ -32,6 +35,7 @@ public class CiscoApiException : Exception
 	/// Constructor
 	/// </summary>
 	/// <param name="response"></param>
+	/// <param name="message">The exception message.</param>
 	public CiscoApiException(HttpResponseMessage response, string message)
 		: base(message)
 	{
@@ -42,6 +46,7 @@ public class CiscoApiException : Exception
 	/// Constructor
 	/// </summary>
 	/// <param name="response"></param>
+	/// <param name="innerException">The exception that caused this exception.</param>
 	public CiscoApiException(HttpResponseMessage response, Exception innerException)
 		: base((response.IsSuccessStatusCode ? "An API issue occurred." : "API returned a non successful status code.") + " See \"Response\" property for more details.", innerException)
 	{

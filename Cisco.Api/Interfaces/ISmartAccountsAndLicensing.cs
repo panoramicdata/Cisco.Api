@@ -8,9 +8,12 @@ using System.Threading.Tasks;
 
 namespace Cisco.Api.Interfaces;
 
+/// <summary>
+/// Defines operations for the smart accounts and licensing API.
+/// </summary>
 public interface ISmartAccountsAndLicensing
 {
-	/// https://apidocs-prod.cisco.com/explore;category=6083723a25042e9035f6a753 (requires login with Cisco ID granted access)
+	// https://apidocs-prod.cisco.com/explore;category=6083723a25042e9035f6a753 (requires login with Cisco ID granted access)
 
 	////////////////////////////////////////
 	//// Smart Accounts
@@ -33,10 +36,16 @@ public interface ISmartAccountsAndLicensing
 		SmartAccountType? type,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the search smart accounts operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<SearchSmartAccountsResponse> SearchSmartAccountsAsync(string? name, string? domain, int limit, int offset, SmartAccountType? type)
 		=> SearchSmartAccountsAsync(name, domain, limit, offset, type, default);
 
+	/// <summary>
+	/// Performs the search smart accounts operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<SearchSmartAccountsResponse> SearchSmartAccountsAsync()
 		=> SearchSmartAccountsAsync(null, null, 50, 0, null, default);
@@ -51,10 +60,16 @@ public interface ISmartAccountsAndLicensing
 		string? domain,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the list smart accounts operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ListOfSmartAccountsResponse> ListSmartAccountsAsync(string? domain)
 		=> ListSmartAccountsAsync(domain, default);
 
+	/// <summary>
+	/// Performs the list smart accounts operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ListOfSmartAccountsResponse> ListSmartAccountsAsync()
 		=> ListSmartAccountsAsync(null, default);
@@ -82,10 +97,16 @@ public interface ISmartAccountsAndLicensing
 		[Query] int offset,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the license subscriptions usage operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ListOfLicenseSubscriptionsResponse> LicenseSubscriptionsUsageAsync(string smartAccountDomain, [Body] LicenseSubscriptionsUsageRequest request, [Query] int limit, [Query] int offset)
 		=> LicenseSubscriptionsUsageAsync(smartAccountDomain, request, limit, offset, default);
 
+	/// <summary>
+	/// Performs the license subscriptions usage operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ListOfLicenseSubscriptionsResponse> LicenseSubscriptionsUsageAsync(string smartAccountDomain, [Body] LicenseSubscriptionsUsageRequest request)
 		=> LicenseSubscriptionsUsageAsync(smartAccountDomain, request, 50, 0, default);
@@ -106,10 +127,16 @@ public interface ISmartAccountsAndLicensing
 		[Query] int offset,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the smart license usage operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ListOfLicensesResponse> SmartLicenseUsageAsync(string smartAccountDomain, [Body] SmartLicenseUsageRequest request, [Query] int limit, [Query] int offset)
 		=> SmartLicenseUsageAsync(smartAccountDomain, request, limit, offset, default);
 
+	/// <summary>
+	/// Performs the smart license usage operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ListOfLicensesResponse> SmartLicenseUsageAsync(string smartAccountDomain, [Body] SmartLicenseUsageRequest request)
 		=> SmartLicenseUsageAsync(smartAccountDomain, request, 50, 0, default);

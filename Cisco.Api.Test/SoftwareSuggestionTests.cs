@@ -4,8 +4,15 @@ using Xunit;
 
 namespace Cisco.Api.Test;
 
+/// <summary>
+/// Contains tests for software suggestion operations.
+/// </summary>
+/// <param name="iTestOutputHelper">The test output helper.</param>
 public class SoftwareSuggestionTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
+	/// <summary>
+	/// Verifies the get by product numbers async succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetByProductNumbersAsync_Succeeds()
 	{

@@ -9,6 +9,9 @@ namespace Cisco.Api.Data.SerialNumberToInfo;
 [DataContract]
 public class OrderablePidCollection
 {
+	/// <summary>
+	/// Gets or sets the serial number orderable pids.
+	/// </summary>
 	[DataMember(Name = "serial_numbers")]
 	public List<SerialNumberOrderablePidList> SerialNumberOrderablePids { get; set; } = null!;
 }

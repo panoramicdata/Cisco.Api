@@ -6,8 +6,31 @@ using Xunit;
 
 namespace Cisco.Api.Test;
 
+/// <summary>
+/// Contains tests for product information operations.
+/// </summary>
+/// <param name="iTestOutputHelper">The test output helper.</param>
 public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
+	private static readonly string[] SerialNumbersExceedingCombinedLimit =
+	[
+		"FCW2234L10F", "FCW2234L12V", "FCW2408P0LF", "FCW2408P0LP", "FCW2408P0LR",
+		"FCW2408P0LS", "FCW2408P0LT", "FCW2408P0LW", "FCW2408P0M0", "FCW2408P0M2",
+		"FCW2408P0M6", "FCW2408P0M9", "FCW2408P0MA", "FCW2408P0MC", "FCW2408P0MD",
+		"FCW2408P0MF", "FCW2408P0MG", "FCW2408P0MJ", "FCW2408P0MK", "FCW2408P0ML",
+		"FCW2234L10E", "FCW2234G122", "FCW2408P0MN", "FCW2408P0MP", "FCW2408P0MQ",
+		"FCW2408P0MR", "FCW2408P0MS", "FCW2408P0MT", "FCW2408P0MU", "FCW2408P0MW",
+		"FCW2408P0MX", "FCW2408P0MY", "FCW2408P0MZ", "FCW2408P0N0", "FCW2408P0N2",
+		"FCW2408P0N3", "FCW2408P0N4", "FCW2408P0N5", "FCW2408P0N7", "FCW2408P0N8",
+		"FOC2308U19E", "FCW2311L110", "FCW2408P0N9", "FCW2408P0NA", "FCW2408P0NB",
+		"FCW2408P0NC", "FCW2408P0ND", "FCW2408P0NE", "FCW2408P0NF", "FCW2408P0NG",
+		"FCW2408P0NH", "FCW2408P0NJ", "FCW2408P0NK", "FCW2408P0NL", "FCW2408P0NN",
+		"FCW2408P0NP", "FCW2408P0NQ", "FCW2408P0NR", "FCW2408P0NS", "FCW2408P0NT"
+	];
+
+	/// <summary>
+	/// Verifies the get by serial number async fails scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetBySerialNumberAsync_Fails()
 	{
@@ -29,6 +52,9 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 		productInformationPage.Products.Select(productInformation => productInformation.ErrorResponse).Should().NotBeNull();
 	}
 
+	/// <summary>
+	/// Verifies the get by serial number async succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetBySerialNumberAsync_Succeeds()
 	{
@@ -69,6 +95,9 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 		productInformationPage.Products.Select(productInformation => productInformation.Weight).Should().NotBeNull();
 	}
 
+	/// <summary>
+	/// Verifies the get by serial number multiple async succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetBySerialNumberMultipleAsync_Succeeds()
 	{
@@ -109,76 +138,16 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 		productInformationPage.Products.Select(productInformation => productInformation.Weight).Should().NotBeNull();
 	}
 
+	/// <summary>
+	/// Verifies the get by serial number multiple async too long succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetBySerialNumberMultipleAsyncTooLong_Succeeds()
 	{
 		// serial numbers is limited to 40 characters!
-		var serialNumbers = new[] {
-					"FCW2234L10F",
-					"FCW2234L12V",
-					"FCW2408P0LF",
-					"FCW2408P0LP",
-					"FCW2408P0LR",
-					"FCW2408P0LS",
-					"FCW2408P0LT",
-					"FCW2408P0LW",
-					"FCW2408P0M0",
-					"FCW2408P0M2",
-					"FCW2408P0M6",
-					"FCW2408P0M9",
-					"FCW2408P0MA",
-					"FCW2408P0MC",
-					"FCW2408P0MD",
-					"FCW2408P0MF",
-					"FCW2408P0MG",
-					"FCW2408P0MJ",
-					"FCW2408P0MK",
-					"FCW2408P0ML",
-					"FCW2234L10E",
-					"FCW2234G122",
-					"FCW2408P0MN",
-					"FCW2408P0MP",
-					"FCW2408P0MQ",
-					"FCW2408P0MR",
-					"FCW2408P0MS",
-					"FCW2408P0MT",
-					"FCW2408P0MU",
-					"FCW2408P0MW",
-					"FCW2408P0MX",
-					"FCW2408P0MY",
-					"FCW2408P0MZ",
-					"FCW2408P0N0",
-					"FCW2408P0N2",
-					"FCW2408P0N3",
-					"FCW2408P0N4",
-					"FCW2408P0N5",
-					"FCW2408P0N7",
-					"FCW2408P0N8",
-					"FOC2308U19E",
-					"FCW2311L110",
-					"FCW2408P0N9",
-					"FCW2408P0NA",
-					"FCW2408P0NB",
-					"FCW2408P0NC",
-					"FCW2408P0ND",
-					"FCW2408P0NE",
-					"FCW2408P0NF",
-					"FCW2408P0NG",
-					"FCW2408P0NH",
-					"FCW2408P0NJ",
-					"FCW2408P0NK",
-					"FCW2408P0NL",
-					"FCW2408P0NN",
-					"FCW2408P0NP",
-					"FCW2408P0NQ",
-					"FCW2408P0NR",
-					"FCW2408P0NS",
-					"FCW2408P0NT"
-				};
-
 		ProductInformationPage productInformationPage;
 		var basePids = new List<string>();
-		foreach (var serialNumber in serialNumbers)
+		foreach (var serialNumber in SerialNumbersExceedingCombinedLimit)
 		{
 			productInformationPage = await CiscoClient
 			.ProductInfo

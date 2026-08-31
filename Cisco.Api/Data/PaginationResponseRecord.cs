@@ -2,6 +2,9 @@
 
 namespace Cisco.Api.Data;
 
+/// <summary>
+/// Represents the pagination response record.
+/// </summary>
 [DataContract]
 public class PaginationResponseRecord
 {

@@ -201,112 +201,94 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 		var currentCredentialsInstance = CiscoUmbrellaCredentials.ElementAt(currentCredentialCurrentIndex).Value;
 
 		await SetupRequestAsync(currentCredentialCurrentIndex, currentCredentialsInstance, request, cancellationToken).ConfigureAwait(false);
-
-		// Pre-read the request body into a byte array so it can be replayed on every retry attempt.
-		// The content stream on an HttpRequestMessage is forward-only: once HttpClient has consumed it
-		// on the first send, it is exhausted and cannot be read again. Without this step, any retry
-		// after a transient failure (e.g. an HttpClient timeout or a 5xx response) would send an
-		// empty body to the server.
-		byte[]? requestBodyBytes = null;
-		if (request.Content is not null)
-		{
-			requestBodyBytes = await request.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
-		}
-
+		var requestBodyBytes = await ReadRequestBodyAsync(request, cancellationToken).ConfigureAwait(false);
 		var attemptCount = 0;
 		while (true)
 		{
-			// A fresh HttpRequestMessage clone is required for every attempt.
-			// Once base.SendAsync() has been called — even if it times out or throws — the original
-			// HttpRequestMessage is marked as 'already sent' by the framework and will throw
-			// InvalidOperationException: "The request message was already sent" if reused.
-			// Cloning ensures each attempt gets a clean, unsent message with the same headers and body.
 			using var attemptRequest = CloneRequest(request, requestBodyBytes);
-
-			HttpResponseMessage httpResponseMessage;
-			try
+			var attempt = await SendAttemptAsync(currentCredentialCurrentIndex, attemptRequest, request, attemptCount, cancellationToken).ConfigureAwait(false);
+			attemptCount = attempt.AttemptCount;
+			if (attempt.Response is null)
 			{
-				httpResponseMessage = await base
-					.SendAsync(attemptRequest, cancellationToken)
-					.ConfigureAwait(false);
-			}
-			catch (Exception ex)
-			{
-				if (++attemptCount < Options.MaxAttemptCount)
-				{
-					_logger.LogWarning(
-						"Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...",
-						attemptCount,
-						Options.MaxAttemptCount);
-
-					// Deliberately use CancellationToken.None for the inter-retry delay rather than the
-					// caller's cancellationToken. When an HttpClient request times out, the framework
-					// cancels its own internal CancellationTokenSource — it does NOT cancel the token
-					// supplied by the caller. If we passed cancellationToken here, a timeout on attempt N
-					// would cancel the delay and prevent attempt N+1 from ever starting, silently
-					// discarding the configured MaxAttemptCount retries. Using CancellationToken.None
-					// ensures the delay (and the subsequent retry) always runs after a timeout.
-					// The caller's token is still respected on the actual SendAsync call above, so a
-					// deliberate job cancellation (e.g. Quartz shutdown) will still stop the retry loop.
-					await Task.Delay(Options.RetryDelay, CancellationToken.None)
-						.ConfigureAwait(false);
-
-					continue;
-				}
-
-				if (!_logger.IsEnabled(LevelToLogAt) && Options.OnErrorEnsureRequestResponseHeadersLogged)
-				{
-					await LogRequestHeaders(currentCredentialCurrentIndex, request, true).ConfigureAwait(false);
-				}
-
-				_logger.LogError(
-					ex, "{Message} after {MaxAttemptCount} attempts.",
-					ex.Message,
-					Options.MaxAttemptCount
-					);
-				throw new CiscoApiException(ex.Message, ex);
+				continue;
 			}
 
-			if (_logger.IsEnabled(LevelToLogAt))
+			await LogResponseHeadersIfNeeded(currentCredentialCurrentIndex, attempt.Response).ConfigureAwait(false);
+			if (attempt.Response.IsSuccessStatusCode)
 			{
-				await LogResponseHeaders(currentCredentialCurrentIndex, httpResponseMessage).ConfigureAwait(false);
+				return attempt.Response;
 			}
 
-			var statusCode = httpResponseMessage.StatusCode;
-			var content = httpResponseMessage.Content;
-#if DEBUG
-			var message = await GetResponseContent(statusCode, content).ConfigureAwait(false);
-#endif
-
-			if (!httpResponseMessage.IsSuccessStatusCode)
+			var message = await GetResponseContent(attempt.Response.StatusCode, attempt.Response.Content).ConfigureAwait(false);
+			var attemptCountRef = new[] { attemptCount };
+			if (await HandleRetriableStatusCodeAsync(currentCredentialCurrentIndex, currentCredentialsInstance, attempt.Response, message, request, attemptCountRef, cancellationToken).ConfigureAwait(false))
 			{
-#if !DEBUG
-				var message = await GetResponseContent(statusCode, content).ConfigureAwait(false);
-#endif
-
-				var attemptCountRef = new[] { attemptCount };
-				if (await HandleRetriableStatusCodeAsync(currentCredentialCurrentIndex, currentCredentialsInstance, httpResponseMessage, message, request, attemptCountRef, cancellationToken).ConfigureAwait(false))
-				{
-					attemptCount = attemptCountRef[0];
-					continue;
-				}
-
-				await LogErrorHeadersIfNeeded(currentCredentialCurrentIndex, request, httpResponseMessage).ConfigureAwait(false);
-
-				_logger.LogError(
-					"{Message} after {MaxAttemptCount} attempts.",
-					message,
-					Options.MaxAttemptCount
-				);
-				var errorContent = await httpResponseMessage
-					.Content
-					.ReadAsStringAsync(cancellationToken)
-					.ConfigureAwait(false);
-				throw new CiscoApiException(httpResponseMessage, errorContent);
+				attemptCount = attemptCountRef[0];
+				continue;
 			}
 
-			return httpResponseMessage;
+			throw await CreateResponseExceptionAsync(currentCredentialCurrentIndex, request, attempt.Response, message, cancellationToken).ConfigureAwait(false);
 		}
+	}
+
+	private static Task<byte[]?> ReadRequestBodyAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+		=> request.Content is null
+			? Task.FromResult<byte[]?>(null)
+			: ReadContentAsync(request.Content, cancellationToken);
+
+	private static async Task<byte[]?> ReadContentAsync(HttpContent content, CancellationToken cancellationToken)
+		=> await content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
+
+	private async Task<(HttpResponseMessage? Response, int AttemptCount)> SendAttemptAsync(
+		int credentialIndex,
+		HttpRequestMessage attemptRequest,
+		HttpRequestMessage originalRequest,
+		int attemptCount,
+		CancellationToken cancellationToken)
+	{
+		try
+		{
+			return (await base.SendAsync(attemptRequest, cancellationToken).ConfigureAwait(false), attemptCount);
+		}
+		catch (Exception ex)
+		{
+			attemptCount++;
+			if (attemptCount < Options.MaxAttemptCount)
+			{
+				_logger.LogWarning("Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...", attemptCount, Options.MaxAttemptCount);
+				await Task.Delay(Options.RetryDelay, CancellationToken.None).ConfigureAwait(false);
+				return (null, attemptCount);
+			}
+
+			if (!_logger.IsEnabled(LevelToLogAt) && Options.OnErrorEnsureRequestResponseHeadersLogged)
+			{
+				await LogRequestHeaders(credentialIndex, originalRequest, true).ConfigureAwait(false);
+			}
+
+			_logger.LogError(ex, "{Message} after {MaxAttemptCount} attempts.", ex.Message, Options.MaxAttemptCount);
+			throw new CiscoApiException(ex.Message, ex);
+		}
+	}
+
+	private async Task LogResponseHeadersIfNeeded(int credentialIndex, HttpResponseMessage response)
+	{
+		if (_logger.IsEnabled(LevelToLogAt))
+		{
+			await LogResponseHeaders(credentialIndex, response).ConfigureAwait(false);
+		}
+	}
+
+	private async Task<CiscoApiException> CreateResponseExceptionAsync(
+		int credentialIndex,
+		HttpRequestMessage request,
+		HttpResponseMessage response,
+		string message,
+		CancellationToken cancellationToken)
+	{
+		await LogErrorHeadersIfNeeded(credentialIndex, request, response).ConfigureAwait(false);
+		_logger.LogError("{Message} after {MaxAttemptCount} attempts.", message, Options.MaxAttemptCount);
+		var errorContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+		return new CiscoApiException(response, errorContent);
 	}
 
 	private int SelectNextCredentialIndex()
@@ -367,63 +349,73 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 		int[] attemptCount,
 		CancellationToken cancellationToken)
 	{
-		switch (httpResponseMessage.StatusCode)
+		if (httpResponseMessage.StatusCode == HttpStatusCode.TooManyRequests)
 		{
-			case HttpStatusCode.TooManyRequests:
-				if (++attemptCount[0] < Options.MaxAttemptCount)
-				{
-					var headers = httpResponseMessage.Headers;
-					var retryAfter = headers.RetryAfter?.Delta;
-					var retryDelay = retryAfter is not null
-						? retryAfter.Value
-						: Options.RetryDelay;
-
-					_logger.LogWarning(
-						"Attempt {AttemptCount}/{MaxAttemptCount} failed due to a 429, retrying in {x} seconds...",
-						attemptCount[0],
-						Options.MaxAttemptCount,
-						retryDelay);
-
-					// Use CancellationToken.None so that a server-side timeout (which cancels HttpClient's
-					// internal token, not the caller's) does not abort the delay and prevent the retry.
-					await Task.Delay(retryDelay, CancellationToken.None).ConfigureAwait(false);
-					return true;
-				}
-
-				break;
-			case HttpStatusCode.BadGateway:
-			case HttpStatusCode.GatewayTimeout:
-			case HttpStatusCode.InternalServerError:
-			case HttpStatusCode.RequestTimeout:
-			case HttpStatusCode.ServiceUnavailable:
-			case HttpStatusCode.Unauthorized:
-				if (++attemptCount[0] < Options.MaxAttemptCount)
-				{
-					if (message.Contains("Developer Inactive"))
-					{
-						_logger.LogDebug("SendAsync(): Response content was Developer Inactive - could be a bad API response, requesting a new token.");
-						currentCredentialsInstance.AccessToken = await GetAccessTokenAsync(currentCredentialCurrentIndex, cancellationToken).ConfigureAwait(false);
-						currentCredentialsInstance.AuthenticationHeaderValue = new AuthenticationHeaderValue("Bearer", currentCredentialsInstance.AccessToken);
-						request.Headers.Authorization = currentCredentialsInstance.AuthenticationHeaderValue;
-					}
-
-					_logger.LogWarning(
-						"Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...",
-						attemptCount[0],
-						Options.MaxAttemptCount);
-
-					// Use CancellationToken.None so that a server-side timeout does not abort the delay and prevent the retry.
-					await Task.Delay(Options.RetryDelay, CancellationToken.None).ConfigureAwait(false);
-					return true;
-				}
-
-				break;
-			default:
-				break;
+			return await RetryAfterRateLimitAsync(httpResponseMessage, attemptCount).ConfigureAwait(false);
 		}
 
-		return false;
+		if (!IsTransientStatusCode(httpResponseMessage.StatusCode))
+		{
+			return false;
+		}
+
+		return await RetryAfterTransientFailureAsync(
+			currentCredentialCurrentIndex,
+			currentCredentialsInstance,
+			message,
+			request,
+			attemptCount,
+			cancellationToken).ConfigureAwait(false);
 	}
+
+	private async Task<bool> RetryAfterRateLimitAsync(HttpResponseMessage response, int[] attemptCount)
+	{
+		if (++attemptCount[0] >= Options.MaxAttemptCount)
+		{
+			return false;
+		}
+
+		var retryDelay = response.Headers.RetryAfter?.Delta ?? Options.RetryDelay;
+		_logger.LogWarning(
+			"Attempt {AttemptCount}/{MaxAttemptCount} failed due to a 429, retrying in {RetryDelay}...",
+			attemptCount[0], Options.MaxAttemptCount, retryDelay);
+		await Task.Delay(retryDelay, CancellationToken.None).ConfigureAwait(false);
+		return true;
+	}
+
+	private async Task<bool> RetryAfterTransientFailureAsync(
+		int credentialIndex,
+		CiscoUmbrellaCredentialsTokenTracking credentials,
+		string message,
+		HttpRequestMessage request,
+		int[] attemptCount,
+		CancellationToken cancellationToken)
+	{
+		if (++attemptCount[0] >= Options.MaxAttemptCount)
+		{
+			return false;
+		}
+
+		if (message.Contains("Developer Inactive", StringComparison.Ordinal))
+		{
+			_logger.LogDebug("SendAsync(): Response content was Developer Inactive - could be a bad API response, requesting a new token.");
+			credentials.AccessToken = await GetAccessTokenAsync(credentialIndex, cancellationToken).ConfigureAwait(false);
+			credentials.AuthenticationHeaderValue = new AuthenticationHeaderValue("Bearer", credentials.AccessToken);
+			request.Headers.Authorization = credentials.AuthenticationHeaderValue;
+		}
+
+		_logger.LogWarning("Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...", attemptCount[0], Options.MaxAttemptCount);
+		await Task.Delay(Options.RetryDelay, CancellationToken.None).ConfigureAwait(false);
+		return true;
+	}
+
+	private static bool IsTransientStatusCode(HttpStatusCode statusCode)
+		=> statusCode is HttpStatusCode.BadGateway
+			or HttpStatusCode.GatewayTimeout
+			or HttpStatusCode.InternalServerError
+			or HttpStatusCode.RequestTimeout
+			or HttpStatusCode.ServiceUnavailable
+			or HttpStatusCode.Unauthorized;
 
 	private async Task LogErrorHeadersIfNeeded(int currentCredentialCurrentIndex, HttpRequestMessage request, HttpResponseMessage httpResponseMessage)
 	{

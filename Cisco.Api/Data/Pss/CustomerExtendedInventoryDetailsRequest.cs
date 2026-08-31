@@ -9,6 +9,9 @@ namespace Cisco.Api;
 [XmlRoot("CustomerExtendedInventoryDetailRequestInput", Namespace = "http://www.cisco.com/InventoryService")]
 public class CustomerExtendedInventoryDetailsRequest : PssServiceRequest
 {
+	/// <summary>
+	/// Gets or sets the page start.
+	/// </summary>
 	[XmlElement("pageStart")]
 	public int PageStart { get; set; } = 1;
 }

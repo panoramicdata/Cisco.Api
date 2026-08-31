@@ -4,6 +4,9 @@ using System.Runtime.Serialization;
 
 namespace Cisco.Api.Data.Umbrella;
 
+/// <summary>
+/// Represents the internal network policy.
+/// </summary>
 [DataContract]
 [DebuggerDisplay("{Name} ({IpAddress}/{PrefixLength})")]
 public class InternalNetworkPolicy

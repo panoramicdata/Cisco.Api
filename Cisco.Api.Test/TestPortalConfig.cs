@@ -17,55 +17,7 @@ internal sealed class TestPortalConfig
 			 .AddJsonFile("appsettings.json");
 
 		var configuration = builder.Build();
-
-		var defaultCredentialsName = configuration["DefaultCredentials"];
-		credentialsName = $"{credentialsName ?? defaultCredentialsName}";
-		var credentialsAppSetting = configuration[$"Credentials:{credentialsName}"]
-			?? throw new InvalidOperationException($"No credentials found in appsettings.json file for {credentialsName}.");
-
-		// If credentialsAppSetting is a list of credentials, then stop
-		// and throw an exception.
-
-		var credentials = credentialsAppSetting.Split(';');
-		if (credentials.Length != 2 && credentials.Length != 4) // The 4 is for Umbrella tests
-		{
-			throw new InvalidOperationException($"Expected to find credentials in the form ClientId;ClientSecret.  Found '{credentialsAppSetting}'");
-		}
-
-		// Normally, takes just a single client id and secret
-		// but if there are four, then it's to support the Umbrella API key pool to circumvent rate limiting
-		if (credentials.Length == 2)
-		{
-			CiscoClient = new CiscoClient(new CiscoClientOptions
-			{
-				ClientId = credentials[0],
-				ClientSecret = credentials[1],
-				MaxAttemptCount = 100
-			}, logger);
-		}
-		else
-		{
-			// Must be the Umbrella 'fast' client
-			// You can use X number of client id and secret pairs to circumvent the heavy rate limiting
-			CiscoClient = new CiscoClient(new CiscoClientOptions
-			{
-				ClientCredentialsNotSupported = [
-					new CiscoClientCredentials
-					{
-						ClientId = credentials[0],
-						ClientSecret = credentials[1]
-					},
-					new CiscoClientCredentials
-					{
-						ClientId = credentials[2],
-						ClientSecret = credentials[3]
-					},
-				],
-				MaxAttemptCount = 100
-			}, logger);
-		}
-
-
+		CiscoClient = CreateCiscoClient(configuration, credentialsName, logger);
 		TestCustomerId = GetProperty(configuration, "TestCustomerId");
 		TestInventoryId = GetProperty(configuration, "TestInventoryId");
 		TestDeviceId = GetProperty(configuration, "TestDeviceId");
@@ -80,6 +32,40 @@ internal sealed class TestPortalConfig
 		TestPsirtId1 = GetProperty(configuration, "TestPsirtId1");
 		TestPsirtId2 = GetProperty(configuration, "TestPsirtId2");
 		SmartAccountDomainReal = GetProperty(configuration, "SmartAccountDomainReal");
+	}
+
+	private static CiscoClient CreateCiscoClient(
+		IConfigurationRoot configuration,
+		string? credentialsName,
+		ILogger logger)
+	{
+		credentialsName ??= configuration["DefaultCredentials"];
+		var credentialsAppSetting = configuration[$"Credentials:{credentialsName}"]
+			?? throw new InvalidOperationException($"No credentials found in appsettings.json file for {credentialsName}.");
+		var credentials = credentialsAppSetting.Split(';');
+		if (credentials.Length is not (2 or 4))
+		{
+			throw new InvalidOperationException($"Expected to find credentials in the form ClientId;ClientSecret.  Found '{credentialsAppSetting}'");
+		}
+
+		var options = credentials.Length == 2
+			? new CiscoClientOptions
+			{
+				ClientId = credentials[0],
+				ClientSecret = credentials[1],
+				MaxAttemptCount = 100
+			}
+			: new CiscoClientOptions
+			{
+				ClientCredentialsNotSupported =
+				[
+					new() { ClientId = credentials[0], ClientSecret = credentials[1] },
+					new() { ClientId = credentials[2], ClientSecret = credentials[3] }
+				],
+				MaxAttemptCount = 100
+			};
+
+		return new CiscoClient(options, logger);
 	}
 
 	private static string GetProperty(IConfigurationRoot configuration, string key)

@@ -20,6 +20,9 @@ public interface IHello
 	Task<Response> HelloAsync(
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the hello operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<Response> HelloAsync()
 		=> HelloAsync(default);

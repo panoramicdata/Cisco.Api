@@ -10,9 +10,15 @@ namespace Cisco.Api.Data.Pss;
     //[XmlRoot("message", Namespace = "http://www.cisco.com/InventoryService")]
     public class Message
     {
+        /// <summary>
+        /// Gets or sets the message type.
+        /// </summary>
         [XmlElement("messageType")]
         public string? MessageType { get; set; }
 
+        /// <summary>
+        /// Gets or sets the message detail.
+        /// </summary>
         [XmlElement("messageDetail")]
         public string? MessageDetail { get; set; }
     }

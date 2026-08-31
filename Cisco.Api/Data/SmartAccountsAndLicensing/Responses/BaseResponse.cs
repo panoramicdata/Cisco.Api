@@ -2,6 +2,9 @@
 
 namespace Cisco.Api.Data.SmartAccountsAndLicensing.Responses;
 
+/// <summary>
+/// Represents the base response.
+/// </summary>
 [DataContract]
 public class BaseResponse
 {

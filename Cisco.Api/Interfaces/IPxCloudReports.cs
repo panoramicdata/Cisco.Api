@@ -5,6 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Cisco.Api.Interfaces;
+/// <summary>
+/// Defines operations for the PX cloud reports API.
+/// </summary>
 public interface IPxCloudReports
 {
 	////////////////////////////////////////////////////////////////////////////
@@ -25,6 +28,9 @@ public interface IPxCloudReports
 		string successTrackId,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the request customer data report operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<RequestCustomerDataReportsAsBulkFilesResponse> RequestCustomerDataReportAsync(string customerId, ReportName reportName, string successTrackId)
 		=> RequestCustomerDataReportAsync(customerId, reportName, successTrackId, default);
@@ -39,6 +45,9 @@ public interface IPxCloudReports
 		string reportId,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the get report operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ReportPayloadParent> GetReportAsync(string customerId, string reportId)
 		=> GetReportAsync(customerId, reportId, default);

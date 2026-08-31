@@ -6,8 +6,15 @@ using Xunit;
 
 namespace Cisco.Api.Test
 {
+	/// <summary>
+	/// Contains tests for security advisory operations.
+	/// </summary>
+	/// <param name="iTestOutputHelper">The test output helper.</param>
 	public class SecurityAdvisoryTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 	{
+		/// <summary>
+		/// Verifies the get by type and version async succeeds scenario.
+		/// </summary>
 		[Fact]
 		public async Task GetByTypeAndVersionAsync_Succeeds()
 		{
@@ -21,6 +28,9 @@ namespace Cisco.Api.Test
 			securityAdvisories.Advisories[0].AdvisoryId.Should().Be("cisco-sa-asa-ssl-vpn-Y88QOm77");
 		}
 
+		/// <summary>
+		/// Verifies the get by type and version with alias async succeeds scenario.
+		/// </summary>
 		[Fact]
 		public async Task GetByTypeAndVersionWithAliasAsync_Succeeds()
 		{
@@ -34,6 +44,9 @@ namespace Cisco.Api.Test
 			securityAdvisories.Advisories[0].AdvisoryId.Should().Be("cisco-sa-asa-ssl-vpn-Y88QOm77");
 		}
 
+		/// <summary>
+		/// Verifies the get by product Cisco succeeds scenario.
+		/// </summary>
 		[Fact]
 		public async Task GetByProductCisco_Succeeds()
 		{
@@ -47,6 +60,9 @@ namespace Cisco.Api.Test
 			securityAdvisories.Advisories[0].AdvisoryId.Should().Be("cisco-sa-cucm-rce-bWNzQcUm");
 		}
 
+		/// <summary>
+		/// Verifies the get by product Cisco fire power succeeds scenario.
+		/// </summary>
 		[Fact]
 		public async Task GetByProductCiscoFirePower_Succeeds()
 		{
@@ -59,6 +75,9 @@ namespace Cisco.Api.Test
 			securityAdvisories.Should().NotBeNull();
 		}
 
+		/// <summary>
+		/// Verifies the get by product Cisco fails scenario.
+		/// </summary>
 		[Fact]
 		public async Task GetByProductCisco_Fails()
 		{
@@ -81,6 +100,9 @@ namespace Cisco.Api.Test
 		}
 
 
+		/// <summary>
+		/// Verifies the get by CVE name async succeeds scenario.
+		/// </summary>
 		[Fact]
 		public async Task GetByCveNameAsync_Succeeds()
 		{
@@ -94,6 +116,9 @@ namespace Cisco.Api.Test
 			securityAdvisories.Advisories[0].AdvisoryId.Should().Be("cisco-sa-nxos-bfd-dos-wGQXrzxn");
 		}
 
+		/// <summary>
+		/// Verifies the get latest by ID async succeeds scenario.
+		/// </summary>
 		[Fact]
 		public async Task GetLatestByIdAsync_Succeeds()
 		{
@@ -107,6 +132,9 @@ namespace Cisco.Api.Test
 			securityAdvisories.Advisories[0].AdvisoryId.Should().Be("cisco-sa-tms-portal-xss-AXNeVg3s");
 		}
 
+		/// <summary>
+		/// Verifies the get OS version data by ios type async succeeds scenario.
+		/// </summary>
 		[Fact]
 		public async Task GetOsVersionDataByIosTypeAsync_Succeeds()
 		{
@@ -124,6 +152,9 @@ namespace Cisco.Api.Test
 			}
 		}
 
+		/// <summary>
+		/// Verifies the get OS version data by nxos type async succeeds scenario.
+		/// </summary>
 		[Fact]
 		public async Task GetOsVersionDataByNxosTypeAsync_Succeeds()
 		{
@@ -142,6 +173,9 @@ namespace Cisco.Api.Test
 			}
 		}
 
+		/// <summary>
+		/// Verifies the get all succeeds scenario.
+		/// </summary>
 		[Fact]
 		public async Task GetAll_Succeeds()
 		{
@@ -155,6 +189,9 @@ namespace Cisco.Api.Test
 			securityAdvisories.Advisories.Count.Should().NotBe(0);
 		}
 
+		/// <summary>
+		/// Verifies the get all by page succeeds scenario.
+		/// </summary>
 		[Fact]
 		public async Task GetAllByPage_Succeeds()
 		{
@@ -168,6 +205,9 @@ namespace Cisco.Api.Test
 			securityAdvisories.Advisories.Count.Should().Be(1);
 		}
 
+		/// <summary>
+		/// Verifies the get by ID succeeds scenario.
+		/// </summary>
 		[Fact]
 		public async Task GetById_Succeeds()
 		{
@@ -181,6 +221,9 @@ namespace Cisco.Api.Test
 			securityAdvisories.Advisories.Count.Should().Be(1);
 		}
 
+		/// <summary>
+		/// Verifies the get by custom request latest1 succeeds scenario.
+		/// </summary>
 		[Fact]
 		public async Task GetByCustomRequestLatest1_Succeeds()
 		{

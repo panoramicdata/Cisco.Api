@@ -2,6 +2,9 @@
 
 namespace Cisco.Api.Data.PxCloud;
 
+/// <summary>
+/// Represents the report payload metadata.
+/// </summary>
 [DataContract]
 public class ReportPayloadMetadata
 {

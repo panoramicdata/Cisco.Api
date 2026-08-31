@@ -2,6 +2,9 @@
 
 namespace Cisco.Api.Data.Pss;
 
+/// <summary>
+/// Represents the extended device detail.
+/// </summary>
 public class ExtendedDeviceDetail : DeviceDetail<ExtendedCardDetail>
 {
 	/// <summary>

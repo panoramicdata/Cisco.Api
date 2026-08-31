@@ -5,8 +5,15 @@ using Xunit;
 
 namespace Cisco.Api.Test;
 
+/// <summary>
+/// Contains tests for PSIRT operations.
+/// </summary>
+/// <param name="iTestOutputHelper">The test output helper.</param>
 public class PsirtTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
+	/// <summary>
+	/// Verifies the get PSIRT by CVE ID scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetPsirtByCveId()
 	{
@@ -21,6 +28,9 @@ public class PsirtTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputH
 		advisoryResponse.Advisories.Should().NotBeEmpty();
 	}
 
+	/// <summary>
+	/// Verifies the get all psirts scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetAllPsirts()
 	{

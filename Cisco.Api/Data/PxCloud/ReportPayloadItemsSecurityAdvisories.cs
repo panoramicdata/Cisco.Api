@@ -3,6 +3,9 @@ using System.Runtime.Serialization;
 
 namespace Cisco.Api.Data.PxCloud;
 
+/// <summary>
+/// Represents the report payload items security advisories.
+/// </summary>
 [DataContract]
 public class ReportPayloadItemsSecurityAdvisories // : ReportPayloadItem
 {

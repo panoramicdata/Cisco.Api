@@ -5,6 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Cisco.Api.Interfaces;
+/// <summary>
+/// Defines operations for the PSS configs API.
+/// </summary>
 public interface IPssConfigs
 {
 	/// <summary>

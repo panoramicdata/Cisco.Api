@@ -2,6 +2,9 @@
 
 namespace Cisco.Api.Data.PxCloud;
 
+/// <summary>
+/// Represents the report response.
+/// </summary>
 [DataContract]
 public class ReportResponse
 {

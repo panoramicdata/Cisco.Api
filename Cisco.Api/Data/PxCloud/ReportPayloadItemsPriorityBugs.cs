@@ -3,6 +3,9 @@ using System.Runtime.Serialization;
 
 namespace Cisco.Api.Data.PxCloud;
 
+/// <summary>
+/// Represents the report payload items priority bugs.
+/// </summary>
 [DataContract]
 public class ReportPayloadItemsPriorityBugs : ReportPayloadItem
 {

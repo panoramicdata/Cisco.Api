@@ -2,6 +2,9 @@
 
 namespace Cisco.Api.Data.SoftwareSuggestion;
 
+/// <summary>
+/// Represents the software suggestion product.
+/// </summary>
 [DataContract]
 public class SoftwareSuggestionProduct
 {

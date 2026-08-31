@@ -5,8 +5,15 @@ using Xunit;
 
 namespace Cisco.Api.Test;
 
+/// <summary>
+/// Contains tests for PX cloud operations.
+/// </summary>
+/// <param name="iTestOutputHelper">The test output helper.</param>
 public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputHelper)
 {
+	/// <summary>
+	/// Verifies the get customers succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetCustomers_Succeeds()
 	{
@@ -18,6 +25,9 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 		response.Should().BeOfType<Customers>();
 	}
 
+	/// <summary>
+	/// Verifies the get all customers succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetAllCustomers_Succeeds()
 	{
@@ -50,6 +60,9 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 		customers.Should().NotBeEmpty();
 	}
 
+	/// <summary>
+	/// Verifies the get contracts succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetContracts_Succeeds()
 	{
@@ -59,10 +72,11 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<Contracts>();
-		//response.Should().NotBeEmpty();
-		//response.Should().HaveCountGreaterThan(0);
 	}
 
+	/// <summary>
+	/// Verifies the get contracts with customers succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetContractsWithCustomers_Succeeds()
 	{
@@ -72,10 +86,11 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<ContractsWithCustomers>();
-		//response.Should().NotBeEmpty();
-		//response.Should().HaveCountGreaterThan(0);
 	}
 
+	/// <summary>
+	/// Verifies the get contract details succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetContractDetails_Succeeds()
 	{
@@ -85,10 +100,11 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<ContractDetails>();
-		//response.Should().NotBeEmpty();
-		//response.Should().HaveCountGreaterThan(0);
 	}
 
+	/// <summary>
+	/// Verifies the get all contract details succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task GetAllContractDetails_Succeeds()
 	{
@@ -121,6 +137,9 @@ public class PxCloudTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutpu
 		contractDetails.Should().NotBeEmpty();
 	}
 
+	/// <summary>
+	/// Verifies the request assets report succeeds scenario.
+	/// </summary>
 	[Fact]
 	public async Task RequestAssetsReport_Succeeds()
 	{

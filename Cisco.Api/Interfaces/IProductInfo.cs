@@ -23,6 +23,9 @@ public interface IProductInfo
 		[Query(CollectionFormat.Csv)] IEnumerable<string> serialNumbers,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the get by serial numbers operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<ProductInformationPage> GetBySerialNumbersAsync([Query(CollectionFormat.Csv)] IEnumerable<string> serialNumbers)
 		=> GetBySerialNumbersAsync(serialNumbers, default);

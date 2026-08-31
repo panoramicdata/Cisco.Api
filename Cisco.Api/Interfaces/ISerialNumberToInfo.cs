@@ -23,6 +23,9 @@ public interface ISerialNumberToInfo
 		IEnumerable<string> serialNumbers,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the get coverage status by serial numbers operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<CoverageStatusCollection> GetCoverageStatusBySerialNumbersAsync(IEnumerable<string> serialNumbers)
 		=> GetCoverageStatusBySerialNumbersAsync(serialNumbers, default);
@@ -38,6 +41,9 @@ public interface ISerialNumberToInfo
 		IEnumerable<string> serialNumbers,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the get coverage summary by serial numbers operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<CoverageSummaryCollection> GetCoverageSummaryBySerialNumbersAsync(IEnumerable<string> serialNumbers)
 		=> GetCoverageSummaryBySerialNumbersAsync(serialNumbers, default);
@@ -53,6 +59,9 @@ public interface ISerialNumberToInfo
 		IEnumerable<string> serialNumbers,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the get orderable product identifiers by serial numbers operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<OrderablePidCollection> GetOrderableProductIdentifiersBySerialNumbersAsync(IEnumerable<string> serialNumbers)
 		=> GetOrderableProductIdentifiersBySerialNumbersAsync(serialNumbers, default);

@@ -25,10 +25,16 @@ public interface IEox
 		int pageIndex,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the get by serial number operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<EoxInfoPage> GetBySerialNumberAsync(string serialNumber, int pageIndex)
 		=> GetBySerialNumberAsync(serialNumber, pageIndex, default);
 
+	/// <summary>
+	/// Performs the get by serial number operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<EoxInfoPage> GetBySerialNumberAsync(string serialNumber)
 		=> GetBySerialNumberAsync(serialNumber, 1, default);
@@ -49,10 +55,16 @@ public interface IEox
 		int pageIndex,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the get by dates operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<EoxInfoPage> GetByDatesAsync(DateTime startDate, DateTime endDate, int pageIndex)
 		=> GetByDatesAsync(startDate, endDate, pageIndex, default);
 
+	/// <summary>
+	/// Performs the get by dates operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<EoxInfoPage> GetByDatesAsync(DateTime startDate, DateTime endDate)
 		=> GetByDatesAsync(startDate, endDate, 1, default);
@@ -70,10 +82,16 @@ public interface IEox
 		int pageIndex,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the get by product ID operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<EoxInfoPage> GetByProductIdAsync(string productId, int pageIndex)
 		=> GetByProductIdAsync(productId, pageIndex, default);
 
+	/// <summary>
+	/// Performs the get by product ID operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<EoxInfoPage> GetByProductIdAsync(string productId)
 		=> GetByProductIdAsync(productId, 1, default);
@@ -91,10 +109,16 @@ public interface IEox
 		int pageIndex,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the get by software release string operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<EoxInfoPage> GetBySoftwareReleaseStringAsync(IEnumerable<string> softwareReleaseStrings, int pageIndex)
 		=> GetBySoftwareReleaseStringAsync(softwareReleaseStrings, pageIndex, default);
 
+	/// <summary>
+	/// Performs the get by software release string operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<EoxInfoPage> GetBySoftwareReleaseStringAsync(IEnumerable<string> softwareReleaseStrings)
 		=> GetBySoftwareReleaseStringAsync(softwareReleaseStrings, 1, default);

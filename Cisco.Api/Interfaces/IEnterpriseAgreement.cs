@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 
 namespace Cisco.Api.Interfaces;
 
+/// <summary>
+/// Defines operations for the enterprise agreement API.
+/// </summary>
 public interface IEnterpriseAgreement
 {
-	/// https://apidocs-prod.cisco.com/explore;category=611719fa4e429c207fef9a59 (requires login with Cisco ID granted access)
+	// https://apidocs-prod.cisco.com/explore;category=611719fa4e429c207fef9a59 (requires login with Cisco ID granted access)
 
 	////////////////////////////////////////
 	//// EA Consumption Report APIs
@@ -23,6 +26,9 @@ public interface IEnterpriseAgreement
 		string smartAccountDomain,
 		CancellationToken cancellationToken);
 
+	/// <summary>
+	/// Performs the get consumption report for all subscriptions associated with smart account domain operation.
+	/// </summary>
 	[Obsolete("Pass a CancellationToken; for example: default. This overload will be removed in a future version.", true)]
 	Task<EaSmartAccountAllSubscriptionConsumptionReportResponse> GetConsumptionReportForAllSubscriptionsAssociatedWithSmartAccountDomainAsync(string smartAccountDomain)
 		=> GetConsumptionReportForAllSubscriptionsAssociatedWithSmartAccountDomainAsync(smartAccountDomain, default);

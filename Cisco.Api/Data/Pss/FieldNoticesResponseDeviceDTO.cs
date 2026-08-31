@@ -14,6 +14,9 @@ namespace Cisco.Api.Data.Pss;
         [XmlElement("deviceId")]
         public string DeviceId { get; set; } = null!;
 
+        /// <summary>
+        /// Gets or sets the field notices.
+        /// </summary>
         [XmlElement("deviceFN")]
         public List<FieldNoticesDevice> FieldNotices { get; set; } = null!;
     }

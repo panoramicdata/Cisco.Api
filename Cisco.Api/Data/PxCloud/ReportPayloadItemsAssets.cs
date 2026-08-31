@@ -3,6 +3,9 @@ using System.Runtime.Serialization;
 
 namespace Cisco.Api.Data.PxCloud;
 
+/// <summary>
+/// Represents the report payload items assets.
+/// </summary>
 [DataContract]
 public class ReportPayloadItemsAssets : ReportPayloadItem
 {
