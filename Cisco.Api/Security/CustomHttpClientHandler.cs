@@ -426,7 +426,7 @@ internal abstract class CustomHttpClientHandler(
 		_logger.Log(
 			logAsError ? LogLevel.Error : LevelToLogAt,
 			"Request\r\n{Request}",
-			request
+			request.ToRedactedString()
 		);
 		if (request.Content != null)
 		{
@@ -449,7 +449,7 @@ internal abstract class CustomHttpClientHandler(
 		_logger.Log(
 			logAsError ? LogLevel.Error : LevelToLogAt,
 			"Response\r\n{Response}",
-			httpResponseMessage
+			httpResponseMessage.ToRedactedString()
 		);
 
 		if (httpResponseMessage.Content != null)

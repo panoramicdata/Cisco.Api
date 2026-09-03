@@ -1,17 +1,11 @@
 ﻿using Cisco.Api.Exceptions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Concurrent;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Sockets;
 using System.Security;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Cisco.Api.Security;
 
@@ -62,23 +56,23 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 					.ConfigureAwait(false);
 
 				_logger.LogTrace("{HttpResponseMessage}", httpResponseMessage);
-				}
-				catch (Exception ex) when (IsTransientException(ex))
+			}
+			catch (Exception ex) when (IsTransientException(ex))
+			{
+				if (++attemptCount < Options.MaxAttemptCount)
 				{
-					if (++attemptCount < Options.MaxAttemptCount)
-					{
-						_logger.LogWarning("GetAccessTokenAsync(): Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...",
-							attemptCount,
-							Options.MaxAttemptCount
-						);
-						await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
-						continue;
-					}
-
-					_logger.LogError(ex, "GetAccessTokenAsync(): {Message} after {MaxAttemptCount} attempts.",
-						ex.Message, Options.MaxAttemptCount);
-					throw new CiscoApiException("Timeout or transient network failure during authentication.", ex);
+					_logger.LogWarning("GetAccessTokenAsync(): Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...",
+						attemptCount,
+						Options.MaxAttemptCount
+					);
+					await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
+					continue;
 				}
+
+				_logger.LogError(ex, "GetAccessTokenAsync(): {Message} after {MaxAttemptCount} attempts.",
+					ex.Message, Options.MaxAttemptCount);
+				throw new CiscoApiException("Timeout or transient network failure during authentication.", ex);
+			}
 
 				var accessTokenResponse = await DeserializeTokenResponseAsync(httpResponseMessage, cancellationToken).ConfigureAwait(false);
 
@@ -432,7 +426,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 		_logger.Log(
 			logAsError ? LogLevel.Error : LevelToLogAt,
 			"Request\r\n{Request}",
-			request
+			request.ToRedactedString()
 		);
 		if (request.Content != null)
 		{
@@ -456,7 +450,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 		_logger.Log(
 			logAsError ? LogLevel.Error : LevelToLogAt,
 			"Response\r\n{Response}",
-			httpResponseMessage
+			httpResponseMessage.ToRedactedString()
 		);
 
 		if (httpResponseMessage.Content != null)

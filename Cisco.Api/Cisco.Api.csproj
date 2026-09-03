@@ -21,7 +21,27 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <LangVersion>latest</LangVersion>
-    <PackageReleaseNotes>Add "Pending" to LicenseStatus and "Demo" to LicenseType enums to handle new values returned by the Cisco Smart Accounts API.</PackageReleaseNotes>
+    <PackageReleaseNotes>
+      Security fix: sensitive HTTP headers are now redacted in diagnostic output.
+
+      Previously the request logging in CustomHttpClientHandler and CustomFastUmbrellaHttpClientHandler
+      passed the whole HttpRequestMessage to the logger, and its ToString() renders every header. The
+      Authorization header this client sets on each request was therefore written verbatim.
+
+      This was not confined to Trace. LogErrorHeadersIfNeeded fires when Trace is DISABLED and
+      OnErrorEnsureRequestResponseHeadersLogged is set, logging the whole request at Error level - so on
+      a normal production logger a usable token reached the log store on every failed request.
+
+      Authorization, Proxy-Authorization, Cookie, Set-Cookie and common API key headers are now redacted
+      in request and response, along with any vendor-prefixed variant whose name ends in "Authorization".
+      The scheme and credential length are retained, so failures remain diagnosable.
+
+      Breaking change to message text: the Request and Response log messages are now rendered by the
+      library rather than by HttpRequestMessage.ToString(). The shape is the same but code parsing those
+      messages should be checked.
+
+      Consumers should upgrade and then review existing logs for previously captured tokens.
+    </PackageReleaseNotes>
     <!-- Modern symbol package configuration -->
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -63,6 +83,9 @@
     <None Include="Data\SmartAccountsAndLicensing\Responses\ListOfSmartAccountsResponse.cs" />
     <None Include="Icon.png" Pack="true" PackagePath="" />
     <None Include="..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Cisco.Api.Test" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services" />
