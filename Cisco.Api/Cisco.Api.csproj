@@ -22,25 +22,30 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <LangVersion>latest</LangVersion>
     <PackageReleaseNotes>
-      Security fix: sensitive HTTP headers are now redacted in diagnostic output.
+      Fix: EoX lookups by serial number now build a valid request on Refit 15.
 
-      Previously the request logging in CustomHttpClientHandler and CustomFastUmbrellaHttpClientHandler
-      passed the whole HttpRequestMessage to the logger, and its ToString() renders every header. The
-      Authorization header this client sets on each request was therefore written verbatim.
+      IEox.GetBySerialNumberAsync marked its serialNumber parameter [Body] while the URL template
+      still declared a {serialNumber} path segment. Refit 13 allowed a single parameter to satisfy
+      both, so the request was correct and the conflict was invisible. Refit 15 does not, and every
+      call now fails inside the client, before anything is sent, with "URL
+      /supporttools/eox/rest/5/EOXBySerialNumber/{pageIndex}/{serialNumber} has parameter
+      {serialNumber}, but no method parameter matches".
 
-      This was not confined to Trace. LogErrorHeadersIfNeeded fires when Trace is DISABLED and
-      OnErrorEnsureRequestResponseHeadersLogged is set, logging the whole request at Error level - so on
-      a normal production logger a usable token reached the log store on every failed request.
+      If you are on Refit 15, take this version: EoX by serial number does not work at all without
+      it. If you are still on Refit 13, the outgoing URL is unchanged, including the escaping of
+      comma-separated serial numbers, so upgrading is safe and costs you nothing except a stray
+      text/plain body that was being attached to a GET.
 
-      Authorization, Proxy-Authorization, Cookie, Set-Cookie and common API key headers are now redacted
-      in request and response, along with any vendor-prefixed variant whose name ends in "Authorization".
-      The scheme and credential length are retained, so failures remain diagnosable.
+      Every other Refit method in the library was checked for the same URL template and parameter
+      attribute conflict. There were none, so no other call site changes.
 
-      Breaking change to message text: the Request and Response log messages are now rendered by the
-      library rather than by HttpRequestMessage.ToString(). The shape is the same but code parsing those
-      messages should be checked.
+      Note for anyone on Refit 15: IEox cannot be generated inline by Refit's source generator, so
+      a reference to the Refit.Reflection package is needed. Without it the client throws at
+      construction, saying the reflection request builder is not installed.
 
-      Consumers should upgrade and then review existing logs for previously captured tokens.
+      New offline tests build a request for every Refit method in the library, so a URL template
+      that no parameter can satisfy now fails this library's own build rather than surfacing as a
+      runtime exception in your application.
     </PackageReleaseNotes>
     <!-- Modern symbol package configuration -->
     <IncludeSymbols>true</IncludeSymbols>
