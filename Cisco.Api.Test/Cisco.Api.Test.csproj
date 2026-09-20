@@ -21,11 +21,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Neovolve.Logging.Xunit.v3" />
-    <!-- RefitRequestBuildingTests builds a request from every interface. IEox falls back to the
-         reflection request builder (see the RF006 note in Cisco.Api.csproj), which Refit 15 no
-         longer ships in the box, so the tests need what a consumer needs. Magic Suite found this
-         out at runtime instead: MS-25923, MS-25939. -->
-    <PackageReference Include="Refit.Reflection" />
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" PrivateAssets="all" />
   </ItemGroup>

@@ -39,9 +39,11 @@
       Every other Refit method in the library was checked for the same URL template and parameter
       attribute conflict. There were none, so no other call site changes.
 
-      Note for anyone on Refit 15: IEox cannot be generated inline by Refit's source generator, so
-      a reference to the Refit.Reflection package is needed. Without it the client throws at
-      construction, saying the reflection request builder is not installed.
+      This package now depends on Refit.Reflection. Four of its interfaces, IEox among them, cannot
+      be generated inline by Refit's source generator, and on Refit 15 the reflection request
+      builder is no longer included by default. Without it, constructing a CiscoClient throws
+      rather than merely failing on those calls. Declaring the dependency here means you inherit it
+      instead of discovering it at runtime.
 
       New offline tests build a request for every Refit method in the library, so a URL template
       that no parameter can satisfy now fails this library's own build rather than surfacing as a
@@ -71,6 +73,11 @@
     </PackageReference>
     <PackageReference Include="refit" />
     <PackageReference Include="Refit.Newtonsoft.Json" />
+    <!-- Not optional. Four interfaces fall back to the reflection request builder (see the RF006
+         note above), which Refit 15 no longer ships in the box, and CiscoClient's constructor
+         builds every client eagerly. Without this, constructing a CiscoClient throws outright.
+         Declared here so consumers inherit it instead of meeting it as a runtime failure. -->
+    <PackageReference Include="Refit.Reflection" />
     <PackageReference Include="SecurityCodeScan.VS2019">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
