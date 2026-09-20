@@ -187,7 +187,7 @@ public class CiscoClient : IDisposable
 		}
 	}
 
-	private static RefitSettings CreateRefitSettings() => new()
+	internal static RefitSettings CreateRefitSettings() => new()
 	{
 		UrlParameterFormatter = new CustomUrlParameterFormatter(),
 		ContentSerializer = new NewtonsoftJsonContentSerializer(

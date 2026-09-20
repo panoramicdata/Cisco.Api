@@ -1,9 +1,5 @@
 ﻿using Cisco.Api.Data.Eox;
 using Refit;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Cisco.Api.Interfaces;
 
@@ -21,7 +17,7 @@ public interface IEox
 	/// <returns>The EOX information</returns>
 	[Get("/supporttools/eox/rest/5/EOXBySerialNumber/{pageIndex}/{serialNumber}")]
 	Task<EoxInfoPage> GetBySerialNumberAsync(
-		[Body] string serialNumber,
+		string serialNumber,
 		int pageIndex,
 		CancellationToken cancellationToken);
 
