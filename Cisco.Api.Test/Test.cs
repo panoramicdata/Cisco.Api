@@ -7,6 +7,11 @@ namespace Cisco.Api.Test;
 /// <summary>
 /// Provides shared test infrastructure.
 /// </summary>
+/// <remarks>
+/// Every class deriving from this one calls the live Cisco APIs with credentials from
+/// appsettings.json, which CI does not have. CI excludes them with --filter "Category!=Integration".
+/// </remarks>
+[Trait("Category", "Integration")]
 public abstract class Test
 {
 	/// <summary>
