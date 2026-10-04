@@ -22,11 +22,8 @@ public class CiscoClient : IDisposable
 {
 	private readonly ILogger _logger;
 	private readonly HttpClient _restHttpClient;
-	private readonly HttpClient _restEnterpriseAgreementClient;
 	private readonly HttpClient _restUmbrellaClient;
-	private readonly HttpClient _restPssClient;
 	private readonly HttpClient _restPXCloudClient;
-	private readonly HttpClient _restSmartAccountsAndLicensingClient;
 	private readonly HttpClient _soapHttpClient;
 	private bool disposedValue;
 
@@ -137,28 +134,28 @@ public class CiscoClient : IDisposable
 		};
 
 		_restHttpClient = CreateAuthenticatedHttpClient("https://id.cisco.com/oauth2/default/v1/token", "https://apix.cisco.com/", options);
-		_restEnterpriseAgreementClient = CreateAuthenticatedHttpClient("https://id.cisco.com/oauth2/default/v1/token", "https://swapi.cisco.com/services/api/enterprise-agreements", alternativeOptionsWithContentTypeAsJson);
+		var restEnterpriseAgreementClient = CreateAuthenticatedHttpClient("https://id.cisco.com/oauth2/default/v1/token", "https://swapi.cisco.com/services/api/enterprise-agreements", alternativeOptionsWithContentTypeAsJson);
 		_restUmbrellaClient = CreateUmbrellaHttpClient(options);
-		_restPssClient = CreateAuthenticatedHttpClient("https://api.cisco.com/pss/token", "https://api.cisco.com/", options);
+		var restPssClient = CreateAuthenticatedHttpClient("https://api.cisco.com/pss/token", "https://api.cisco.com/", options);
 		_restPXCloudClient = CreatePxCloudHttpClient(options);
 		_soapHttpClient = CreateAuthenticatedHttpClient("https://api.cisco.com/pss/token", "https://api.cisco.com/pss/v1.0/", options);
-		_restSmartAccountsAndLicensingClient = CreateAuthenticatedHttpClient("https://id.cisco.com/oauth2/default/v1/token", "https://swapi.cisco.com/services/api/smart-accounts-and-licensing", alternativeOptionsWithContentTypeAsJson);
+		var restSmartAccountsAndLicensingClient = CreateAuthenticatedHttpClient("https://id.cisco.com/oauth2/default/v1/token", "https://swapi.cisco.com/services/api/smart-accounts-and-licensing", alternativeOptionsWithContentTypeAsJson);
 
 		var refitSettings = CreateRefitSettings();
 
 		// Interfaces
-		EnterpriseAgreement = RestService.For<IEnterpriseAgreement>(_restEnterpriseAgreementClient, refitSettings);
+		EnterpriseAgreement = RestService.For<IEnterpriseAgreement>(restEnterpriseAgreementClient, refitSettings);
 		Eox = RestService.For<IEox>(_restHttpClient, refitSettings);
 		Hello = RestService.For<IHello>(_restHttpClient);
 		ProductInfo = RestService.For<IProductInfo>(_restHttpClient, refitSettings);
 		Psirt = RestService.For<IPsirt>(_restHttpClient, refitSettings);
 		Pss = new PssServices(_soapHttpClient);
-		PssConfigs = new PssConfigs(_restPssClient);
+		PssConfigs = new PssConfigs(restPssClient);
 		PxCloudReports = new PxCloudReports(_restPXCloudClient);
 		PxCloud = RestService.For<IPxCloud>(_restPXCloudClient, refitSettings);
 		SecurityAdvisory = RestService.For<ISecurityAdvisory>(_restHttpClient, refitSettings);
 		SerialNumberToInfo = RestService.For<ISerialNumberToInfo>(_restHttpClient, refitSettings);
-		SmartAccountsAndLicensing = RestService.For<ISmartAccountsAndLicensing>(_restSmartAccountsAndLicensingClient, refitSettings);
+		SmartAccountsAndLicensing = RestService.For<ISmartAccountsAndLicensing>(restSmartAccountsAndLicensingClient, refitSettings);
 		SoftwareSuggestion = RestService.For<ISoftwareSuggestion>(_restHttpClient, refitSettings);
 		Umbrella = RestService.For<IUmbrella>(_restUmbrellaClient, refitSettings);
 	}

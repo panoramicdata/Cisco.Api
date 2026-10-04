@@ -145,34 +145,49 @@ public class RefitRequestBuildingTests
 
 		var valueType = Nullable.GetUnderlyingType(type) ?? type;
 
-		if (valueType == typeof(int))
+		if (TrySampleScalar(valueType, out var scalar))
 		{
-			return SamplePageIndex;
-		}
-
-		if (valueType == typeof(long))
-		{
-			return (long)SamplePageIndex;
-		}
-
-		if (valueType == typeof(DateTime))
-		{
-			return SampleDate;
-		}
-
-		if (valueType == typeof(DateTimeOffset))
-		{
-			return new DateTimeOffset(SampleDate, TimeSpan.Zero);
-		}
-
-		if (valueType.IsEnum)
-		{
-			return Enum.GetValues(valueType).GetValue(0);
+			return scalar;
 		}
 
 		return type.IsValueType || type.GetConstructor(Type.EmptyTypes) is not null
 			? Activator.CreateInstance(type)
 			: null;
+	}
+
+	/// <summary>
+	/// A representative value for a numeric, date or enum type.
+	/// </summary>
+	private static bool TrySampleScalar(Type valueType, out object? value)
+	{
+		value = null;
+
+		if (valueType == typeof(int))
+		{
+			value = SamplePageIndex;
+		}
+		else if (valueType == typeof(long))
+		{
+			value = (long)SamplePageIndex;
+		}
+		else if (valueType == typeof(DateTime))
+		{
+			value = SampleDate;
+		}
+		else if (valueType == typeof(DateTimeOffset))
+		{
+			value = new DateTimeOffset(SampleDate, TimeSpan.Zero);
+		}
+		else if (valueType.IsEnum)
+		{
+			value = Enum.GetValues(valueType).GetValue(0);
+		}
+		else
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	/// <summary>
