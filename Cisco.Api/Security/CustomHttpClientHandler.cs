@@ -40,7 +40,7 @@ internal abstract class CustomHttpClientHandler(
 		{
 			using var httpClient = GetHttpClient();
 
-			HttpResponseMessage httpResponseMessage;
+			HttpResponseMessage? httpResponseMessage = null;
 			try
 			{
 				httpResponseMessage = await httpClient
@@ -51,34 +51,19 @@ internal abstract class CustomHttpClientHandler(
 			}
 			catch (Exception ex) when (IsTransientException(ex))
 			{
-				if (++attemptCount < Options.MaxAttemptCount)
+				attemptCount++;
+				if (await HandleTransientAuthExceptionAsync(ex, attemptCount, cancellationToken).ConfigureAwait(false))
 				{
-					_logger.LogWarning("GetAccessTokenAsync(): Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...",
-						attemptCount,
-						Options.MaxAttemptCount
-					);
-
-					await Task.Delay(Options.RetryDelay, cancellationToken)
-						.ConfigureAwait(false);
-
 					continue;
 				}
+			}
 
-				_logger.LogError(
-					ex,
-					"GetAccessTokenAsync(): {Message} after {MaxAttemptCount} attempts.",
-					ex.Message,
-					Options.MaxAttemptCount);
-
-				throw new CiscoApiException("Timeout or transient network failure during authentication.", ex);
-				}
-
-				var accessTokenResponse = await DeserializeTokenResponseAsync(httpResponseMessage, cancellationToken).ConfigureAwait(false);
+			var accessTokenResponse = await DeserializeTokenResponseAsync(httpResponseMessage!, cancellationToken).ConfigureAwait(false);
 
 			if (accessTokenResponse.Error is not null)
 			{
 				var attemptCountRef = new[] { attemptCount };
-				var shouldContinue = await HandleAuthErrorAsync(accessTokenResponse, httpResponseMessage, attemptCountRef, cancellationToken)
+				var shouldContinue = await HandleAuthErrorAsync(accessTokenResponse, httpResponseMessage!, attemptCountRef, cancellationToken)
 					.ConfigureAwait(false);
 				attemptCount = attemptCountRef[0];
 				if (shouldContinue)
@@ -89,6 +74,30 @@ internal abstract class CustomHttpClientHandler(
 
 			return StoreAndReturnAccessToken(accessTokenResponse);
 		}
+	}
+
+	private async Task<bool> HandleTransientAuthExceptionAsync(Exception ex, int attemptCount, CancellationToken cancellationToken)
+	{
+		if (attemptCount < Options.MaxAttemptCount)
+		{
+			_logger.LogWarning("GetAccessTokenAsync(): Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...",
+				attemptCount,
+				Options.MaxAttemptCount
+			);
+
+			await Task.Delay(Options.RetryDelay, cancellationToken)
+				.ConfigureAwait(false);
+
+			return true;
+		}
+
+		_logger.LogError(
+			ex,
+			"GetAccessTokenAsync(): {Message} after {MaxAttemptCount} attempts.",
+			ex.Message,
+			Options.MaxAttemptCount);
+
+		throw new CiscoApiException("Timeout or transient network failure during authentication.", ex);
 	}
 
 	private void ValidateClientCredentials()
@@ -141,34 +150,46 @@ internal abstract class CustomHttpClientHandler(
 		{
 			if (Options.RetryInvalidClientTokenErrors)
 			{
-				if (++attemptCount[0] < Options.RetryInvalidClientTokenErrorsMaxAttemptCount)
-				{
-					_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) – retrying after {Delay}s...",
-						attemptCount[0],
-						Options.RetryInvalidClientTokenErrorsMaxAttemptCount,
-						Options.RetryInvalidClientTokenErrorsRetryDelay.TotalSeconds);
-
-					await Task.Delay(Options.RetryInvalidClientTokenErrorsRetryDelay, cancellationToken).ConfigureAwait(false);
-					return true;
-				}
-
-				_logger.LogError("GetAccessTokenAsync(): invalid_client exhausted after {MaxAttemptCount} attempts.",
-					Options.RetryInvalidClientTokenErrorsMaxAttemptCount);
-				throw new CiscoApiException("Timeout during authentication - gave up trying to get token after repeated invalid_client errors.");
+				return await HandleRetryInvalidClientErrorAsync(attemptCount, cancellationToken);
 			}
 
-			if (++attemptCount[0] < Options.MaxAttemptCount)
-			{
-				_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) using standard retry settings, retrying after {Delay}s...",
-					attemptCount[0],
-					Options.MaxAttemptCount,
-					Options.RetryDelay.TotalSeconds);
-				await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
-				return true;
-			}
+			return await HandleStandardInvalidClientRetryAsync(attemptCount, cancellationToken);
 		}
 
 		throw new SecurityException(combinedMessage);
+	}
+
+	private async Task<bool> HandleRetryInvalidClientErrorAsync(int[] attemptCount, CancellationToken cancellationToken)
+	{
+		if (++attemptCount[0] < Options.RetryInvalidClientTokenErrorsMaxAttemptCount)
+		{
+			_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) – retrying after {Delay}s...",
+				attemptCount[0],
+				Options.RetryInvalidClientTokenErrorsMaxAttemptCount,
+				Options.RetryInvalidClientTokenErrorsRetryDelay.TotalSeconds);
+
+			await Task.Delay(Options.RetryInvalidClientTokenErrorsRetryDelay, cancellationToken).ConfigureAwait(false);
+			return true;
+		}
+
+		_logger.LogError("GetAccessTokenAsync(): invalid_client exhausted after {MaxAttemptCount} attempts.",
+			Options.RetryInvalidClientTokenErrorsMaxAttemptCount);
+		throw new CiscoApiException("Timeout during authentication - gave up trying to get token after repeated invalid_client errors.");
+	}
+
+	private async Task<bool> HandleStandardInvalidClientRetryAsync(int[] attemptCount, CancellationToken cancellationToken)
+	{
+		if (++attemptCount[0] < Options.MaxAttemptCount)
+		{
+			_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) using standard retry settings, retrying after {Delay}s...",
+				attemptCount[0],
+				Options.MaxAttemptCount,
+				Options.RetryDelay.TotalSeconds);
+			await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
+			return true;
+		}
+
+		return false;
 	}
 
 	private static string BuildErrorMessage(string error, string? description)
@@ -428,19 +449,7 @@ internal abstract class CustomHttpClientHandler(
 			"Request\r\n{Request}",
 			request.ToRedactedString()
 		);
-		if (request.Content != null)
-		{
-			var content = await request
-				.Content
-				.ReadAsStringAsync()
-				.ConfigureAwait(false);
-
-			_logger.Log(
-				logAsError ? LogLevel.Error : LevelToLogAt,
-				"RequestContent\r\n{RequestContext}",
-				content
-			);
-		}
+		await LogContentBlockAsync(request.Content, logAsError, "RequestContent\r\n{RequestContext}").ConfigureAwait(false);
 	}
 
 	private async Task LogResponseHeaders(HttpResponseMessage httpResponseMessage, bool logAsError = false)
@@ -452,18 +461,24 @@ internal abstract class CustomHttpClientHandler(
 			httpResponseMessage.ToRedactedString()
 		);
 
-		if (httpResponseMessage.Content != null)
-		{
-			var content = await httpResponseMessage
-				.Content
-				.ReadAsStringAsync()
-				.ConfigureAwait(false);
+		await LogContentBlockAsync(httpResponseMessage.Content, logAsError, "ResponseContent\r\n{ResponseContent}").ConfigureAwait(false);
+	}
 
-			_logger.Log(
-				logAsError ? LogLevel.Error : LevelToLogAt,
-				"ResponseContent\r\n{ResponseContent}",
-				content);
+	private async Task LogContentBlockAsync(HttpContent? content, bool logAsError, string template)
+	{
+		if (content == null)
+		{
+			return;
 		}
+
+		var body = await content
+			.ReadAsStringAsync()
+			.ConfigureAwait(false);
+
+		_logger.Log(
+			logAsError ? LogLevel.Error : LevelToLogAt,
+			template,
+			body);
 	}
 
 	private static async Task<string> GetResponseContent(HttpStatusCode statusCode, HttpContent? content)

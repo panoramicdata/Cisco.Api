@@ -33,6 +33,16 @@ public class HttpExtensionsTests
 	private const string FakeToken = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOP";
 
 	/// <summary>
+	/// Creates a request with a credential-bearing header and returns its redacted rendering.
+	/// </summary>
+	private static string BuildRedactedRequest(HttpMethod method, string uri, string headerName, string headerValue)
+	{
+		using var request = new HttpRequestMessage(method, uri);
+		request.Headers.TryAddWithoutValidation(headerName, headerValue);
+		return request.ToRedactedString();
+	}
+
+	/// <summary>
 	/// The headline case: the bearer token this client sets must not survive into the message.
 	/// </summary>
 	[Fact]
@@ -122,10 +132,7 @@ public class HttpExtensionsTests
 	[InlineData("AuThOrIzAtIoN")]
 	public void ToRedactedString_AuthorizationHeader_IsRedactedWhateverTheCasing(string headerName)
 	{
-		using var request = new HttpRequestMessage(HttpMethod.Get, "https://api.cisco.com/thing");
-		request.Headers.TryAddWithoutValidation(headerName, $"Bearer {FakeToken}");
-
-		var rendered = request.ToRedactedString();
+		var rendered = BuildRedactedRequest(HttpMethod.Get, "https://api.cisco.com/thing", headerName, $"Bearer {FakeToken}");
 
 		rendered.Should().NotContain(FakeToken);
 		rendered.Should().Contain("<redacted");
@@ -145,10 +152,7 @@ public class HttpExtensionsTests
 	public void ToRedactedString_OtherCredentialHeaders_AreRedacted(string headerName)
 	{
 		const string secret = "s3cr3t-value-that-must-not-be-logged";
-		using var request = new HttpRequestMessage(HttpMethod.Get, "https://api.cisco.com/thing");
-		request.Headers.TryAddWithoutValidation(headerName, secret);
-
-		var rendered = request.ToRedactedString();
+		var rendered = BuildRedactedRequest(HttpMethod.Get, "https://api.cisco.com/thing", headerName, secret);
 
 		rendered.Should().NotContain(secret);
 		rendered.Should().Contain("<redacted");
@@ -163,10 +167,7 @@ public class HttpExtensionsTests
 	[InlineData("X-Vendor-Authorization")]
 	public void ToRedactedString_VendorPrefixedAuthorizationHeader_IsRedacted(string headerName)
 	{
-		using var request = new HttpRequestMessage(HttpMethod.Get, "https://api.cisco.com/thing");
-		request.Headers.TryAddWithoutValidation(headerName, $"Bearer {FakeToken}");
-
-		var rendered = request.ToRedactedString();
+		var rendered = BuildRedactedRequest(HttpMethod.Get, "https://api.cisco.com/thing", headerName, $"Bearer {FakeToken}");
 
 		rendered.Should().NotContain(FakeToken);
 		rendered.Should().Contain($"{headerName}: Bearer <redacted, length {FakeToken.Length}>");
@@ -180,10 +181,7 @@ public class HttpExtensionsTests
 	public void ToRedactedString_CookieValueContainingASpace_IsRedactedWhole()
 	{
 		const string cookie = "session=abc123def456; HttpOnly";
-		using var request = new HttpRequestMessage(HttpMethod.Get, "https://api.cisco.com/thing");
-		request.Headers.TryAddWithoutValidation("Cookie", cookie);
-
-		var rendered = request.ToRedactedString();
+		var rendered = BuildRedactedRequest(HttpMethod.Get, "https://api.cisco.com/thing", "Cookie", cookie);
 
 		rendered.Should().Contain($"Cookie: <redacted, length {cookie.Length}>");
 		rendered.Should().NotContain("session=");
@@ -195,10 +193,7 @@ public class HttpExtensionsTests
 	[Fact]
 	public void ToRedactedString_CredentialWithoutAScheme_IsRedactedEntirely()
 	{
-		using var request = new HttpRequestMessage(HttpMethod.Get, "https://api.cisco.com/thing");
-		request.Headers.TryAddWithoutValidation("X-API-Key", "abcdef123456");
-
-		var rendered = request.ToRedactedString();
+		var rendered = BuildRedactedRequest(HttpMethod.Get, "https://api.cisco.com/thing", "X-API-Key", "abcdef123456");
 
 		rendered.Should().Contain("X-API-Key: <redacted, length 12>");
 	}
@@ -238,10 +233,7 @@ public class HttpExtensionsTests
 	[Fact]
 	public void ToRedactedString_NoCredentialHeaders_RedactsNothing()
 	{
-		using var request = new HttpRequestMessage(HttpMethod.Get, "https://api.cisco.com/thing");
-		request.Headers.TryAddWithoutValidation("Accept", "application/json");
-
-		var rendered = request.ToRedactedString();
+		var rendered = BuildRedactedRequest(HttpMethod.Get, "https://api.cisco.com/thing", "Accept", "application/json");
 
 		rendered.Should().Contain("Accept: application/json");
 		rendered.Should().NotContain("<redacted");

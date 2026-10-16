@@ -17,15 +17,9 @@ public class PsirtTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputH
 	[Fact]
 	public async Task GetPsirtByCveId()
 	{
-		var advisoryResponse = await CiscoClient
-			.Psirt
-			.GetByCveIdAsync("CVE-2020-3433", CancellationToken.None)
-			.ConfigureAwait(true);
+		var advisoryResponse = await GetByCveIdAsync("CVE-2020-3433");
 
-		advisoryResponse.Should().NotBeNull();
-		advisoryResponse.Should().BeOfType<AdvisoriesResponse>();
-		advisoryResponse.Advisories.Should().NotBeNull();
-		advisoryResponse.Advisories.Should().NotBeEmpty();
+		AssertAdvisories(advisoryResponse);
 	}
 
 	/// <summary>
@@ -34,15 +28,35 @@ public class PsirtTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutputH
 	[Fact]
 	public async Task GetAllPsirts()
 	{
-		var advisoryResponse = await CiscoClient
+		var advisoryResponse = await GetAllAsync();
+
+		AssertAdvisories(advisoryResponse);
+		advisoryResponse.Advisories.Count.Should().BeGreaterThan(100);
+	}
+
+	private async Task<AdvisoriesResponse> GetByCveIdAsync(string cveId)
+	{
+		var response = await CiscoClient
+			.Psirt
+			.GetByCveIdAsync(cveId, CancellationToken.None)
+			.ConfigureAwait(true);
+		return response;
+	}
+
+	private async Task<AdvisoriesResponse> GetAllAsync()
+	{
+		var response = await CiscoClient
 			.Psirt
 			.GetAllAsync(CancellationToken.None)
 			.ConfigureAwait(true);
+		return response;
+	}
 
+	private static void AssertAdvisories(AdvisoriesResponse advisoryResponse)
+	{
 		advisoryResponse.Should().NotBeNull();
 		advisoryResponse.Should().BeOfType<AdvisoriesResponse>();
 		advisoryResponse.Advisories.Should().NotBeNull();
 		advisoryResponse.Advisories.Should().NotBeEmpty();
-		advisoryResponse.Advisories.Count.Should().BeGreaterThan(100);
 	}
 }

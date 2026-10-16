@@ -40,14 +40,7 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 			.GetBySerialNumbersAsync(["`"], default)
 			.ConfigureAwait(true);
 
-		productInformationPage.Should().NotBeNull();
-
-		productInformationPage.PaginationResponseRecord.Should().NotBeNull();
-		productInformationPage.PaginationResponseRecord.LastIndex.Should().Be(0);
-		productInformationPage.PaginationResponseRecord.PageIndex.Should().Be(0);
-		productInformationPage.PaginationResponseRecord.PageRecords.Should().Be(0);
-		productInformationPage.PaginationResponseRecord.TotalRecords.Should().Be(0);
-
+		CheckEmptyProductInformationPage(productInformationPage);
 		productInformationPage.Products.Should().NotBeNull();
 		productInformationPage.Products.Select(productInformation => productInformation.ErrorResponse).Should().NotBeNull();
 	}
@@ -64,35 +57,7 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 			.GetBySerialNumbersAsync(["FTX1910100B"], default)
 			.ConfigureAwait(true);
 
-		productInformationPage.Should().NotBeNull();
-
-		productInformationPage.PaginationResponseRecord.Should().NotBeNull();
-		productInformationPage.PaginationResponseRecord.LastIndex.Should().Be(0);
-		productInformationPage.PaginationResponseRecord.PageIndex.Should().Be(0);
-		productInformationPage.PaginationResponseRecord.PageRecords.Should().Be(0);
-		productInformationPage.PaginationResponseRecord.TotalRecords.Should().Be(0);
-
-		productInformationPage.Products.Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.Dimensions).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.Dimensions.Format).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.Dimensions.Value).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.FormFactor).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.Id).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.BasePid).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.OrderablePid).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.OrderableStatus).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.ProductCategory).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.ProductName).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.ProductSeries).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.ProductSubcategory).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.ProductSupportPage).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.ReleaseDate).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.RichMediaUrls).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.RichMediaUrls.LargeImageUrl).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.RichMediaUrls.SmallImageUrl).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.SerialNumber).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.VisioStencilUrl).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.Weight).Should().NotBeNull();
+		CheckProductInformationPage(productInformationPage, null);
 	}
 
 	/// <summary>
@@ -107,35 +72,7 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 			.GetBySerialNumbersAsync(["FCW2234L10F", "FCW2234L12V"], default)
 			.ConfigureAwait(true);
 
-		productInformationPage.Should().NotBeNull();
-
-		productInformationPage.PaginationResponseRecord.Should().NotBeNull();
-		productInformationPage.PaginationResponseRecord.LastIndex.Should().Be(0);
-		productInformationPage.PaginationResponseRecord.PageIndex.Should().Be(0);
-		productInformationPage.PaginationResponseRecord.PageRecords.Should().Be(0);
-		productInformationPage.PaginationResponseRecord.TotalRecords.Should().Be(0);
-
-		productInformationPage.Products.Count.Should().Be(2);
-		productInformationPage.Products.Select(productInformation => productInformation.Dimensions).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.Dimensions.Format).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.Dimensions.Value).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.FormFactor).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.Id).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.BasePid).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.OrderablePid).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.OrderableStatus).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.ProductCategory).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.ProductName).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.ProductSeries).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.ProductSubcategory).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.ProductSupportPage).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.ReleaseDate).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.RichMediaUrls).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.RichMediaUrls.LargeImageUrl).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.RichMediaUrls.SmallImageUrl).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.SerialNumber).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.VisioStencilUrl).Should().NotBeNull();
-		productInformationPage.Products.Select(productInformation => productInformation.Weight).Should().NotBeNull();
+		CheckProductInformationPage(productInformationPage, 2);
 	}
 
 	/// <summary>
@@ -159,5 +96,57 @@ public class ProductInformationTests(ITestOutputHelper iTestOutputHelper) : Test
 
 		basePids = [.. basePids.Distinct()];
 		basePids.Count.Should().BeGreaterThan(1);
+	}
+
+	/// <summary>
+	/// Verifies the product information page is not null and the pagination record reflects an empty page.
+	/// </summary>
+	/// <param name="productInformationPage">The product information page.</param>
+	private static void CheckEmptyProductInformationPage(ProductInformationPage productInformationPage)
+	{
+		productInformationPage.Should().NotBeNull();
+
+		productInformationPage.PaginationResponseRecord.Should().NotBeNull();
+		productInformationPage.PaginationResponseRecord.LastIndex.Should().Be(0);
+		productInformationPage.PaginationResponseRecord.PageIndex.Should().Be(0);
+		productInformationPage.PaginationResponseRecord.PageRecords.Should().Be(0);
+		productInformationPage.PaginationResponseRecord.TotalRecords.Should().Be(0);
+	}
+
+	/// <summary>
+	/// Verifies the product information page and every product field it contains.
+	/// </summary>
+	/// <param name="productInformationPage">The product information page.</param>
+	/// <param name="productCount">The expected number of products, or null to skip the check.</param>
+	private static void CheckProductInformationPage(ProductInformationPage productInformationPage, int? productCount)
+	{
+		CheckEmptyProductInformationPage(productInformationPage);
+
+		productInformationPage.Products.Should().NotBeNull();
+		if (productCount.HasValue)
+		{
+			productInformationPage.Products.Count.Should().Be(productCount.Value);
+		}
+
+		productInformationPage.Products.Select(productInformation => productInformation.Dimensions).Should().NotBeNull();
+		productInformationPage.Products.Select(productInformation => productInformation.Dimensions.Format).Should().NotBeNull();
+		productInformationPage.Products.Select(productInformation => productInformation.Dimensions.Value).Should().NotBeNull();
+		productInformationPage.Products.Select(productInformation => productInformation.FormFactor).Should().NotBeNull();
+		productInformationPage.Products.Select(productInformation => productInformation.Id).Should().NotBeNull();
+		productInformationPage.Products.Select(productInformation => productInformation.BasePid).Should().NotBeNull();
+		productInformationPage.Products.Select(productInformation => productInformation.OrderablePid).Should().NotBeNull();
+		productInformationPage.Products.Select(productInformation => productInformation.OrderableStatus).Should().NotBeNull();
+		productInformationPage.Products.Select(productInformation => productInformation.ProductCategory).Should().NotBeNull();
+		productInformationPage.Products.Select(productInformation => productInformation.ProductName).Should().NotBeNull();
+		productInformationPage.Products.Select(productInformation => productInformation.ProductSeries).Should().NotBeNull();
+		productInformationPage.Products.Select(productInformation => productInformation.ProductSubcategory).Should().NotBeNull();
+		productInformationPage.Products.Select(productInformation => productInformation.ProductSupportPage).Should().NotBeNull();
+		productInformationPage.Products.Select(productInformation => productInformation.ReleaseDate).Should().NotBeNull();
+		productInformationPage.Products.Select(productInformation => productInformation.RichMediaUrls).Should().NotBeNull();
+		productInformationPage.Products.Select(productInformation => productInformation.RichMediaUrls.LargeImageUrl).Should().NotBeNull();
+		productInformationPage.Products.Select(productInformation => productInformation.RichMediaUrls.SmallImageUrl).Should().NotBeNull();
+		productInformationPage.Products.Select(productInformation => productInformation.SerialNumber).Should().NotBeNull();
+		productInformationPage.Products.Select(productInformation => productInformation.VisioStencilUrl).Should().NotBeNull();
+		productInformationPage.Products.Select(productInformation => productInformation.Weight).Should().NotBeNull();
 	}
 }

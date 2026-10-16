@@ -305,15 +305,20 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 			&& currentCredentialsInstance.AccessTokenExpiryDateTimeOffset <= DateTimeOffset.UtcNow)
 		{
 			_logger.LogDebug("SendAsync(): The access token expiry date time ('{AccessTokenExpiryDateTimeOffset}') has expired - getting a new token...", currentCredentialsInstance.AccessTokenExpiryDateTimeOffset);
-			currentCredentialsInstance.AccessToken = await GetAccessTokenAsync(currentCredentialCurrentIndex, cancellationToken).ConfigureAwait(false);
-			currentCredentialsInstance.AuthenticationHeaderValue = new AuthenticationHeaderValue("Bearer", currentCredentialsInstance.AccessToken);
 		}
 
-		if (currentCredentialsInstance.AuthenticationHeaderValue is null)
+		if (currentCredentialsInstance.AuthenticationHeaderValue is null
+			|| (currentCredentialsInstance.AccessTokenExpiryDateTimeOffset is not null
+				&& currentCredentialsInstance.AccessTokenExpiryDateTimeOffset <= DateTimeOffset.UtcNow))
 		{
-			currentCredentialsInstance.AccessToken = await GetAccessTokenAsync(currentCredentialCurrentIndex, cancellationToken).ConfigureAwait(false);
-			currentCredentialsInstance.AuthenticationHeaderValue = new AuthenticationHeaderValue("Bearer", currentCredentialsInstance.AccessToken);
+			await RefreshAccessTokenAsync(currentCredentialCurrentIndex, currentCredentialsInstance, cancellationToken).ConfigureAwait(false);
 		}
+	}
+
+	private async Task RefreshAccessTokenAsync(int currentCredentialCurrentIndex, CiscoUmbrellaCredentialsTokenTracking currentCredentialsInstance, CancellationToken cancellationToken)
+	{
+		currentCredentialsInstance.AccessToken = await GetAccessTokenAsync(currentCredentialCurrentIndex, cancellationToken).ConfigureAwait(false);
+		currentCredentialsInstance.AuthenticationHeaderValue = new AuthenticationHeaderValue("Bearer", currentCredentialsInstance.AccessToken);
 	}
 
 	private async Task SetupRequestAsync(int currentCredentialCurrentIndex, CiscoUmbrellaCredentialsTokenTracking currentCredentialsInstance, HttpRequestMessage request, CancellationToken cancellationToken)
@@ -393,8 +398,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 		if (message.Contains("Developer Inactive", StringComparison.Ordinal))
 		{
 			_logger.LogDebug("SendAsync(): Response content was Developer Inactive - could be a bad API response, requesting a new token.");
-			credentials.AccessToken = await GetAccessTokenAsync(credentialIndex, cancellationToken).ConfigureAwait(false);
-			credentials.AuthenticationHeaderValue = new AuthenticationHeaderValue("Bearer", credentials.AccessToken);
+			await RefreshAccessTokenAsync(credentialIndex, credentials, cancellationToken).ConfigureAwait(false);
 			request.Headers.Authorization = credentials.AuthenticationHeaderValue;
 		}
 

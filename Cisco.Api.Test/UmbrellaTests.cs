@@ -17,14 +17,9 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 	[Fact]
 	public async Task ListInternalNetworks_Succeeds()
 	{
-		var response = await CiscoClient
-			.Umbrella
-			.ListInternalNetworksAsync(null, 1, 100, default)
-			.ConfigureAwait(true);
+		var response = await ListInternalNetworks();
 
-		response.Should().BeOfType<List<InternalNetwork>>();
-		response.Should().NotBeEmpty();
-		response.Should().HaveCountGreaterThan(0);
+		AssertResponse(response);
 	}
 
 	/// <summary>
@@ -36,34 +31,16 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 		// Remember to set "DefaultCredentials": "Cae_Umbrella_Fast", which contains 2 client id and secret pairs.
 
 		// Check that token was first
-		var response = await CiscoClient
-			.Umbrella
-			.ListInternalNetworksAsync(null, 1, 100, default)
-			.ConfigureAwait(true);
-
-		response.Should().BeOfType<List<InternalNetwork>>();
-		response.Should().NotBeEmpty();
-		response.Should().HaveCountGreaterThan(0);
+		var response = await ListInternalNetworks();
+		AssertResponse(response);
 
 		// Check that token was second
-		response = await CiscoClient
-			.Umbrella
-			.ListInternalNetworksAsync(null, 1, 100, default)
-			.ConfigureAwait(true);
-
-		response.Should().BeOfType<List<InternalNetwork>>();
-		response.Should().NotBeEmpty();
-		response.Should().HaveCountGreaterThan(0);
+		response = await ListInternalNetworks();
+		AssertResponse(response);
 
 		// Check that token was first again
-		response = await CiscoClient
-			.Umbrella
-			.ListInternalNetworksAsync(null, 1, 100, default)
-			.ConfigureAwait(true);
-
-		response.Should().BeOfType<List<InternalNetwork>>();
-		response.Should().NotBeEmpty();
-		response.Should().HaveCountGreaterThan(0);
+		response = await ListInternalNetworks();
+		AssertResponse(response);
 	}
 
 	/// <summary>
@@ -78,8 +55,7 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<List<Policy>>();
-		response.Should().NotBeEmpty();
-		response.Should().HaveCountGreaterThan(0);
+		AssertResponse(response);
 	}
 
 	/// <summary>
@@ -94,6 +70,16 @@ public class UmbrellaTests(ITestOutputHelper iTestOutputHelper) : Test(iTestOutp
 			.ConfigureAwait(true);
 
 		response.Should().BeOfType<List<Site>>();
+		AssertResponse(response);
+	}
+
+	private async Task<List<InternalNetwork>> ListInternalNetworks()
+		=> (await CiscoClient.Umbrella.ListInternalNetworksAsync(null, 1, 100, default).ConfigureAwait(true)).Should()
+			.BeOfType<List<InternalNetwork>>()
+			.Subject;
+
+	private static void AssertResponse<T>(IEnumerable<T> response)
+	{
 		response.Should().NotBeEmpty();
 		response.Should().HaveCountGreaterThan(0);
 	}
