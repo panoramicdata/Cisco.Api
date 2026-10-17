@@ -231,7 +231,7 @@ public class RefitRequestBuildingTests
 
 		protected override Task<HttpResponseMessage> SendAsync(
 			HttpRequestMessage request,
-			CancellationToken _)
+			CancellationToken cancellationToken)
 		{
 			Request = request;
 

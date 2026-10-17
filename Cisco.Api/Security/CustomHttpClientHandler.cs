@@ -78,16 +78,8 @@ internal abstract class CustomHttpClientHandler(
 
 	private async Task<bool> HandleTransientAuthExceptionAsync(Exception ex, int attemptCount, CancellationToken cancellationToken)
 	{
-		if (attemptCount < Options.MaxAttemptCount)
+		if (await TryRetryAsync(attemptCount, cancellationToken).ConfigureAwait(false))
 		{
-			_logger.LogWarning("GetAccessTokenAsync(): Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...",
-				attemptCount,
-				Options.MaxAttemptCount
-			);
-
-			await Task.Delay(Options.RetryDelay, cancellationToken)
-				.ConfigureAwait(false);
-
 			return true;
 		}
 
@@ -98,6 +90,18 @@ internal abstract class CustomHttpClientHandler(
 			Options.MaxAttemptCount);
 
 		throw new CiscoApiException("Timeout or transient network failure during authentication.", ex);
+	}
+
+	private async Task<bool> TryRetryAsync(int attemptCount, CancellationToken cancellationToken)
+	{
+		if (attemptCount < Options.MaxAttemptCount)
+		{
+			_logger.LogWarning("Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...", attemptCount, Options.MaxAttemptCount);
+			await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
+			return true;
+		}
+
+		return false;
 	}
 
 	private void ValidateClientCredentials()
@@ -161,12 +165,12 @@ internal abstract class CustomHttpClientHandler(
 
 	private async Task<bool> HandleRetryInvalidClientErrorAsync(int[] attemptCount, CancellationToken cancellationToken)
 	{
-		if (++attemptCount[0] < Options.RetryInvalidClientTokenErrorsMaxAttemptCount)
+		++attemptCount[0];
+		if (attemptCount[0] < Options.RetryInvalidClientTokenErrorsMaxAttemptCount)
 		{
-			_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) – retrying after {Delay}s...",
+			_logger.LogWarning("Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...",
 				attemptCount[0],
-				Options.RetryInvalidClientTokenErrorsMaxAttemptCount,
-				Options.RetryInvalidClientTokenErrorsRetryDelay.TotalSeconds);
+				Options.RetryInvalidClientTokenErrorsMaxAttemptCount);
 
 			await Task.Delay(Options.RetryInvalidClientTokenErrorsRetryDelay, cancellationToken).ConfigureAwait(false);
 			return true;
@@ -179,13 +183,9 @@ internal abstract class CustomHttpClientHandler(
 
 	private async Task<bool> HandleStandardInvalidClientRetryAsync(int[] attemptCount, CancellationToken cancellationToken)
 	{
-		if (++attemptCount[0] < Options.MaxAttemptCount)
+		++attemptCount[0];
+		if (await TryRetryAsync(attemptCount[0], cancellationToken).ConfigureAwait(false))
 		{
-			_logger.LogWarning("GetAccessTokenAsync(): invalid_client ({AttemptCount}/{MaxAttemptCount}) using standard retry settings, retrying after {Delay}s...",
-				attemptCount[0],
-				Options.MaxAttemptCount,
-				Options.RetryDelay.TotalSeconds);
-			await Task.Delay(Options.RetryDelay, cancellationToken).ConfigureAwait(false);
 			return true;
 		}
 
@@ -275,10 +275,8 @@ internal abstract class CustomHttpClientHandler(
 		catch (Exception ex)
 		{
 			attemptCount++;
-			if (attemptCount < Options.MaxAttemptCount)
+			if (await TryRetryAsync(attemptCount, CancellationToken.None).ConfigureAwait(false))
 			{
-				_logger.LogWarning("Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...", attemptCount, Options.MaxAttemptCount);
-				await Task.Delay(Options.RetryDelay, CancellationToken.None).ConfigureAwait(false);
 				return (null, attemptCount);
 			}
 
@@ -388,16 +386,8 @@ internal abstract class CustomHttpClientHandler(
 
 	private async Task<bool> RetryAfterRateLimitAsync(int[] attemptCount)
 	{
-		if (++attemptCount[0] >= Options.MaxAttemptCount)
-		{
-			return false;
-		}
-
-		_logger.LogWarning(
-			"Attempt {AttemptCount}/{MaxAttemptCount} failed due to a 429, retrying in {RetryDelay}...",
-			attemptCount[0], Options.MaxAttemptCount, Options.RetryDelay);
-		await Task.Delay(Options.RetryDelay, CancellationToken.None).ConfigureAwait(false);
-		return true;
+		++attemptCount[0];
+		return await TryRetryAsync(attemptCount[0], CancellationToken.None).ConfigureAwait(false);
 	}
 
 	private async Task<bool> RetryAfterTransientFailureAsync(
@@ -406,7 +396,8 @@ internal abstract class CustomHttpClientHandler(
 		int[] attemptCount,
 		CancellationToken cancellationToken)
 	{
-		if (++attemptCount[0] >= Options.MaxAttemptCount)
+		++attemptCount[0];
+		if (!await TryRetryAsync(attemptCount[0], CancellationToken.None).ConfigureAwait(false))
 		{
 			return false;
 		}
@@ -419,8 +410,6 @@ internal abstract class CustomHttpClientHandler(
 			request.Headers.Authorization = _authenticationHeaderValue;
 		}
 
-		_logger.LogWarning("Attempt {AttemptCount}/{MaxAttemptCount} failed, retrying...", attemptCount[0], Options.MaxAttemptCount);
-		await Task.Delay(Options.RetryDelay, CancellationToken.None).ConfigureAwait(false);
 		return true;
 	}
 
