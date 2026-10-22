@@ -99,11 +99,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 			return true;
 		}
 
-		_logger.LogError(
-			ex,
-			"GetAccessTokenAsync(): {Message} after {MaxAttemptCount} attempts.",
-			ex.Message,
-			Options.MaxAttemptCount);
+		_logger.LogFinalFailure(ex, $"GetAccessTokenAsync(): {ex.Message}", attemptCount);
 
 		throw new CiscoApiException("Timeout or transient network failure during authentication.", ex);
 	}
@@ -168,8 +164,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 			return true;
 		}
 
-		_logger.LogError("GetAccessTokenAsync(): invalid_client exhausted after {MaxAttemptCount} attempts.",
-			Options.RetryInvalidClientTokenErrorsMaxAttemptCount);
+		_logger.LogFinalFailure(null, "GetAccessTokenAsync(): invalid_client", attemptCount[0]);
 		throw new CiscoApiException("Timeout during authentication - gave up trying to get token after repeated invalid_client errors.");
 	}
 
@@ -249,7 +244,8 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 				continue;
 			}
 
-			throw await CreateResponseExceptionAsync(currentCredentialCurrentIndex, request, attempt.Response, message, cancellationToken).ConfigureAwait(false);
+			// attemptCount counts the failures before this response, so this response was attempt attemptCount + 1.
+			throw await CreateResponseExceptionAsync(currentCredentialCurrentIndex, request, attempt.Response, message, attemptCount + 1, cancellationToken).ConfigureAwait(false);
 		}
 	}
 
@@ -287,7 +283,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 				await LogRequestHeaders(credentialIndex, originalRequest, true).ConfigureAwait(false);
 			}
 
-			_logger.LogError(ex, "{Message} after {MaxAttemptCount} attempts.", ex.Message, Options.MaxAttemptCount);
+			_logger.LogFinalFailure(ex, ex.Message, attemptCount);
 			throw new CiscoApiException(ex.Message, ex);
 		}
 	}
@@ -305,10 +301,11 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 		HttpRequestMessage request,
 		HttpResponseMessage response,
 		string message,
+		int attemptCount,
 		CancellationToken cancellationToken)
 	{
 		await LogErrorHeadersIfNeeded(credentialIndex, request, response).ConfigureAwait(false);
-		_logger.LogError("{Message} after {MaxAttemptCount} attempts.", message, Options.MaxAttemptCount);
+		_logger.LogFinalFailure(null, message, attemptCount);
 		var errorContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 		return new CiscoApiException(response, errorContent);
 	}
