@@ -28,7 +28,7 @@ internal abstract class CustomHttpClientHandler(
 	protected Uri AuthUri { get; } = authenticationUri;
 	protected CiscoClientOptions Options { get; } = options;
 
-	private async Task<string> GetAccessTokenAsync(CancellationToken cancellationToken)
+	internal async Task<string> GetAccessTokenAsync(CancellationToken cancellationToken)
 	{
 		ValidateClientCredentials();
 
@@ -39,6 +39,11 @@ internal abstract class CustomHttpClientHandler(
 		while (true)
 		{
 			using var httpClient = GetHttpClient();
+			// CAEP-2580 The token request carries the same User-Agent as the API requests it authorises.
+			if (Options.UserAgent is not null)
+			{
+				httpClient.DefaultRequestHeaders.Add("User-Agent", Options.UserAgent);
+			}
 
 			HttpResponseMessage? httpResponseMessage = null;
 			try

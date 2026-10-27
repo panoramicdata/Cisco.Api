@@ -38,7 +38,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 	protected int CurrentCredentialCurrentIndex { get; set; }
 	public bool IsFirstQuery { get; private set; } = true;
 
-	private async Task<string> GetAccessTokenAsync(int currentCredentialCurrentIndex, CancellationToken cancellationToken)
+	internal async Task<string> GetAccessTokenAsync(int currentCredentialCurrentIndex, CancellationToken cancellationToken)
 	{
 		_logger.LogDebug("Authenticating...");
 
@@ -47,6 +47,11 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 		while (true)
 		{
 			using var httpClient = GetHttpClient(currentCredentialCurrentIndex);
+			// CAEP-2580 The token request carries the same User-Agent as the API requests it authorises.
+			if (Options.UserAgent is not null)
+			{
+				httpClient.DefaultRequestHeaders.Add("User-Agent", Options.UserAgent);
+			}
 
 			HttpResponseMessage? httpResponseMessage = null;
 			try
