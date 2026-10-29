@@ -6,7 +6,7 @@
   <ItemGroup>
     <!-- Cisco.Api -->
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="10.0.13" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.402" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.403" />
     <PackageVersion Include="Nerdbank.GitVersioning" Version="3.10.94" />
     <PackageVersion Include="refit" Version="16.4.0" />
     <PackageVersion Include="Refit.Newtonsoft.Json" Version="16.4.0" />
