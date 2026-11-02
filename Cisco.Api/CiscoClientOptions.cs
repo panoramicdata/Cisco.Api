@@ -70,6 +70,16 @@ public class CiscoClientOptions
 	/// </summary>
 	public TimeSpan RetryInvalidClientTokenErrorsRetryDelay { get; set; } = TimeSpan.FromSeconds(10);
 	/// <summary>
+	/// Whether to refuse every request that could modify Cisco, before it is sent
+	/// </summary>
+	public bool IsReadOnly { get; set; }
+
+	// The per-API copies of the options inherit the caller's setting live, so changing it later still applies.
+	internal CiscoClientOptions? ReadOnlySource { get; init; }
+
+	internal bool EffectiveIsReadOnly => IsReadOnly || (ReadOnlySource?.EffectiveIsReadOnly ?? false);
+
+	/// <summary>
 	/// Gets or sets the use JSON content type flag.
 	/// </summary>
 	public bool UseJsonContentType { get; internal set; }
