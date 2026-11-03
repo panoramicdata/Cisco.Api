@@ -47,7 +47,7 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 		while (true)
 		{
 			using var httpClient = GetHttpClient(currentCredentialCurrentIndex);
-			// CAEP-2580 The token request carries the same User-Agent as the API requests it authorises.
+			// The token request carries the same User-Agent as the API requests it authorises.
 			if (Options.UserAgent is not null)
 			{
 				httpClient.DefaultRequestHeaders.Add("User-Agent", Options.UserAgent);

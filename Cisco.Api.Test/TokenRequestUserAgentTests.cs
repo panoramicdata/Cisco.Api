@@ -7,12 +7,12 @@ using Xunit;
 namespace Cisco.Api.Test;
 
 /// <summary>
-/// CAEP-2580 The access token is requested with the configured User-Agent, as API requests are, and with none when
+/// The access token is requested with the configured User-Agent, as API requests are, and with none when
 /// none is configured. Offline: the token endpoint is a stub.
 /// </summary>
 public class TokenRequestUserAgentTests
 {
-	private const string ResearchUserAgent = "NetworkIntelligenceResearch/1.0 boxxe Limited";
+	private const string ConfiguredUserAgent = "ExampleProduct/1.0 Example Company";
 
 	private static readonly Uri TokenUri = new("https://id.cisco.com/oauth2/default/v1/token");
 
@@ -31,11 +31,11 @@ public class TokenRequestUserAgentTests
 	public async Task TokenRequest_CarriesTheConfiguredUserAgent()
 	{
 		using var tokenEndpoint = new StubTokenEndpoint();
-		using var handler = new StubbedTokenHandler(Options(ResearchUserAgent), tokenEndpoint);
+		using var handler = new StubbedTokenHandler(Options(ConfiguredUserAgent), tokenEndpoint);
 
 		await handler.GetAccessTokenAsync(TestContext.Current.CancellationToken);
 
-		tokenEndpoint.UserAgents.Should().Equal(ResearchUserAgent);
+		tokenEndpoint.UserAgents.Should().Equal(ConfiguredUserAgent);
 	}
 
 	/// <summary>
@@ -59,11 +59,11 @@ public class TokenRequestUserAgentTests
 	public async Task UmbrellaTokenRequest_CarriesTheConfiguredUserAgent()
 	{
 		using var tokenEndpoint = new StubTokenEndpoint();
-		using var handler = new StubbedUmbrellaTokenHandler(Options(ResearchUserAgent), tokenEndpoint);
+		using var handler = new StubbedUmbrellaTokenHandler(Options(ConfiguredUserAgent), tokenEndpoint);
 
 		await handler.GetAccessTokenAsync(0, TestContext.Current.CancellationToken);
 
-		tokenEndpoint.UserAgents.Should().Equal(ResearchUserAgent);
+		tokenEndpoint.UserAgents.Should().Equal(ConfiguredUserAgent);
 	}
 
 	private sealed class StubbedTokenHandler(CiscoClientOptions options, StubTokenEndpoint tokenEndpoint)
