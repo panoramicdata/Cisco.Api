@@ -223,6 +223,8 @@ internal abstract class CustomHttpClientHandler(
 		HttpRequestMessage request,
 		CancellationToken cancellationToken)
 	{
+		ReadOnlyGuard.ThrowIfRefused(Options, request);
+
 		await SetupRequestAsync(request, cancellationToken).ConfigureAwait(false);
 		var requestBodyBytes = await ReadRequestBodyAsync(request, cancellationToken).ConfigureAwait(false);
 		var attemptCount = 0;

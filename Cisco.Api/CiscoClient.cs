@@ -130,6 +130,7 @@ public class CiscoClient : IDisposable
 			HttpClientTimeoutSeconds = options.HttpClientTimeoutSeconds,
 			// IMPORTANT: EA API requires application/json content type
 			// for all requests, regardless of whether there is a body or not
+			ReadOnlySource = options,
 			UseJsonContentType = true
 		};
 

@@ -219,6 +219,8 @@ internal abstract class CustomFastUmbrellaHttpClientHandler(
 		HttpRequestMessage request,
 		CancellationToken cancellationToken)
 	{
+		ReadOnlyGuard.ThrowIfRefused(Options, request);
+
 		var currentCredentialCurrentIndex = SelectNextCredentialIndex();
 		var currentCredentialsInstance = CiscoUmbrellaCredentials.ElementAt(currentCredentialCurrentIndex).Value;
 
