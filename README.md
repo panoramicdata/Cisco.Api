@@ -6,6 +6,8 @@
 
 A .NET library for accessing Cisco Support APIs, including EoX, Product Information, PSIRT, PSS, Serial Number to Information, PX Cloud, and Umbrella APIs.
 
+Supports .NET 11.0.
+
 ## Prerequisites
 
 You must have an **SNTC (Smart Net Total Care)** or **PSS (Product Support Services)** account in order to use this library.
@@ -85,8 +87,8 @@ namespace My.Project
 
 ## Supported Frameworks
 
-- .NET 9.0
-- .NET 10.0
+- .NET 11.0
+- .NET 11.0
 
 ## API Documentation
 
