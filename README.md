@@ -4,6 +4,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/0d1b38ded4f44b188f9f5d7eccf49324)](https://app.codacy.com/gh/panoramicdata/Cisco.Api/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
+> **Need help with APIs or .NET?** Panoramic Data are experts in APIs and .NET, and we can help with your development. [Contact us](https://www.panoramicdata.com/contact-us) or see our [software services](https://www.panoramicdata.com/services/software).
+
 A .NET library for accessing Cisco Support APIs, including EoX, Product Information, PSIRT, PSS, Serial Number to Information, PX Cloud, and Umbrella APIs.
 
 Supports .NET 11.0.
