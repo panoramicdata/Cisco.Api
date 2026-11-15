@@ -75,20 +75,24 @@ public class TokenRequestUserAgentTests
 	private sealed class StubbedUmbrellaTokenHandler(CiscoClientOptions options, StubTokenEndpoint tokenEndpoint)
 		: AuthenticatedFastUmbrellaHttpClientHandler(TokenUri, options, NullLogger.Instance)
 	{
-		public override HttpClient GetHttpClient(int currentCredentialCurrentIndex) => new(tokenEndpoint, disposeHandler: false) { BaseAddress = TokenUri };
+		public override HttpClient GetHttpClient(int currentCredentialCurrentIndex)
+		{
+			ArgumentOutOfRangeException.ThrowIfNegative(currentCredentialCurrentIndex);
+			return new HttpClient(tokenEndpoint, disposeHandler: false) { BaseAddress = TokenUri };
+		}
 	}
 
-	private sealed class StubTokenEndpoint : HttpMessageHandler
+	private sealed class StubTokenEndpoint : StubHttpMessageHandler
 	{
 		public List<string> UserAgents { get; } = [];
 
-		protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+		protected override HttpResponseMessage Respond()
 		{
-			UserAgents.Add(request.Headers.UserAgent.ToString());
-			return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+			UserAgents.Add(Request!.Headers.UserAgent.ToString());
+			return new HttpResponseMessage(HttpStatusCode.OK)
 			{
 				Content = new StringContent("""{"access_token":"token-1","token_type":"Bearer","expires_in":3600}""", Encoding.UTF8, "application/json"),
-			});
+			};
 		}
 	}
 }

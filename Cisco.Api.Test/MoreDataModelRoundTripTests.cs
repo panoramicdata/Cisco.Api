@@ -12,154 +12,87 @@ namespace Cisco.Api.Test;
 /// </summary>
 public class MoreDataModelRoundTripTests
 {
+	private static CiscoDate DateOn(string value) => new() { Value = value, DateFormat = "yyyy-MM-dd" };
+
 	/// <summary>Every EoxRecord property is set and read back.</summary>
 	[Fact]
 	public void EoxRecord_EveryPropertyRoundTrips()
-	{
-		var record = new EoxRecord();
-		record.EolProductId = "pid";
-		record.ProductDescription = "desc";
-		record.ProductBulletinNumber = "bn";
-		record.LinkToProductBulletinUrl = "http://x";
-		record.ExternalAnnouncementDate = new CiscoDate { Value = "2024-01-01", DateFormat = "yyyy-MM-dd" };
-		record.EndOfSaleDate = new CiscoDate { Value = "2024-02-01", DateFormat = "yyyy-MM-dd" };
-		record.EndOfSoftwareMaintenanceReleases = new CiscoDate { Value = "2024-03-01", DateFormat = "yyyy-MM-dd" };
-		record.EndOfSecurityVulnerabilitySupportDate = new CiscoDate { Value = "2024-04-01", DateFormat = "yyyy-MM-dd" };
-		record.EndOfRoutineFailureAnalysisDate = new CiscoDate { Value = "2024-05-01", DateFormat = "yyyy-MM-dd" };
-		record.EndOfServiceContractRenewalDate = new CiscoDate { Value = "2024-06-01", DateFormat = "yyyy-MM-dd" };
-		record.LastSupportDate = new CiscoDate { Value = "2024-07-01", DateFormat = "yyyy-MM-dd" };
-		record.EndOfServiceAttachDate = new CiscoDate { Value = "2024-08-01", DateFormat = "yyyy-MM-dd" };
-		record.UpdatedDate = new CiscoDate { Value = "2024-09-01", DateFormat = "yyyy-MM-dd" };
-		record.Error = new EoxError { ErrorID = "x", ErrorDescription = "y", ErrorDataType = "PRODUCT_ID", ErrorDataValue = "v" };
-		record.EoxMigrationDetails = new EoxMigrationDetails
-		{
-			PidActiveFlag = "Y",
-			Information = "info",
-			Option = "opt",
-			ProductId = "pid",
-			ProductName = "pname",
-			Strategy = "strat",
-			ProductInfoUrl = "http://x"
-		};
-		record.InputType = "it";
-		record.InputValue = "iv";
-
-		record.EolProductId.Should().Be("pid");
-		record.ProductDescription.Should().Be("desc");
-		record.ProductBulletinNumber.Should().Be("bn");
-		record.LinkToProductBulletinUrl.Should().Be("http://x");
-		record.ExternalAnnouncementDate.Should().NotBeNull();
-		record.EndOfSaleDate.Should().NotBeNull();
-		record.EndOfSoftwareMaintenanceReleases.Should().NotBeNull();
-		record.EndOfSecurityVulnerabilitySupportDate.Should().NotBeNull();
-		record.EndOfRoutineFailureAnalysisDate.Should().NotBeNull();
-		record.EndOfServiceContractRenewalDate.Should().NotBeNull();
-		record.LastSupportDate.Should().NotBeNull();
-		record.EndOfServiceAttachDate.Should().NotBeNull();
-		record.UpdatedDate.Should().NotBeNull();
-		record.Error.Should().NotBeNull();
-		record.EoxMigrationDetails.Should().NotBeNull();
-		record.InputType.Should().Be("it");
-		record.InputValue.Should().Be("iv");
-	}
+		=> PropertyAssert.SetAndRead<EoxRecord>(
+			(nameof(EoxRecord.EolProductId), "pid"),
+			(nameof(EoxRecord.ProductDescription), "desc"),
+			(nameof(EoxRecord.ProductBulletinNumber), "bn"),
+			(nameof(EoxRecord.LinkToProductBulletinUrl), "http://x"),
+			(nameof(EoxRecord.ExternalAnnouncementDate), DateOn("2024-01-01")),
+			(nameof(EoxRecord.EndOfSaleDate), DateOn("2024-02-01")),
+			(nameof(EoxRecord.EndOfSoftwareMaintenanceReleases), DateOn("2024-03-01")),
+			(nameof(EoxRecord.EndOfSecurityVulnerabilitySupportDate), DateOn("2024-04-01")),
+			(nameof(EoxRecord.EndOfRoutineFailureAnalysisDate), DateOn("2024-05-01")),
+			(nameof(EoxRecord.EndOfServiceContractRenewalDate), DateOn("2024-06-01")),
+			(nameof(EoxRecord.LastSupportDate), DateOn("2024-07-01")),
+			(nameof(EoxRecord.EndOfServiceAttachDate), DateOn("2024-08-01")),
+			(nameof(EoxRecord.UpdatedDate), DateOn("2024-09-01")),
+			(nameof(EoxRecord.Error), new EoxError { ErrorID = "x", ErrorDescription = "y", ErrorDataType = "PRODUCT_ID", ErrorDataValue = "v" }),
+			(nameof(EoxRecord.EoxMigrationDetails), new EoxMigrationDetails
+			{
+				PidActiveFlag = "Y",
+				Information = "info",
+				Option = "opt",
+				ProductId = "pid",
+				ProductName = "pname",
+				Strategy = "strat",
+				ProductInfoUrl = "http://x"
+			}),
+			(nameof(EoxRecord.InputType), "it"),
+			(nameof(EoxRecord.InputValue), "iv"));
 
 	/// <summary>Every SecurityAdvisory property is set and read back.</summary>
 	[Fact]
 	public void SecurityAdvisory_EveryPropertyRoundTrips()
-	{
-		var advisory = new SecurityAdvisory();
-		advisory.AdvisoryId = "aid";
-		advisory.AdvisoryTitle = "t";
-		advisory.BugIds = ["b1", "b2"];
-		advisory.Cves = ["cve-1"];
-		advisory.Platforms = [new Platform { Id = "1", Name = "n" }];
-		advisory.CvrfUrl = "http://cvrf";
-		advisory.CsafUrl = "http://csaf";
-		advisory.CvssBaseScore = "7.0";
-		advisory.Cwes = ["cwe-1"];
-		advisory.FirstFixed = ["ff1"];
-		advisory.IpsSignatures = new { sig = "s" };
-		advisory.IosReleases = ["ios-1"];
-		advisory.FirstPublished = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero);
-		advisory.LastUpdated = new DateTimeOffset(2024, 2, 1, 0, 0, 0, TimeSpan.Zero);
-		advisory.Status = "ok";
-		advisory.Version = "v1";
-		advisory.ProductNames = ["p1"];
-		advisory.PublicationUrl = "http://pub";
-		advisory.SecurityImpactRating = SecurityImpactRating.High;
-		advisory.Summary = "sum";
-
-		advisory.AdvisoryId.Should().Be("aid");
-		advisory.AdvisoryTitle.Should().Be("t");
-		advisory.BugIds.Should().HaveCount(2);
-		advisory.Cves.Should().HaveCount(1);
-		advisory.Platforms.Should().HaveCount(1);
-		advisory.CvrfUrl.Should().Be("http://cvrf");
-		advisory.CsafUrl.Should().Be("http://csaf");
-		advisory.CvssBaseScore.Should().Be("7.0");
-		advisory.Cwes.Should().HaveCount(1);
-		advisory.FirstFixed.Should().HaveCount(1);
-		advisory.IpsSignatures.Should().NotBeNull();
-		advisory.IosReleases.Should().HaveCount(1);
-		advisory.FirstPublished.Should().Be(new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero));
-		advisory.LastUpdated.Should().Be(new DateTimeOffset(2024, 2, 1, 0, 0, 0, TimeSpan.Zero));
-		advisory.Status.Should().Be("ok");
-		advisory.Version.Should().Be("v1");
-		advisory.ProductNames.Should().HaveCount(1);
-		advisory.PublicationUrl.Should().Be("http://pub");
-		advisory.SecurityImpactRating.Should().Be(SecurityImpactRating.High);
-		advisory.Summary.Should().Be("sum");
-	}
+		=> PropertyAssert.SetAndRead<SecurityAdvisory>(
+			(nameof(SecurityAdvisory.AdvisoryId), "aid"),
+			(nameof(SecurityAdvisory.AdvisoryTitle), "t"),
+			(nameof(SecurityAdvisory.BugIds), new List<string> { "b1", "b2" }),
+			(nameof(SecurityAdvisory.Cves), new List<string> { "cve-1" }),
+			(nameof(SecurityAdvisory.Platforms), new List<Platform> { new() { Id = "1", Name = "n" } }),
+			(nameof(SecurityAdvisory.CvrfUrl), "http://cvrf"),
+			(nameof(SecurityAdvisory.CsafUrl), "http://csaf"),
+			(nameof(SecurityAdvisory.CvssBaseScore), "7.0"),
+			(nameof(SecurityAdvisory.Cwes), new List<string> { "cwe-1" }),
+			(nameof(SecurityAdvisory.FirstFixed), new List<string> { "ff1" }),
+			(nameof(SecurityAdvisory.IpsSignatures), new { sig = "s" }),
+			(nameof(SecurityAdvisory.IosReleases), new List<string> { "ios-1" }),
+			(nameof(SecurityAdvisory.FirstPublished), new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero)),
+			(nameof(SecurityAdvisory.LastUpdated), new DateTimeOffset(2024, 2, 1, 0, 0, 0, TimeSpan.Zero)),
+			(nameof(SecurityAdvisory.Status), "ok"),
+			(nameof(SecurityAdvisory.Version), "v1"),
+			(nameof(SecurityAdvisory.ProductNames), new List<string> { "p1" }),
+			(nameof(SecurityAdvisory.PublicationUrl), "http://pub"),
+			(nameof(SecurityAdvisory.SecurityImpactRating), SecurityImpactRating.High),
+			(nameof(SecurityAdvisory.Summary), "sum"));
 
 	/// <summary>Every ProductInformation property is set and read back.</summary>
 	[Fact]
 	public void ProductInformation_EveryPropertyRoundTrips()
-	{
-		var info = new ProductInformation();
-		info.Dimensions = new Dimensions { Format = "10x10x10", Value = "cm" };
-		info.FormFactor = "ff";
-		info.Id = "i";
-		info.BasePid = "b";
-		info.OrderablePid = "o";
-		info.OrderableStatus = "O";
-		info.ProductCategory = "cat";
-		info.ProductName = "n";
-		info.ProductSeries = "s";
-		info.ProductSubcategory = "sc";
-		info.ProductSupportPage = "http://x";
-		info.ProductType = "t";
-		info.ReleaseDate = "2024-01-01";
-		info.RichMediaUrls = new RichMediaUrls { SmallImageUrl = "s1", LargeImageUrl = "l1" };
-		info.SerialNumber = "sn";
-		info.VisioStencilUrl = "http://v";
-		info.Weight = "1kg";
-		info.ErrorResponse = new ErrorResponse
-		{
-			ApiError = new ApiError
+		=> PropertyAssert.SetAndRead<ProductInformation>(
+			(nameof(ProductInformation.Dimensions), new Dimensions { Format = "10x10x10", Value = "cm" }),
+			(nameof(ProductInformation.FormFactor), "ff"),
+			(nameof(ProductInformation.Id), "i"),
+			(nameof(ProductInformation.BasePid), "b"),
+			(nameof(ProductInformation.OrderablePid), "o"),
+			(nameof(ProductInformation.OrderableStatus), "O"),
+			(nameof(ProductInformation.ProductCategory), "cat"),
+			(nameof(ProductInformation.ProductName), "n"),
+			(nameof(ProductInformation.ProductSeries), "s"),
+			(nameof(ProductInformation.ProductSubcategory), "sc"),
+			(nameof(ProductInformation.ProductSupportPage), "http://x"),
+			(nameof(ProductInformation.ProductType), "t"),
+			(nameof(ProductInformation.ReleaseDate), "2024-01-01"),
+			(nameof(ProductInformation.RichMediaUrls), new RichMediaUrls { SmallImageUrl = "s1", LargeImageUrl = "l1" }),
+			(nameof(ProductInformation.SerialNumber), "sn"),
+			(nameof(ProductInformation.VisioStencilUrl), "http://v"),
+			(nameof(ProductInformation.Weight), "1kg"),
+			(nameof(ProductInformation.ErrorResponse), new ErrorResponse
 			{
-				ErrorCode = "E",
-				ErrorDescription = "d",
-				SuggestedAction = "s"
-			}
-		};
-
-		info.Dimensions.Should().NotBeNull();
-		info.FormFactor.Should().Be("ff");
-		info.Id.Should().Be("i");
-		info.BasePid.Should().Be("b");
-		info.OrderablePid.Should().Be("o");
-		info.OrderableStatus.Should().Be("O");
-		info.ProductCategory.Should().Be("cat");
-		info.ProductName.Should().Be("n");
-		info.ProductSeries.Should().Be("s");
-		info.ProductSubcategory.Should().Be("sc");
-		info.ProductSupportPage.Should().Be("http://x");
-		info.ProductType.Should().Be("t");
-		info.ReleaseDate.Should().Be("2024-01-01");
-		info.RichMediaUrls.Should().NotBeNull();
-		info.SerialNumber.Should().Be("sn");
-		info.VisioStencilUrl.Should().Be("http://v");
-		info.Weight.Should().Be("1kg");
-		info.ErrorResponse.Should().NotBeNull();
-	}
+				ApiError = new ApiError { ErrorCode = "E", ErrorDescription = "d", SuggestedAction = "s" }
+			}));
 }

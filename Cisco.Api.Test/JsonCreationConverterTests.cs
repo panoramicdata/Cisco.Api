@@ -11,13 +11,16 @@ namespace Cisco.Api.Test;
 /// </summary>
 public class JsonCreationConverterTests
 {
-	private sealed class DerivedConverter : JsonCreationConverter<Simple>
+	private abstract class ReadOnlyConverter : JsonCreationConverter<Simple>
+	{
+		public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+			=> throw new NotSupportedException($"{value} cannot be written to {writer.Path} by {serializer.GetType().Name}");
+	}
+
+	private sealed class DerivedConverter : ReadOnlyConverter
 	{
 		protected override Simple Create(Type objectType, JObject jObject)
-			=> new Simple { CreatedBy = true };
-
-		public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
-			=> throw new NotSupportedException();
+			=> new Simple { CreatedBy = objectType == typeof(Simple), Value = (string?)jObject["Value"] ?? string.Empty };
 	}
 
 	private sealed class Simple
@@ -76,15 +79,13 @@ public class JsonCreationConverterTests
 		converter.ReadJson(reader, typeof(Simple), null, JsonSerializer.Create()).Should().BeNull();
 	}
 
-	private sealed class NullReturningConverter : JsonCreationConverter<Simple>
+	private sealed class NullReturningConverter : ReadOnlyConverter
 	{
 		// The base class declares a non-nullable Create, but returning null is the supported way to
 		// tell ReadJson that the object should not be materialised.
 		#pragma warning disable CS8764
-		protected override Simple? Create(Type objectType, JObject jObject) => null;
+		protected override Simple? Create(Type objectType, JObject jObject)
+			=> objectType == typeof(Simple) && jObject.Count == 0 ? null : new Simple();
 		#pragma warning restore CS8764
-
-		public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
-			=> throw new NotSupportedException();
 	}
 }

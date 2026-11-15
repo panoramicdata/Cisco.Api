@@ -225,21 +225,12 @@ public class RefitRequestBuildingTests
 	/// <summary>
 	/// Captures the request instead of sending it, and answers with an empty JSON document.
 	/// </summary>
-	private sealed class RequestCapturingHandler : HttpMessageHandler
+	private sealed class RequestCapturingHandler : StubHttpMessageHandler
 	{
-		public HttpRequestMessage? Request { get; private set; }
-
-		protected override Task<HttpResponseMessage> SendAsync(
-			HttpRequestMessage request,
-			CancellationToken cancellationToken)
-		{
-			Request = request;
-
-			return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+		protected override HttpResponseMessage Respond()
+			=> new(HttpStatusCode.OK)
 			{
-				RequestMessage = request,
 				Content = new StringContent("{}", Encoding.UTF8, "application/json")
-			});
-		}
+			};
 	}
 }
