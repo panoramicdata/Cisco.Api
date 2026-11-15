@@ -70,13 +70,22 @@ public class RetryLoggingTests
 
 		public List<(LogLevel Level, Exception? Exception)> Entries { get; } = [];
 
-		public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+		public List<object> Scopes { get; } = [];
 
-		public bool IsEnabled(LogLevel logLevel) => true;
+		public List<EventId> EventIds { get; } = [];
+
+		public IDisposable? BeginScope<TState>(TState state) where TState : notnull
+		{
+			Scopes.Add(state);
+			return null;
+		}
+
+		public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
 
 		public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
 		{
 			Messages.Add(formatter(state, exception));
+			EventIds.Add(eventId);
 			Entries.Add((logLevel, exception));
 		}
 	}

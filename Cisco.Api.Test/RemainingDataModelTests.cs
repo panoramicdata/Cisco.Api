@@ -265,12 +265,12 @@ public class RemainingDataModelTests
 		{
 			OriginId = 1,
 			Name = "n",
-			IpAddress = "10.0.0.1",
+			IpAddress = "ip-address-value",
 			PrefixLength = 24
 		};
 		network.OriginId.Should().Be(1);
 		network.Name.Should().Be("n");
-		network.IpAddress.Should().Be("10.0.0.1");
+		network.IpAddress.Should().Be("ip-address-value");
 		network.PrefixLength.Should().Be(24);
 	}
 

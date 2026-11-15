@@ -124,14 +124,14 @@ public class PxCloudReportsTests
 		return memoryStream.ToArray();
 	}
 
-	private sealed class StubHandler(HttpStatusCode status, byte[] body) : HttpMessageHandler
+	private sealed class StubHandler(HttpStatusCode status, byte[] body) : StubHttpMessageHandler
 	{
 		private readonly HttpStatusCode _status = status;
 		private readonly byte[] _body = body;
 		public string? Location { get; set; }
 		public string ContentType { get; set; } = "application/octet-stream";
 
-		protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+		protected override HttpResponseMessage Respond()
 		{
 			var response = new HttpResponseMessage(_status)
 			{
@@ -142,7 +142,7 @@ public class PxCloudReportsTests
 			{
 				response.Headers.TryAddWithoutValidation("location", Location);
 			}
-			return Task.FromResult(response);
+			return response;
 		}
 	}
 }
