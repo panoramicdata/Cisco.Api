@@ -1,4 +1,5 @@
 ﻿using Cisco.Api.Exceptions;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -101,4 +102,23 @@ internal static class HandlerSupport
 
 		return clone;
 	}
-}
+
+	internal static void AddUserAgent(HttpRequestMessage request, CiscoClientOptions options)
+	{
+		if (options.UserAgent is not null)
+		{
+			request.Headers.Add("User-Agent", options.UserAgent);
+		}
+	}
+
+	internal static async Task<CiscoApiException> BuildResponseExceptionAsync(
+		ILogger logger,
+		HttpResponseMessage response,
+		string message,
+		int attemptCount,
+		CancellationToken cancellationToken)
+	{
+		logger.LogFinalFailure(null, message, attemptCount);
+		var errorContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+		return new CiscoApiException(response, errorContent);
+	}}

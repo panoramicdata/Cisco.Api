@@ -58,6 +58,7 @@ internal abstract partial class CustomFastUmbrellaHttpClientHandler(
 				(original, response, message, attempts) => CreateResponseExceptionAsync(credentialIndex, original, response, message, attempts, cancellationToken)),
 			cancellationToken).ConfigureAwait(false);
 	}
+
 	private async Task<CiscoApiException> CreateResponseExceptionAsync(
 		int credentialIndex,
 		HttpRequestMessage request,
@@ -67,9 +68,7 @@ internal abstract partial class CustomFastUmbrellaHttpClientHandler(
 		CancellationToken cancellationToken)
 	{
 		await LogErrorHeadersIfNeeded(credentialIndex, request, response).ConfigureAwait(false);
-		_logger.LogFinalFailure(null, message, attemptCount);
-		var errorContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-		return new CiscoApiException(response, errorContent);
+		return await HandlerSupport.BuildResponseExceptionAsync(_logger, response, message, attemptCount, cancellationToken).ConfigureAwait(false);
 	}
 
 	private int SelectNextCredentialIndex()
@@ -98,10 +97,7 @@ internal abstract partial class CustomFastUmbrellaHttpClientHandler(
 			await LogRequestHeaders(currentCredentialCurrentIndex, request).ConfigureAwait(false);
 		}
 
-		if (Options.UserAgent is not null)
-		{
-			request.Headers.Add("User-Agent", Options.UserAgent);
-		}
+		HandlerSupport.AddUserAgent(request, Options);
 	}
 
 	public abstract HttpClient GetHttpClient(int currentCredentialCurrentIndex);

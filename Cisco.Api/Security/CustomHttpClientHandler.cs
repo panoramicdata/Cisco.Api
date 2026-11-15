@@ -41,6 +41,7 @@ internal abstract partial class CustomHttpClientHandler(
 				(original, response, message, attempts) => CreateResponseExceptionAsync(original, response, message, attempts, cancellationToken)),
 			cancellationToken).ConfigureAwait(false);
 	}
+
 	private async Task<CiscoApiException> CreateResponseExceptionAsync(
 		HttpRequestMessage request,
 		HttpResponseMessage response,
@@ -49,9 +50,7 @@ internal abstract partial class CustomHttpClientHandler(
 		CancellationToken cancellationToken)
 	{
 		await LogErrorHeadersIfNeeded(request, response).ConfigureAwait(false);
-		_logger.LogFinalFailure(null, message, attemptCount);
-		var errorContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-		return new CiscoApiException(response, errorContent);
+		return await BuildResponseExceptionAsync(_logger, response, message, attemptCount, cancellationToken).ConfigureAwait(false);
 	}
 
 	private async Task SetupRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -66,10 +65,7 @@ internal abstract partial class CustomHttpClientHandler(
 			await LogRequestHeaders(request).ConfigureAwait(false);
 		}
 
-		if (Options.UserAgent is not null)
-		{
-			request.Headers.Add("User-Agent", Options.UserAgent);
-		}
+		HandlerSupport.AddUserAgent(request, Options);
 	}
 
 	private async Task PrepareRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
