@@ -50,7 +50,7 @@ internal abstract partial class CustomHttpClientHandler(
 		CancellationToken cancellationToken)
 	{
 		await LogErrorHeadersIfNeeded(request, response).ConfigureAwait(false);
-		return await BuildResponseExceptionAsync(_logger, response, message, attemptCount, cancellationToken).ConfigureAwait(false);
+		return await HandlerSupport.BuildResponseExceptionAsync(_logger, response, message, attemptCount, cancellationToken).ConfigureAwait(false);
 	}
 
 	private async Task SetupRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
