@@ -17,7 +17,7 @@ public class DeviceDetail : DeviceDetail<CardDetail>
 /// </summary>
 [DebuggerDisplay("{DeviceId}:{ValidatedSerialNumber}")]
 [XmlRoot("deviceDetail", Namespace = "http://www.cisco.com/InventoryService")]
-public class DeviceDetail<TCardDetailType>
+public class DeviceDetail<TCardDetailType> : PssInventoryItem
 {
 	/// <summary>
 	/// Device id of the device contained in a specific
@@ -37,36 +37,6 @@ public class DeviceDetail<TCardDetailType>
 	/// </summary>
 	[XmlElement("ipAddress")]
 	public string IpAddress { get; set; } = null!;
-
-	/// <summary>
-	/// Serial number of the device noted on the purchase order.
-	/// </summary>
-	[XmlElement("originalSerialNumber")]
-	public string OriginalSerialNumber { get; set; } = null!;
-
-	/// <summary>
-	/// Actual number physically found on the device.
-	/// </summary>
-	[XmlElement("validatedSerialNumber")]
-	public string ValidatedSerialNumber { get; set; } = null!;
-
-	/// <summary>
-	/// Refers to the validated product id of the device.
-	/// </summary>
-	[XmlElement("productId")]
-	public string ProductId { get; set; } = null!;
-
-	/// <summary>
-	/// Product description of the device.
-	/// </summary>
-	[XmlElement("productDescription")]
-	public string ProductDescription { get; set; } = null!;
-
-	/// <summary>
-	/// Product family the device belongs to.
-	/// </summary>
-	[XmlElement("productFamily")]
-	public string ProductFamily { get; set; } = null!;
 
 	/// <summary>
 	/// Product name of the device.
@@ -117,12 +87,6 @@ public class DeviceDetail<TCardDetailType>
 	public string HardWareVersion { get; set; } = null!;
 
 	/// <summary>
-	/// Software version of the device.
-	/// </summary>
-	[XmlElement("softwareVersion")]
-	public string? SoftwareVersion { get; set; }
-
-	/// <summary>
 	/// OS type of the software.
 	/// </summary>
 	[XmlElement("softwareType")]
@@ -133,24 +97,6 @@ public class DeviceDetail<TCardDetailType>
 	/// </summary>
 	[XmlElement("flashMemory")]
 	public string FlashMemory { get; set; } = null!;
-
-	/// <summary>
-	/// Original Manufacturer of device
-	/// </summary>
-	[XmlElement("manufacturer")]
-	public string Manufacturer { get; set; } = null!;
-
-	/// <summary>
-	/// Unique association between PID and SN
-	/// </summary>
-	[XmlElement("c3instanceid")]
-	public string C3InstanceId { get; set; } = null!;
-
-	/// <summary>
-	/// Ship Date of device
-	/// </summary>
-	[XmlElement("shipDate")]
-	public string ShipDate { get; set; } = null!;
 
 	/// <summary>
 	/// Operating System version of the device.

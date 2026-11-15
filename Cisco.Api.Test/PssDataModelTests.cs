@@ -1,4 +1,6 @@
 using Cisco.Api.Data.Pss;
+using System.Xml;
+using System.Xml.Serialization;
 using Xunit;
 
 namespace Cisco.Api.Test;
@@ -61,4 +63,41 @@ public class PssDataModelTests
 			(nameof(CardDetail.Manufacturer), "cisco"),
 			(nameof(CardDetail.C3InstanceId), "c3"),
 			(nameof(CardDetail.ShipDate), "2023-01-01"));
+
+	/// <summary>Elements declared on the shared base class bind alongside the card's own elements.</summary>
+	[Fact]
+	public void CardDetail_XmlDeserialisation_BindsInheritedAndOwnElements()
+	{
+		const string xml = "<cardDetail><cardId>c1</cardId><productId>p1</productId><shipDate>2023-01-01</shipDate></cardDetail>";
+
+		var card = Deserialize<CardDetail>(xml, "cardDetail");
+
+		PropertyAssert.AssertValues(
+			card!,
+			(nameof(CardDetail.CardId), "c1"),
+			(nameof(CardDetail.ProductId), "p1"),
+			(nameof(CardDetail.ShipDate), "2023-01-01"));
+	}
+
+	/// <summary>Elements declared on the shared base class bind alongside the device's own elements.</summary>
+	[Fact]
+	public void DeviceDetail_XmlDeserialisation_BindsInheritedAndOwnElements()
+	{
+		const string xml = "<deviceDetail xmlns=\"http://www.cisco.com/InventoryService\"><deviceId>d1</deviceId><manufacturer>cisco</manufacturer><cardDetail><cardId>c1</cardId></cardDetail></deviceDetail>";
+
+		var device = Deserialize<DeviceDetail>(xml, "deviceDetail", "http://www.cisco.com/InventoryService");
+
+		PropertyAssert.AssertValues(
+			device!,
+			(nameof(DeviceDetail.DeviceId), "d1"),
+			(nameof(DeviceDetail.Manufacturer), "cisco"));
+		device!.CardDetails.Should().ContainSingle().Which.CardId.Should().Be("c1");
+	}
+
+	private static T? Deserialize<T>(string xml, string root, string xmlNamespace = "") where T : class
+	{
+		using var stringReader = new StringReader(xml);
+		using var reader = XmlReader.Create(stringReader, new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null });
+		return new XmlSerializer(typeof(T), new XmlRootAttribute(root) { Namespace = xmlNamespace }).Deserialize(reader) as T;
+	}
 }
