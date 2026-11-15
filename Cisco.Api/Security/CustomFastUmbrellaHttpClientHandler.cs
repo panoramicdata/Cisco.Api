@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Net.Http.Headers;
 
-using static Cisco.Api.Security.HandlerSupport;
 
 namespace Cisco.Api.Security;
 
@@ -45,41 +44,20 @@ internal abstract partial class CustomFastUmbrellaHttpClientHandler(
 	{
 		ReadOnlyGuard.ThrowIfRefused(Options, request);
 
-		var currentCredentialCurrentIndex = SelectNextCredentialIndex();
-		var currentCredentialsInstance = CiscoUmbrellaCredentials.ElementAt(currentCredentialCurrentIndex).Value;
+		var credentialIndex = SelectNextCredentialIndex();
+		var credentials = CiscoUmbrellaCredentials.ElementAt(credentialIndex).Value;
 
-		await SetupRequestAsync(currentCredentialCurrentIndex, currentCredentialsInstance, request, cancellationToken).ConfigureAwait(false);
-		var requestBodyBytes = await ReadRequestBodyAsync(request, cancellationToken).ConfigureAwait(false);
-		var attemptCount = 0;
-		while (true)
-		{
-			using var attemptRequest = CloneRequest(request, requestBodyBytes);
-			var attempt = await SendAttemptAsync(currentCredentialCurrentIndex, attemptRequest, request, attemptCount, cancellationToken).ConfigureAwait(false);
-			attemptCount = attempt.AttemptCount;
-			if (attempt.Response is null)
-			{
-				continue;
-			}
+		await SetupRequestAsync(credentialIndex, credentials, request, cancellationToken).ConfigureAwait(false);
 
-			await LogResponseHeadersIfNeeded(currentCredentialCurrentIndex, attempt.Response).ConfigureAwait(false);
-			if (attempt.Response.IsSuccessStatusCode)
-			{
-				return attempt.Response;
-			}
-
-			var message = await GetResponseContent(attempt.Response.StatusCode, attempt.Response.Content).ConfigureAwait(false);
-			var attemptCountRef = new[] { attemptCount };
-			if (await HandleRetriableStatusCodeAsync(currentCredentialCurrentIndex, currentCredentialsInstance, attempt.Response, message, request, attemptCountRef, cancellationToken).ConfigureAwait(false))
-			{
-				attemptCount = attemptCountRef[0];
-				continue;
-			}
-
-			// attemptCount counts the failures before this response, so this response was attempt attemptCount + 1.
-			throw await CreateResponseExceptionAsync(currentCredentialCurrentIndex, request, attempt.Response, message, attemptCount + 1, cancellationToken).ConfigureAwait(false);
-		}
+		return await SendLoop.RunAsync(
+			request,
+			new SendSteps(
+				(attemptRequest, original, attempts) => SendAttemptAsync(credentialIndex, attemptRequest, original, attempts, cancellationToken),
+				response => LogResponseHeadersIfNeeded(credentialIndex, response),
+				(response, message, original, attempts) => HandleRetriableStatusCodeAsync(credentialIndex, credentials, response, message, original, attempts, cancellationToken),
+				(original, response, message, attempts) => CreateResponseExceptionAsync(credentialIndex, original, response, message, attempts, cancellationToken)),
+			cancellationToken).ConfigureAwait(false);
 	}
-
 	private async Task<CiscoApiException> CreateResponseExceptionAsync(
 		int credentialIndex,
 		HttpRequestMessage request,

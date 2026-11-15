@@ -1,11 +1,15 @@
-﻿using Cisco.Api.Exceptions;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using System.Net.Http.Headers;
 using System.Security;
 
 namespace Cisco.Api.Security;
 
 internal abstract partial class CustomHttpClientHandler
 {
+	private AuthenticationHeaderValue? _authenticationHeaderValue;
+
+	private DateTimeOffset? _accessTokenExpiryDateTimeOffset;
+
 	internal async Task<string> GetAccessTokenAsync(CancellationToken cancellationToken)
 	{
 		ValidateClientCredentials();
@@ -66,5 +70,21 @@ internal abstract partial class CustomHttpClientHandler
 		);
 
 		return accessTokenResponse.AccessToken!;
+	}
+
+	private async Task EnsureAuthenticatedAsync(CancellationToken cancellationToken)
+	{
+		if (_accessTokenExpiryDateTimeOffset is not null && _accessTokenExpiryDateTimeOffset <= DateTimeOffset.UtcNow)
+		{
+			_logger.LogDebug("SendAsync(): The access token expiry date time ('{AccessTokenExpiryDateTimeOffset}') has expired - getting a new token...", _accessTokenExpiryDateTimeOffset);
+			var accessToken = await GetAccessTokenAsync(cancellationToken).ConfigureAwait(false);
+			_authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", accessToken);
+		}
+
+		if (_authenticationHeaderValue is null)
+		{
+			var accessToken = await GetAccessTokenAsync(cancellationToken).ConfigureAwait(false);
+			_authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", accessToken);
+		}
 	}
 }
