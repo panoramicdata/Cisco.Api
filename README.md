@@ -76,7 +76,7 @@ namespace My.Project
 
 			var productInformation = await ciscoClient
 				.ProductInfo
-				.GetBySerialNumbersAsync(new[] { "<SERIAL_NUMBER>" })
+				.GetBySerialNumbersAsync(new[] { "<SERIAL_NUMBER>" }, default)
 				.ConfigureAwait(false);
 
 			var productDetails = productInformation.Products.First();
@@ -87,6 +87,60 @@ namespace My.Project
 }
 ```
 
+## Migrating from 3.0.104
+
+Releases after 3.0.104 removed the optional parameters from the interface methods and turned the old overloads into compile errors (`[Obsolete(..., true)]`). Code that compiled against 3.0.104 by omitting `pageIndex`, `alias` or the `CancellationToken` no longer compiles. Pass every argument explicitly, using `default` for the `CancellationToken` if you have no token to hand.
+
+### `pageIndex` is now required
+
+`pageIndex` (previously defaulting to `1`) must be passed on these methods, followed by a `CancellationToken`:
+
+- `IEox.GetBySerialNumberAsync(string serialNumber, int pageIndex, CancellationToken cancellationToken)`
+- `IEox.GetBySoftwareReleaseStringAsync(IEnumerable<string> softwareReleaseStrings, int pageIndex, CancellationToken cancellationToken)`
+- `ISoftwareSuggestion.GetByProductIdsAsync(IEnumerable<string> productIds, int pageIndex, CancellationToken cancellationToken)`
+
+```csharp
+// Before (3.0.104)
+var eox = await client.Eox.GetBySerialNumberAsync(serialNumber);
+var suggestions = await client.SoftwareSuggestion.GetByProductIdsAsync(productIds);
+
+// After
+var eox = await client.Eox.GetBySerialNumberAsync(serialNumber, 1, cancellationToken);
+var suggestions = await client.SoftwareSuggestion.GetByProductIdsAsync(productIds, 1, cancellationToken);
+```
+
+### `alias` is now required
+
+`ISecurityAdvisory.GetAdvisoriesByOsTypeAndVersion` previously defaulted `alias` to an empty string:
+
+```csharp
+// Before (3.0.104)
+var advisories = await client.SecurityAdvisory.GetAdvisoriesByOsTypeAndVersion("ios", "15.2(4)M1");
+
+// After
+var advisories = await client.SecurityAdvisory.GetAdvisoriesByOsTypeAndVersion("ios", "15.2(4)M1", "", cancellationToken);
+```
+
+### `CancellationToken` is now required
+
+Every overload without a `CancellationToken` is now a compile error. Add the token as the last argument, or `default`. This includes:
+
+- `ISerialNumberToInfo.GetCoverageStatusBySerialNumbersAsync`
+- `ISerialNumberToInfo.GetCoverageSummaryBySerialNumbersAsync`
+- `IProductInfo.GetBySerialNumbersAsync`
+- `ISecurityAdvisory.GetOsVersionDataByType`
+- `ISecurityAdvisory.GetAdvisoriesByCveName`
+- `ISecurityAdvisory.GetAdvisoriesByProduct`
+
+```csharp
+// Before (3.0.104)
+var products = await client.ProductInfo.GetBySerialNumbersAsync(serialNumbers);
+var cve = await client.SecurityAdvisory.GetAdvisoriesByCveName("CVE-2024-20353");
+
+// After
+var products = await client.ProductInfo.GetBySerialNumbersAsync(serialNumbers, cancellationToken);
+var cve = await client.SecurityAdvisory.GetAdvisoriesByCveName("CVE-2024-20353", cancellationToken);
+```
 ## Supported Frameworks
 
 - .NET 11.0
