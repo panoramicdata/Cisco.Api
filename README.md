@@ -87,6 +87,10 @@ namespace My.Project
 }
 ```
 
+## Breaking changes
+
+- `CommerceSku.Create(...)`, a public static factory taking 21 positional parameters, has been removed. It only assigned each argument to the property of the same name, so use an object initializer instead: `new CommerceSku { Eol = true, CustSuiteId = 1, SuiteCommerceSku = "sku", ... }`. All properties are unchanged.
+
 ## Migrating from 3.0.104
 
 Releases after 3.0.104 removed the optional parameters from the interface methods and turned the old overloads into compile errors (`[Obsolete(..., true)]`). Code that compiled against 3.0.104 by omitting `pageIndex`, `alias` or the `CancellationToken` no longer compiles. Pass every argument explicitly, using `default` for the `CancellationToken` if you have no token to hand.
