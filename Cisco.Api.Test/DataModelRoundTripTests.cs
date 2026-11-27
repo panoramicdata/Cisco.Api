@@ -36,17 +36,34 @@ public class DataModelRoundTripTests
 			(nameof(CommerceSku.CalculationMethod), "m"),
 			(nameof(CommerceSku.CommitmentType), "c"));
 
-	/// <summary>The static Create method populates every property.</summary>
+	/// <summary>An object initializer populates every property.</summary>
 	[Fact]
-	public void CommerceSku_Create_SetsEveryProperty()
+	public void CommerceSku_Initializer_SetsEveryProperty()
 	{
-		var sku = CommerceSku.Create(
-			eol: true, custSuiteId: 1, suiteCommerceSku: "s1", suiteCommerceSkuDescription: "d1",
-			suiteName: "n1", custSuiteName: "c1", eolMessage: "m1", purchasedEntitlements: 2,
-			premierEntitlements: 3, growthAllowance: 4, totalEntitlements: 5, preEAConsumption: 6,
-			licenseGenerated: 7, licenseMigrated: 8, c1ToDNAMigratedCount: 9, totalConsumption: 10,
-			remainingEntitlements: 11, softwareDownloads: 12, healthMessage: "h1", calculationMethod: "cm",
-			commitmentType: "ct");
+		var sku = new CommerceSku
+		{
+			Eol = true,
+			CustSuiteId = 1,
+			SuiteCommerceSku = "s1",
+			SuiteCommerceSkuDescription = "d1",
+			SuiteName = "n1",
+			CustSuiteName = "c1",
+			EolMessage = "m1",
+			PurchasedEntitlements = 2,
+			PremierEntitlements = 3,
+			GrowthAllowance = 4,
+			TotalEntitlements = 5,
+			PreEAConsumption = 6,
+			LicenseGenerated = 7,
+			LicenseMigrated = 8,
+			C1ToDNAMigratedCount = 9,
+			TotalConsumption = 10,
+			RemainingEntitlements = 11,
+			SoftwareDownloads = 12,
+			HealthMessage = "h1",
+			CalculationMethod = "cm",
+			CommitmentType = "ct",
+		};
 
 		PropertyAssert.AssertValues(
 			sku,
